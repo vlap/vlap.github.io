@@ -1,0 +1,7 @@
+https://github.com/ketch/tex2_rst_html
+
+The workflow for adding a new paper to an html bibliography is:
+1) Add the paper in Mendeley.
+2) Export bibtex from Mendeley.
+3) Run Python scripts.
+4) Paste resulting HTML into the appropriate file.

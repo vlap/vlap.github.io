@@ -1,0 +1,54 @@
+/* The stylesheet for social media links. */
+
+#links {
+	width:100%;
+	height:30px;
+	left:0;
+	text-align:left;
+}
+
+#links ul{
+	list-style:none;
+	list-style-type:none;
+	background-repeat:no-repeat;
+}
+
+#links li {
+	float:left;
+	cursor:default;
+	width:32px;
+	height:32px;
+	margin-right:10px;
+}
+
+#links li a {
+	display:block;
+	width:32px;
+	height:32px;
+}
+
+#links li span {display:none;}
+
+#links_facebook a {background:url(../images/elements/facebook_off.png);}
+#links_facebook a:hover {background:url(../images/elements/facebook_on.png);}
+
+#links_twitter a {background:url(../images/elements/twitter_off.png);}
+#links_twitter a:hover {background:url(../images/elements/twitter_on.png);}
+
+#links_flickr a {background:url(../images/elements/flickr_off.png);}
+#links_flickr a:hover {background:url(../images/elements/flickr_on.png);}
+
+#links_photobucket a {background:url(../images/elements/photobucket_off.png);}
+#links_photobucket a:hover {background:url(../images/elements/photobucket_on.png);}
+
+#links_linkedin a {background:url(../images/elements/linkedin_off.png);}
+#links_linkedin a:hover {background:url(../images/elements/linkedin_on.png);}
+
+#links_lastfm a {background:url(../images/elements/lastfm_off.png);}
+#links_lastfm a:hover {background:url(../images/elements/lastfm_on.png);}
+
+#links_github a {background:url(../images/elements/github_off.png);}
+#links_github a:hover {background:url(../images/elements/github_on.png);}
+
+#links_mendeley a {background:url(../images/elements/mendeley_off.png);}
+#links_mendeley a:hover {background:url(../images/elements/mendeley_on.png);}

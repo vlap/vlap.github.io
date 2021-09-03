@@ -1,0 +1,16 @@
+#pub {
+	padding: 3px; 
+	border-width: 2px; 
+	border-style: none; 
+	margin-top: 10px; 
+	margin-bottom: 10px;
+	}
+#pub a{
+	color: #beb;
+	}
+#pub name{
+	font-weight: bold; 
+	color: #09434e;}
+#pub journal{
+	font-style: italic;
+	}
