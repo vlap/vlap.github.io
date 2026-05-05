@@ -1,0 +1,29 @@
+{{- $software := site.Data.curated_software }}
+<div class="software-container">
+    {{- range $software }}
+    <div class="software-card">
+        <div class="software-card-header">
+            <h3>
+                {{- if .github }}
+                <a href="https://github.com/{{ .github }}" target="_blank" rel="noopener">{{ .name }}</a>
+                {{- else if .url }}
+                <a href="{{ .url }}" target="_blank" rel="noopener">{{ .name }}</a>
+                {{- else }}
+                {{ .name }}
+                {{- end }}
+            </h3>
+            {{- if .github }}
+            <span class="github-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A3.37 3.37 0 0 0 19 4.77a3.07 3.07 0 0 0-.08-2.3s-.82-.26-2.68 1.03a9.21 9.21 0 0 0-4.85 0C9.62 2.21 8.8 2.47 8.8 2.47a3.07 3.07 0 0 0-.08 2.3 3.37 3.37 0 0 0-.94 2.61c0 5.42 3.3 6.61 6.44 7a3.37 3.37 0 0 0-.94 2.58V22"></path></svg>
+            </span>
+            {{- end }}
+        </div>
+        <p class="software-desc">{{ .description }}</p>
+        <div class="software-tags">
+            {{- range .tags }}
+            <span class="software-tag">{{ . }}</span>
+            {{- end }}
+        </div>
+    </div>
+    {{- end }}
+</div>

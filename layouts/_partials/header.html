@@ -1,7 +1,15 @@
 <header class="header">
     <nav class="header-nav">
         <div class="logo">
-            {{- /* Site Title/Logo removed as requested - already prominent on front page */ -}}
+            {{- if not .IsHome }}
+            <a href="{{ "" | absLangURL }}" accesskey="h" title="{{ site.Title }} (Alt + H)">
+                {{- if site.Params.label.text }}
+                    {{- site.Params.label.text -}}
+                {{- else }}
+                    {{- site.Title -}}
+                {{- end -}}
+            </a>
+            {{- end }}
 
             {{- $lsenabled := (or (not site.Params.disableThemeToggle) (and (not site.Params.disableLangToggle) (hugo.IsMultilingual))) }}
             {{- if $lsenabled }}

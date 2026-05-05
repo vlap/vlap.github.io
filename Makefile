@@ -22,10 +22,16 @@ help:
 	@echo "  watch   Automatically sync/deploy when Dropbox changes (requires inotify-tools)"
 
 sync:
+	@echo "==> Fetching ORCID data..."
+	@$(PYTHON) scripts/fetch_orcid.py
+	@echo "==> Fetching GitHub activity..."
+	@$(PYTHON) scripts/fetch_github.py
 	@echo "==> Mirroring YAML data and conversion..."
 	@$(PYTHON) scripts/bib_to_yaml.py
 	@# Direct mirror of YAML files from Dropbox to Repo data/
 	@rsync -avz --include="*.yaml" --exclude="*" "$(DROPBOX_CV_PATH)/" data/
+	@echo "==> Updating site statistics..."
+	@$(PYTHON) scripts/update_stats.py
 	@echo "==> Syncing PDF downloads..."
 	@mkdir -p static/downloads
 	@rsync -avz --include="*.pdf" --exclude="*" "$(DROPBOX_CV_PATH)/" static/downloads/

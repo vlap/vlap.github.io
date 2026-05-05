@@ -1,327 +1,137 @@
-- author: "Li, Hongmei and Ilyina, Tatiana and Dunkl, Istv\xE1n and Brune, Sebastian\
-    \ and M\xFCller, Wolfgang A. and Bernardello, Raffaele and Bethke, Ingo and Bopp,\
-    \ Laurent and Fransner, Filippa and Friedlingstein, Pierre and Lapin, Vladimir\
-    \ and Merryfield, William J. and Mignot, Juliette and O\u2019Sullivan, Michael\
-    \ and Sospedra-Alfonso, Reinel and Swingedouw, Didier and Tatebe, Hiroaki and\
-    \ Tjiputra, Jerry and Torres, Olivier and Tourigny, Etienne"
-  doi: 10.1175/bams-d-25-0139.1
-  issn: 1520-0477
-  journal: Bulletin of the American Meteorological Society
-  key: Li_2026
-  month: February
-  publisher: American Meteorological Society
-  title: Multi-model reconstructions and predictions of the CO2 fluxes and atmospheric
-    CO2 variations
-  type: article
-  url: http://dx.doi.org/10.1175/bams-d-25-0139.1
-  year: '2026'
-- author: Ramiro I. Saurral and Diego A. Campos and Katherine Grayson and Vladimir
-    Lapin and Paloma Trascasa-Castro and Etienne Tourigny and Markus G. Donat and
-    Stefano Materia and Eric Ferrer and Francisco J. Doblas-Reyes
-  doi: 10.1016/j.wace.2026.100877
-  journal: Weather and Climate Extremes
-  key: Ramiro2026
-  title: The key role of Mediterranean and North Atlantic sea surface temperatures
+- title: The key role of Mediterranean and North Atlantic sea surface temperatures
     on the 2024 record-breaking Valencia precipitation event
-  type: article
   year: '2026'
-- author: "Carr\xE9ric, Aude and Ortega, Pablo and Bilbao, Roberto and Delgado-Torres,\
-    \ Carlos and Lapin, Vladimir and L\xF3pez-Mart\xED, Ferran and Donat, Markus and\
-    \ Doblas-Reyes, Francisco"
-  doi: 10.5194/egusphere-2025-4658
-  key: Carr_ric_2025
-  month: October
-  publisher: Copernicus GmbH
-  title: Comparing the seasonal predictability of the Tropical Pacific variability
-    in EC-Earth3 at two horizontal resolutions
-  type: article
-  url: http://dx.doi.org/10.5194/egusphere-2025-4658
-  year: '2025'
-- author: Carreric, Aude and Ortega, Pablo and Lapin, Vladimir and Doblas-Reyes, Francisco
-  doi: 10.5194/egusphere-egu24-19229
-  key: Carreric_2025
-  month: January
-  publisher: Copernicus GmbH
-  title: Comparing the seasonal predictability of Tropical Pacific variability in
-    EC-Earth3 at two different horizontal resolutions
-  type: article
-  url: http://dx.doi.org/10.5194/egusphere-egu24-19229
-  year: '2025'
-- author: Cvijanovic, Ivana and Simon, Amelie and Levine, Xavier and White, Rachel
-    and Ortega, Pablo and Donat, Markus and Lucas, Donald D. and Chiang, John C. H.
-    and Seidenglanz, Anne and Bojovic, Dragana and Amaral, Arthur Ramos and Lapin,
-    Vladimir and Doblas-Reyes, Francisco and Petrova, Desislava
-  doi: 10.1038/s43247-025-02059-w
-  issn: 2662-4435
-  journal: Communications Earth \& Environment
-  key: Cvijanovic_2025
-  month: March
-  number: '1'
-  publisher: Springer Science and Business Media LLC
-  title: Arctic sea-ice loss drives a strong regional atmospheric response over the
-    North Pacific and North Atlantic on decadal scales
-  type: article
-  url: http://dx.doi.org/10.1038/s43247-025-02059-w
-  volume: '6'
-  year: '2025'
-- author: Mahmood, Rashed and Donat, Markus G. and Bilbao, Roberto and Ortega, Pablo
-    and Lapin, Vladimir and Tourigny, Etienne and Doblas-Reyes, Francisco
-  doi: 10.5194/egusphere-2025-1208
-  key: Mahmood_2025
-  month: March
-  publisher: Copernicus GmbH
-  title: Multi-decadal initialized climate predictions using the EC-Earth3 global
-    climate model
-  type: article
-  url: http://dx.doi.org/10.5194/egusphere-2025-1208
-  year: '2025'
-- author: Roberto Bilbao and Thomas J. Aubry and Matthew Toohey and Pablo Ortega and
-    Vladimir Lapin and Etienne Tourigny
-  doi: 10.5194/gmd-18-6239-2025
-  journal: Geoscientific Model Development
-  key: Roberto2025
-  title: 'The sensitivity of EC-Earth3 decadal predictions to the choice of volcanic
-    forcing dataset: insights for the next major eruption'
-  type: article
-  year: '2025'
-- author: Aude Carreric and Pablo Ortega and Francisco Doblas-Reyes and Vladimir Lapin
-  doi: 10.5194/ems2024-752
-  key: Aude2024
-  title: Comparing the seasonal predictability of ENSO and the Tropical Pacific variability
-    in EC-Earth3 at two different horizontal resolutions
-  type: article
-  year: '2024'
-- author: Raffaele Bernardello and Valentina Sicardi and Vladimir Lapin and Pablo
-    Ortega and Yohan Ruprich-Robert and Etienne Tourigny and Eric Ferrer
-  doi: 10.5194/esd-15-1255-2024
-  journal: Earth System Dynamics
-  key: Raffaele2024
-  title: Ocean biogeochemical reconstructions to estimate historical ocean CO2 uptake
-  type: article
-  year: '2024'
-- author: "Silvy, Yona and Fr\xF6licher, Thomas L. and Terhaar, Jens and Joos, Fortunat\
-    \ and Burger, Friedrich A. and Lacroix, Fabrice and Allen, Myles and Bernardello,\
-    \ Raffaele and Bopp, Laurent and Brovkin, Victor and Buzan, Jonathan R. and Cadule,\
-    \ Patricia and Dix, Martin and Dunne, John and Friedlingstein, Pierre and Georgievski,\
-    \ Goran and Hajima, Tomohiro and Jenkins, Stuart and Kawamiya, Michio and Kiang,\
-    \ Nancy Y. and Lapin, Vladimir and Lee, Donghyun and Lerner, Paul and Mengis,\
-    \ Nadine and Monteiro, Estela A. and Paynter, David and Peters, Glen P. and Romanou,\
-    \ Anastasia and Schwinger, J\xF6rg and Sparrow, Sarah and Stofferahn, Eric and\
-    \ Tjiputra, Jerry and Tourigny, Etienne and Ziehn, Tilo"
-  doi: 10.5194/esd-15-1591-2024
-  issn: 2190-4987
-  journal: Earth System Dynamics
-  key: Silvy_2024
-  month: December
-  number: '6'
-  pages: "1591\u20131628"
-  publisher: Copernicus GmbH
-  title: "AERA-MIP: emission pathways, remaining budgets, and carbon cycle dynamics\
-    \ compatible with 1.5 and 2 \xB0C global warming stabilization"
-  type: article
-  url: http://dx.doi.org/10.5194/esd-15-1591-2024
-  volume: '15'
-  year: '2024'
-- author: "Acosta Navarro, J C and Garc\xEDa-Serrano, J and Lapin, V and Ortega, P"
-  doi: 10.1088/1748-9326/ac6c9b
-  issn: 1748-9326
-  journal: Environmental Research Letters
-  key: Acosta_Navarro_2022
-  month: May
-  number: '6'
-  pages: 064008
-  publisher: IOP Publishing
-  title: Added value of assimilating springtime Arctic sea ice concentration in summer-fall
-    climate predictions
-  type: article
-  url: http://dx.doi.org/10.1088/1748-9326/ac6c9b
-  volume: '17'
-  year: '2022'
-- author: "Hermanson, Leon and Smith, Doug and Seabrook, Melissa and Bilbao, Roberto\
-    \ and Doblas-Reyes, Francisco and Tourigny, Etienne and Lapin, Vladimir and Kharin,\
-    \ Viatcheslav V. and Merryfield, William J. and Sospedra-Alfonso, Reinel and Athanasiadis,\
-    \ Panos and Nicoli, Dario and Gualdi, Silvio and Dunstone, Nick and Eade, Rosie\
-    \ and Scaife, Adam and Collier, Mark and O\u2019Kane, Terence and Kitsios, Vassili\
-    \ and Sandery, Paul and Pankatz, Klaus and Fr\xFCh, Barbara and Pohlmann, Holger\
-    \ and M\xFCller, Wolfgang and Kataoka, Takahito and Tatebe, Hiroaki and Ishii,\
-    \ Masayoshi and Imada, Yukiko and Kruschke, Tim and Koenigk, Torben and Karami,\
-    \ Mehdi Pasha and Yang, Shuting and Tian, Tian and Zhang, Liping and Delworth,\
-    \ Tom and Yang, Xiaosong and Zeng, Fanrong and Wang, Yiguo and Counillon, Fran\xE7\
-    ois and Keenlyside, Noel and Bethke, Ingo and Lean, Judith and Luterbacher, J\xFC\
-    rg and Kolli, Rupa Kumar and Kumar, Arun"
-  doi: 10.1175/bams-d-20-0311.1
-  issn: 1520-0477
+  journal: Weather and Climate Extremes
+  doi: 10.1016/j.wace.2026.100877
+  url: https://doi.org/10.1016/j.wace.2026.100877
+- title: Multi-model reconstructions and predictions of the CO2 fluxes and atmospheric
+    CO2 variations
+  year: '2026'
   journal: Bulletin of the American Meteorological Society
-  key: Hermanson_2022
-  month: April
-  number: '4'
-  pages: "E1117\u2013E1129"
-  publisher: American Meteorological Society
-  title: "WMO Global Annual to Decadal Climate Update: A Prediction for 2021\u2013\
-    25"
-  type: article
-  url: http://dx.doi.org/10.1175/bams-d-20-0311.1
-  volume: '103'
-  year: '2022'
-- author: "Simon, Am\xE9lie and Gastineau, Guillaume and Frankignoul, Claude and Lapin,\
-    \ Vladimir and Ortega, Pablo"
-  doi: 10.5194/wcd-3-845-2022
-  issn: 2698-4016
-  journal: Weather and Climate Dynamics
-  key: Simon_2022
-  month: August
-  number: '3'
-  pages: "845\u2013861"
-  publisher: Copernicus GmbH
-  title: Pacific Decadal Oscillation modulates the Arctic sea-ice loss influence on
-    the midlatitude atmospheric circulation in winter
-  type: article
-  url: http://dx.doi.org/10.5194/wcd-3-845-2022
-  volume: '3'
-  year: '2022'
-- author: Tourigny, Etienne and Bernardello, Raffaele and Sicardi, Valentina and Ortega,
-    Pablo and Ruprich Robert, Yohan and Lapin, Vladimir and Acosta Navarro, Juan C.
-    and Bilbao, Roberto and Meier, Arndt and Li, Hongmei and Ilyina, Tatiana
-  doi: 10.5194/egusphere-egu22-10228
-  key: Tourigny_2022
-  month: March
-  publisher: Copernicus GmbH
-  title: Near-term prediction of the global carbon cycle using EC-Earth3-CC, the Carbon
-    Cycle version of the EC-Earth3 Earth System Model
-  type: article
-  url: http://dx.doi.org/10.5194/egusphere-egu22-10228
-  year: '2022'
-- author: "Tsujino, Hiroyuki and Urakawa, L. Shogo and Griffies, Stephen M. and Danabasoglu,\
-    \ Gokhan and Adcroft, Alistair J. and Amaral, Arthur E. and Arsouze, Thomas and\
-    \ Bentsen, Mats and Bernardello, Raffaele and B\xF6ning, Claus W. and Bozec, Alexandra\
-    \ and Chassignet, Eric P. and Danilov, Sergey and Dussin, Raphael and Exarchou,\
-    \ Eleftheria and Fogli, Pier Giuseppe and Fox-Kemper, Baylor and Guo, Chuncheng\
-    \ and Ilicak, Mehmet and Iovino, Doroteaciro and Kim, Who M. and Koldunov, Nikolay\
-    \ and Lapin, Vladimir and Li, Yiwen and Lin, Pengfei and Lindsay, Keith and Liu,\
-    \ Hailong and Long, Matthew C. and Komuro, Yoshiki and Marsland, Simon J. and\
-    \ Masina, Simona and Nummelin, Aleksi and Rieck, Jan Klaus and Ruprich-Robert,\
-    \ Yohan and Scheinert, Markus and Sicardi, Valentina and Sidorenko, Dmitry and\
-    \ Suzuki, Tatsuo and Tatebe, Hiroaki and Wang, Qiang and Yeager, Stephen G. and\
-    \ Yu, Zipeng"
-  doi: 10.5194/gmd-13-3643-2020
-  issn: 1991-9603
+  doi: 10.1175/bams-d-25-0139.1
+  url: https://doi.org/10.1175/bams-d-25-0139.1
+- title: Comparing the seasonal predictability of the Tropical Pacific variability
+    in EC-Earth3 at two horizontal resolutions
+  year: '2025'
+  journal: Crossref
+  doi: 10.5194/egusphere-2025-4658
+  url: https://doi.org/10.5194/egusphere-2025-4658
+- title: 'The sensitivity of EC-Earth3 decadal predictions to the choice of volcanic
+    forcing dataset: insights for the next major eruption'
+  year: '2025'
   journal: Geoscientific Model Development
-  key: Tsujino_2020
-  month: August
-  number: '8'
-  pages: "3643\u20133708"
-  publisher: Copernicus GmbH
-  title: "Evaluation of global ocean\u2013sea-ice model simulations based on the experimental\
-    \ protocols of the Ocean Model Intercomparison Project phase 2 (OMIP-2)"
-  type: article
-  url: http://dx.doi.org/10.5194/gmd-13-3643-2020
-  volume: '13'
+  doi: 10.5194/gmd-18-6239-2025
+  url: https://doi.org/10.5194/gmd-18-6239-2025
+- title: Multi-decadal initialized climate predictions using the EC-Earth3 global
+    climate model
+  year: '2025'
+  journal: Crossref
+  doi: 10.5194/egusphere-2025-1208
+  url: https://doi.org/10.5194/egusphere-2025-1208
+- title: Supplementary material to "Multi-decadal initialized climate predictions
+    using the EC-Earth3 global climate model"
+  year: '2025'
+  journal: Crossref
+  doi: 10.5194/egusphere-2025-1208-supplement
+  url: https://doi.org/10.5194/egusphere-2025-1208-supplement
+- title: Arctic sea-ice loss drives a strong regional atmospheric response over the
+    North Pacific and North Atlantic on decadal scales
+  year: '2025'
+  journal: Communications Earth &amp; Environment
+  doi: 10.1038/s43247-025-02059-w
+  url: https://doi.org/10.1038/s43247-025-02059-w
+- title: Comparing the seasonal predictability of Tropical Pacific variability in
+    EC-Earth3 at two different horizontal resolutions
+  year: '2025'
+  journal: Crossref
+  doi: 10.5194/egusphere-egu24-19229
+  url: https://doi.org/10.5194/egusphere-egu24-19229
+- title: 'AERA-MIP: emission pathways, remaining budgets, and carbon cycle dynamics
+    compatible with 1.5 and 2 °C global warming stabilization'
+  year: '2024'
+  journal: Earth System Dynamics
+  doi: 10.5194/esd-15-1591-2024
+  url: https://doi.org/10.5194/esd-15-1591-2024
+- title: Ocean biogeochemical reconstructions to estimate historical ocean CO2 uptake
+  year: '2024'
+  journal: Earth System Dynamics
+  doi: 10.5194/esd-15-1255-2024
+  url: https://doi.org/10.5194/esd-15-1255-2024
+- title: Comparing the seasonal predictability of ENSO and the Tropical Pacific variability
+    in EC-Earth3 at two different horizontal resolutions
+  year: '2024'
+  journal: Crossref
+  doi: 10.5194/ems2024-752
+  url: https://doi.org/10.5194/ems2024-752
+- title: Pacific Decadal Oscillation modulates the Arctic sea-ice loss influence on
+    the midlatitude atmospheric circulation in winter
+  year: '2022'
+  journal: Weather and Climate Dynamics
+  doi: 10.5194/wcd-3-845-2022
+  url: https://doi.org/10.5194/wcd-3-845-2022
+- title: Added value of assimilating springtime Arctic sea ice concentration in summer-fall
+    climate predictions
+  year: '2022'
+  journal: Environmental Research Letters
+  doi: 10.1088/1748-9326/ac6c9b
+  url: https://doi.org/10.1088/1748-9326/ac6c9b
+- title: 'WMO Global Annual to Decadal Climate Update: A Prediction for 2021–25'
+  year: '2022'
+  journal: Bulletin of the American Meteorological Society
+  doi: 10.1175/bams-d-20-0311.1
+  url: https://doi.org/10.1175/bams-d-20-0311.1
+- title: Near-term prediction of the global carbon cycle using EC-Earth3-CC, the Carbon
+    Cycle version of the EC-Earth3 Earth System Model
+  year: '2022'
+  journal: Crossref
+  doi: 10.5194/egusphere-egu22-10228
+  url: https://doi.org/10.5194/egusphere-egu22-10228
+- title: Pacific Decadal Oscillation modulates the Arctic sea-ice loss influence on
+    the mid-latitude atmospheric circulation in winter
+  year: '2022'
+  journal: Crossref
+  doi: 10.5194/egusphere-2022-69
+  url: https://doi.org/10.5194/egusphere-2022-69
+- title: Evaluation of global ocean-sea-ice model simulations based on the experimental
+    protocols of the Ocean Model Intercomparison Project phase 2 (OMIP-2)
   year: '2020'
-- author: Benilov, E. S. and Lapin, V. N.
-  doi: 10.1017/jfm.2014.719
-  issn: 1469-7645
-  journal: Journal of Fluid Mechanics
-  key: Benilov_2014
-  month: December
-  pages: "277\u2013295"
-  publisher: Cambridge University Press (CUP)
-  title: 'An example where lubrication theory comes short: hydraulic jumps in a flow
-    down an inclined plate'
-  type: article
-  url: http://dx.doi.org/10.1017/jfm.2014.719
-  volume: '764'
+  journal: Geoscientific Model Development
+  doi: 10.5194/gmd-13-3643-2020
+  url: https://doi.org/10.5194/gmd-13-3643-2020
+- title: Accuracy assessment of global barotropic ocean tide models
   year: '2014'
-- author: "Stammer, D. and Ray, R. D. and Andersen, O. B. and Arbic, B. K. and Bosch,\
-    \ W. and Carr\xE8re, L. and Cheng, Y. and Chinn, D. S. and Dushaw, B. D. and Egbert,\
-    \ G. D. and Erofeeva, S. Y. and Fok, H. S. and Green, J. A. M. and Griffiths,\
-    \ S. and King, M. A. and Lapin, V. and Lemoine, F. G. and Luthcke, S. B. and Lyard,\
-    \ F. and Morison, J. and M\xFCller, M. and Padman, L. and Richman, J. G. and Shriver,\
-    \ J. F. and Shum, C. K. and Taguchi, E. and Yi, Y."
-  doi: 10.1002/2014rg000450
-  issn: 8755-1209
   journal: Reviews of Geophysics
-  key: Stammer_2014
-  month: August
-  number: '3'
-  pages: "243\u2013282"
-  publisher: American Geophysical Union (AGU)
-  title: Accuracy assessment of global barotropic ocean tide models
-  type: article
-  url: http://dx.doi.org/10.1002/2014rg000450
-  volume: '52'
+  doi: 10.1002/2014rg000450
+  url: https://doi.org/10.1002/2014rg000450
+- title: 'An example where lubrication theory comes short: Hydraulic jumps in a flow
+    down an inclined plate'
   year: '2014'
-- author: Benilov, E.S. and Lapin, V.N.
-  doi: 10.1080/03091929.2012.709515
-  journal: Geophysical and Astrophysical Fluid Dynamics
-  key: Benilov2013
-  title: On resonant over-reflection of waves by jets
-  type: article
-  year: '2013'
-- author: Benilov, E. S. and Lapin, V. N.
-  doi: 10.1017/jfm.2013.530
-  issn: 1469-7645
   journal: Journal of Fluid Mechanics
-  key: Benilov_2013
-  month: November
-  pages: "107\u2013129"
-  publisher: Cambridge University Press (CUP)
-  title: Inertial instability of flows on the inside or outside of a rotating horizontal
+  doi: 10.1017/jfm.2014.719
+  url: https://doi.org/10.1017/jfm.2014.719
+- title: Inertial instability of flows on the inside or outside of a rotating horizontal
     cylinder
-  type: article
-  url: http://dx.doi.org/10.1017/jfm.2013.530
-  volume: '736'
   year: '2013'
-- author: Benilov, E.S. and Lapin, V.N.
-  doi: 10.1103/PhysRevE.83.066321
-  journal: Physical Review E - Statistical, Nonlinear, and Soft Matter Physics
-  key: Benilov2011
-  title: Shock waves in Stokes flows down an inclined plate
-  type: article
-  year: '2011'
-- author: "Benilov, E. S. and Lapin, V. N. and O\u2019Brien, S. B. G."
-  doi: 10.1007/s10665-011-9512-2
-  issn: 1573-2703
+  journal: Journal of Fluid Mechanics
+  doi: 10.1017/jfm.2013.530
+  url: https://doi.org/10.1017/jfm.2013.530
+- title: On resonant over-reflection of waves by jets
+  year: '2013'
+  journal: Geophysical and Astrophysical Fluid Dynamics
+  doi: 10.1080/03091929.2012.709515
+  url: https://doi.org/10.1080/03091929.2012.709515
+- title: On rimming flows with shocks
+  year: '2012'
   journal: Journal of Engineering Mathematics
-  key: Benilov_2011
-  month: November
-  number: '1'
-  pages: "49\u201362"
-  publisher: Springer Science and Business Media LLC
-  title: On rimming flows with shocks
-  type: article
-  url: http://dx.doi.org/10.1007/s10665-011-9512-2
-  volume: '75'
+  doi: 10.1007/s10665-011-9512-2
+  url: https://doi.org/10.1007/s10665-011-9512-2
+- title: Shock waves in Stokes flows down an inclined plate
   year: '2011'
-- author: Lapin, V. N.
-  key: Lapin2011a
-  number: May
-  title: '{Resonant over-reflection of waves by jets'
-  type: phdthesis
-  url: http://hdl.handle.net/10344/1965
+  journal: Physical Review E - Statistical, Nonlinear, and Soft Matter Physics
+  doi: 10.1103/PhysRevE.83.066321
+  url: https://doi.org/10.1103/PhysRevE.83.066321
+- title: Stability of the Couette flow of ideal rigid-plastic bodies
   year: '2011'
-- author: Lapin, V. N.
-  doi: 10.3103/s0027133011010018
-  issn: 1934-8452
   journal: Moscow University Mechanics Bulletin
-  key: Lapin_2011
-  month: February
-  number: '1'
-  pages: "1\u20137"
-  publisher: Allerton Press
-  title: Stability of the Couette flow of ideal rigid-plastic bodies
-  type: article
-  url: http://dx.doi.org/10.3103/S0027133011010018
-  volume: '66'
-  year: '2011'
-- author: Ward, J. A. and Lapin, V. N. and Lee, W.
-  booktitle: Proc. 70th Eur. Study Gr. with Ind.
-  key: Ward2009
-  title: '{The Effect of Mechanical Loading on the Frequency of an Oscillator Circuit.'
-  type: inproceedings
-  url: http://www.macsi.ul.ie/2/esgi70/ESGI70{_
-  year: '2009'
-- author: Lapin, V. N. and Griffiths, S. D.
-  journal: Ocean Model.
-  key: Lapin
-  title: '{Improved accuracy of finite difference ocean models with irregular boundaries.'
-  type: article
+  doi: 10.3103/S0027133011010018
+  url: https://doi.org/10.3103/S0027133011010018

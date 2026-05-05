@@ -1,0 +1,19 @@
+- name: vlap.github.io
+  description: Vladimir Lapin, climate modeller
+  url: https://github.com/vlap/vlap.github.io
+  stars: 0
+  language: PostScript
+  updated: '2026-05-05T23:15:08Z'
+- name: baro_tides_fd
+  description: Global finite difference model of barotropic tides
+  url: https://github.com/vlap/baro_tides_fd
+  stars: 0
+  language: FORTRAN
+  updated: '2017-01-13T15:26:51Z'
+- name: internal_tides_fd
+  description: Global coupled finite difference model of barotropic and baroclinic
+    tides
+  url: https://github.com/vlap/internal_tides_fd
+  stars: 0
+  language: FORTRAN
+  updated: '2017-01-13T14:47:42Z'

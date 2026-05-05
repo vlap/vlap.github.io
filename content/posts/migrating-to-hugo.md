@@ -1,7 +1,8 @@
 ---
 title: "Goodbye XHTML, Hello Hugo: Migrating my Professional Portfolio"
-date: 2026-05-04
+date: 2026-05-04T09:00:00+02:00
 draft: false
+type: "posts"
 tags: ["Web Design", "Hugo", "Personal"]
 cover:
     image: "images/decor/photos/photo1.jpg"

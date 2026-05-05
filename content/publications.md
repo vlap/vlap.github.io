@@ -8,7 +8,7 @@ showToc: false
 I have authored {{< count type="publications" >}} peer-reviewed journal articles, conference proceedings, and technical reports.
 
 ### Journal Articles & Proceedings
-{{< publications file="publications" >}}
+{{< pub_list >}}
 
 ---
 ### Theses

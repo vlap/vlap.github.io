@@ -1,13 +1,15 @@
-{{- with site.Params.homeInfoParams }}
+{{- $profile := site.Data.profile }}
+{{- $stats := site.Data.stats }}
+
 <article class="first-entry home-info">
-    {{- if .Image -}}
+    {{- if site.Params.homeInfoParams.Image -}}
     <div class="home-info-image">
-        <img src="{{ .Image | absURL }}" alt="Profile Image">
+        <img src="{{ site.Params.homeInfoParams.Image | absURL }}" alt="Profile Image">
     </div>
     {{- end }}
     <header class="entry-header">
         <h1>
-            {{ .Title | markdownify }}
+            {{ $profile.name }}
             <span class="symbol-bar">
                 <span title="Climate Science" class="grayscale">🌐</span>
                 <span title="Applied Mathematics">∫</span>
@@ -17,7 +19,28 @@
     </header>
     <div class="entry-content md-content">
         {{ $opts := dict "display" "block" }}
-        {{ .Content | $.Page.RenderString $opts }}
+        {{ $profile.bio | $.Page.RenderString $opts }}
+    </div>
+
+    {{- if $profile.current_focus }}
+    <div class="current-focus">
+        <span class="focus-label">Current Focus:</span> {{ $profile.current_focus }}
+    </div>
+    {{- end }}
+
+    <div class="impact-metrics">
+        <a href="{{ "/publications/" | absURL }}" class="metric-item">
+            <span class="metric-value">{{ $stats.publications }}</span>
+            <span class="metric-label">Publications</span>
+        </a>
+        <a href="{{ "/software/" | absURL }}" class="metric-item">
+            <span class="metric-value">{{ $stats.software }}</span>
+            <span class="metric-label">Software Tools</span>
+        </a>
+        <a href="{{ "/cv/trainings/" | absURL }}" class="metric-item">
+            <span class="metric-value">{{ $stats.trainings }}</span>
+            <span class="metric-label">Trainings</span>
+        </a>
     </div>
 
     <div class="research-highlights">
@@ -42,5 +65,3 @@
         {{ partial "social_icons.html" (dict "align" "center") }}
     </footer>
 </article>
-
-{{- end -}}

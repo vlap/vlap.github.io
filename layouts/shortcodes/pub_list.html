@@ -1,0 +1,21 @@
+{{- $pubs := site.Data.publications }}
+<div class="publication-list">
+    {{- range $pubs }}
+    <div class="pub-item">
+        <div class="pub-year">{{ .year }}</div>
+        <div class="pub-details">
+            <h4 class="pub-title">
+                {{- if .url }}
+                <a href="{{ .url }}" target="_blank" rel="noopener">{{ .title }}</a>
+                {{- else }}
+                {{ .title }}
+                {{- end }}
+            </h4>
+            <div class="pub-journal">{{ .journal }}</div>
+            {{- if .doi }}
+            <div class="pub-doi">DOI: <a href="https://doi.org/{{ .doi }}" target="_blank" rel="noopener">{{ .doi }}</a></div>
+            {{- end }}
+        </div>
+    </div>
+    {{- end }}
+</div>

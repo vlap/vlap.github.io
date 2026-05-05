@@ -1,0 +1,22 @@
+- name: "EC-Earth4"
+  description: "Core technical contributions to the European Earth System Model. Focus on OpenIFS integration and OASIS3-MCT coupling."
+  url: "https://ec-earth.org/ec-earth/ec-earth4/"
+  tags: ["Fortran", "C++", "HPC", "OASIS3-MCT"]
+  featured: true
+
+- name: "Prediction Data Workflow"
+  description: "Lead developer of a modular framework for preprocessing and interpolating climate datasets (EN4, ERA5, ORAS5)."
+  url: "https://gitlab.earth.bsc.es/es/prediction-data-workflow"
+  tags: ["Python", "CDO", "Data Engineering"]
+  featured: true
+
+- name: "auto-ecearth4"
+  description: "Official Autosubmit runtime environment for EC-Earth4 experiments on Marenostrum 5."
+  url: "https://earth.bsc.es/gitlab/es/auto-ecearth4"
+  tags: ["Python", "YAML", "Slurm", "Autosubmit"]
+  featured: true
+
+- name: "dotfiles"
+  description: "Modular senior-dev shell environment optimized for HPC research and local productivity."
+  github: "vlap/dotfiles"
+  featured: false

@@ -1,0 +1,15 @@
+name: "Dr. Vladimir Lapin"
+title: "Senior Research Engineer"
+affiliation: "Barcelona Supercomputing Center (BSC)"
+description: "Senior Research Engineer at BSC | Bridging Climate Science with ML & HPC"
+bio: |
+  Senior Research Engineer at the Barcelona Supercomputing Center (BSC).
+
+  Expert in climate model development, technical coordination, and data assimilation. Interested in MLOps to bridge models with modern machine learning frameworks.
+current_focus: "Getting EC-Earth4 ready to run CMIP7 simulation on MN5 at BSC"
+social:
+  github: "https://github.com/vlap"
+  linkedin: "https://linkedin.com/in/vladimir-lapin"
+  googlescholar: "https://scholar.google.com/citations?user=ZVQF-ggAAAAJ&hl=en"
+  orcid: "https://orcid.org/0000-0001-7302-8539"
+orcid_id: "0000-0001-7302-8539"

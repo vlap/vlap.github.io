@@ -1,0 +1,17 @@
+{{- $activity := site.Data.github_activity }}
+{{- if gt (len $activity) 0 }}
+<div class="active-dev">
+    <h2 class="section-title">Active Development</h2>
+    <div class="activity-feed">
+        {{- range $activity }}
+        <div class="activity-item">
+            <div class="activity-header">
+                <a href="{{ .url }}" target="_blank" rel="noopener"><strong>{{ .name }}</strong></a>
+                <span class="activity-meta">{{ .language }}</span>
+            </div>
+            <p class="activity-desc">{{ .description | truncate 100 }}</p>
+        </div>
+        {{- end }}
+    </div>
+</div>
+{{- end }}

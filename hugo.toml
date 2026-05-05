@@ -29,8 +29,10 @@ keywords = ["Vladimir Lapin", "Climate Modelling", "HPC Engineering", "Applied M
     ShowCodeCopyButtons = true
     ShowToc = false
     ShowScrollToTop = true
-    
+    mainSections = ["posts"]
+
     [params.assets]
+
         favicon = "favicon.svg"
         favicon16x16 = "favicon.svg"
         favicon32x32 = "favicon.svg"
@@ -59,13 +61,6 @@ keywords = ["Vladimir Lapin", "Climate Modelling", "HPC Engineering", "Applied M
     [params.homeInfoParams]
         Title = "Dr. Vladimir Lapin"
         Image = "images/decor/vladimir_lapin.jpg"
-        Content = """
-Senior Research Engineer at the **Barcelona Supercomputing Center (BSC)**.
-
-Specializing in the intersection of **Climate Modelling, HPC Engineering, and Machine Learning**. I develop high-performance data workflows and AI-driven enhancements for complex physical simulations.
-
-[View Software Portfolio](/software) | [Detailed CV](/cv) | [Technical Stack](/tools) | [Get in Touch](/contact)
-"""
 
     [[params.socialIcons]]
         name = "github"
@@ -88,39 +83,49 @@ Specializing in the intersection of **Climate Modelling, HPC Engineering, and Ma
         identifier = "software"
         name = "Software"
         url = "/software/"
-        weight = 5
+        weight = 10
+    [[menu.main]]
+        identifier = "publications"
+        name = "Publications"
+        url = "/publications/"
+        weight = 20
     [[menu.main]]
         identifier = "cv"
         name = "CV"
         url = "/cv/"
-        weight = 10
+        weight = 30
     [[menu.main]]
         identifier = "trainings"
         parent = "cv"
         name = "Trainings"
         url = "/cv/trainings/"
-        weight = 11
+        weight = 31
     [[menu.main]]
         identifier = "presentations"
         parent = "cv"
         name = "Presentations"
         url = "/cv/presentations/"
-        weight = 12
+        weight = 32
     [[menu.main]]
         identifier = "tools"
         name = "Tools"
         url = "/tools/"
-        weight = 20
+        weight = 40
     [[menu.main]]
-        identifier = "publications"
-        name = "Publications"
-        url = "/publications/"
-        weight = 30
+        identifier = "archive"
+        name = "Archive"
+        url = "/archives"
+        weight = 50
+    [[menu.main]]
+        identifier = "search"
+        name = "Search"
+        url = "/search/"
+        weight = 60
     [[menu.main]]
         identifier = "contact"
         name = "Contact"
         url = "/contact/"
-        weight = 40
+        weight = 70
 
 [markup]
   [markup.goldmark]
