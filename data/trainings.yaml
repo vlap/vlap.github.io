@@ -56,12 +56,21 @@
 
 - title: "Data assimilation"
   url: "https://events.ecmwf.int/event/376/"
-  year: 2024
-  month: 3
+  year: 2022
+  month: 2
   institution: "ECMWF"
   category: "Climate"
   duration: "5 days"
   skills: ["4D-Var", "Ensemble Methods", "Numerical Weather Prediction"]
+
+- title: "Data Assimilation in Geophysics"
+  year: 2019
+  month: 10
+  institution: "University of the Balearic Islands (UiB)"
+  category: "Climate"
+  duration: "5 sessions"
+  skills: ["Data Assimilation", "Geophysical Fluid Dynamics", "Ensemble Kalman Filters"]
+  notes: "Course by Alberto Carrassi"
 
 - title: "Energy transfers in Atmosphere and Ocean"
   year: 2017

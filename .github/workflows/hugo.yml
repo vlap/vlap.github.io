@@ -23,7 +23,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: 0.125.4
+      HUGO_VERSION: 0.161.1
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Install Hugo CLI
         run: |
@@ -52,6 +53,18 @@ jobs:
             --gc \
             --minify \
             --baseURL "${{ steps.pages.outputs.base_url }}/"
+
+      - name: Smoke Test
+        run: |
+          # Verify essential data files are present and not empty
+          if [ ! -s data/publications.yaml ]; then
+            echo "Error: publications.yaml is missing or empty!"
+            exit 1
+          fi
+          if [ ! -d public ]; then
+            echo "Error: public directory was not generated!"
+            exit 1
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
