@@ -1,0 +1,227 @@
+/* Home Info Customizations */
+.home-info {
+    text-align: center;
+}
+
+.home-info-image img {
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    margin-bottom: 20px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.home-info .entry-header h1 {
+    font-size: 2.2em;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.symbol-bar {
+    font-size: 0.7em;
+    opacity: 0.5;
+    font-weight: 400;
+    letter-spacing: 5px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.home-info .entry-content {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.home-info .entry-footer {
+    justify-content: center;
+    display: flex;
+}
+
+/* Data Sections (Publications, CV) */
+.pub-item, .cv-item {
+    margin-bottom: 1.8em;
+    padding-bottom: 1em;
+    border-bottom: 1px solid var(--border);
+}
+
+.pub-item:last-child, .cv-item:last-child {
+    border-bottom: none;
+}
+
+.pub-item h4, .cv-item h4 {
+    margin: 0 0 0.3em 0;
+    line-height: 1.4;
+}
+
+.pub-meta, .cv-meta {
+    font-size: 0.9em;
+    color: var(--secondary);
+}
+
+.pub-link, .cv-link {
+    font-size: 0.85em;
+    display: inline-block;
+    margin-top: 0.5em;
+    color: var(--tertiary);
+    text-decoration: underline;
+}
+
+.cv-skills {
+    font-size: 0.8em;
+    margin-top: 0.5em;
+    color: var(--secondary);
+}
+
+.cv-skills strong {
+    color: var(--primary);
+}
+
+/* Icons & Symbols */
+.grayscale, .symbol-bar span {
+    filter: grayscale(100%);
+    transition: filter 0.3s ease, opacity 0.3s ease;
+    display: inline-block;
+}
+
+.grayscale:hover, .symbol-bar span:hover {
+    filter: grayscale(0%);
+    opacity: 1;
+}
+
+/* Header & Profile Cleanups */
+.profile_inner h1 {
+    background: none !important;
+    padding-right: 0 !important;
+}
+
+/* Social Icons */
+.social-icons a {
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+.social-icons a:hover {
+    opacity: 1;
+}
+
+/* Print-friendly CSS: Essential for HR/Managers who print CVs */
+@media print {
+    .header, .footer, .social-icons, .buttons, .header-section-image, #theme-toggle {
+        display: none !important;
+    }
+    main {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+}
+
+/* Software & Tools Improvements */
+.md-content h2 {
+    margin-top: 2em;
+    border-bottom: 2px solid var(--tertiary);
+    padding-bottom: 0.3em;
+}
+
+.md-content h3 {
+    margin-top: 1.5em;
+    color: var(--primary);
+}
+lay: none !important;
+    }
+    main {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+}
+
+/* Software & Tools Improvements */
+.md-content h2 {
+    margin-top: 2em;
+    border-bottom: 2px solid var(--tertiary);
+    padding-bottom: 0.3em;
+}
+
+.md-content h3 {
+    margin-top: 1.5em;
+    color: var(--primary);
+}
+
+/* Skill Badges */
+.badge-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 1.5em 0;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 2px 10px;
+    border-radius: 12px;
+    background: var(--tertiary);
+    color: var(--primary);
+    border: 1px solid var(--border);
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.badge-hpc { background: rgba(0, 102, 204, 0.1) !important; color: #0066cc !important; border-color: #0066cc !important; }
+.badge-ai { background: rgba(204, 0, 102, 0.1) !important; color: #cc0066 !important; border-color: #cc0066 !important; }
+.badge-lead { background: rgba(0, 153, 76, 0.1) !important; color: #00994c !important; border-color: #00994c !important; }
+
+/* Research Highlights Homepage */
+.research-highlights {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 40px auto;
+    max-width: 900px;
+    flex-wrap: wrap;
+}
+
+.highlight-item {
+    flex: 1;
+    min-width: 200px;
+    padding: 20px;
+    background: var(--entry);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+}
+
+.highlight-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+.highlight-icon {
+    font-size: 2em;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.highlight-item h4 {
+    margin: 10px 0;
+    font-size: 1.1em;
+    color: var(--primary);
+}
+
+.highlight-item p {
+    font-size: 0.85em;
+    color: var(--secondary);
+    line-height: 1.4;
+    margin: 0;
+}

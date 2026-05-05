@@ -1,0 +1,24 @@
+{{ $file := .Get "file" }}
+{{ $data := index hugo.Data $file }}
+
+<div class="cv-section">
+  {{ range $data }}
+  <div class="cv-item" style="margin-bottom: 1.5em;">
+    <h4 style="margin: 0;">{{ .title }}</h4>
+    <div style="font-size: 0.9em; color: #666;">
+      {{ if .event }}<span>{{ .event }}</span>{{ end }}
+      {{ if .institution }}<span>{{ .institution }}</span>{{ end }}
+      {{ if .location }} | <span>{{ .location }}</span>{{ end }}
+      | <span>{{ .year }}-{{ printf "%02d" .month }}</span>
+    </div>
+    {{ if .url }}
+    <a href="{{ .url }}" target="_blank" style="font-size: 0.8em;">Link</a>
+    {{ end }}
+    {{ if .skills }}
+    <div style="font-size: 0.8em; margin-top: 0.3em;">
+      <strong>Skills:</strong> {{ range $index, $skill := .skills }}{{ if $index }}, {{ end }}{{ $skill }}{{ end }}
+    </div>
+    {{ end }}
+  </div>
+  {{ end }}
+</div>

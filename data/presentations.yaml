@@ -1,0 +1,116 @@
+- title: Sea Ice in ICON
+  event: ICON winter meeting, DWD
+  location: Offenbach am Main
+  year: 2016
+  month: 2
+- title: Sea Ice in ICON
+  event: Ocean seminar, MPI-M
+  location: Hamburg
+  year: 2015
+  month: 11
+- title: A global finite-difference model for surface and internal tides
+  event: NOC seminars
+  location: Liverpool
+  year: 2014
+  month: 9
+- title: Accuracy of finite-difference ocean models with staircased boundaries
+  event: ClimathNet 2014
+  location: University of Leeds
+  year: 2014
+  month: 7
+  urls: https://climathnet.org/meetingsandevents/conference2014/
+- title: Global modelling of surface and internal tides
+  event: EGU2014
+  location: Vienna
+  year: 2014
+  month: 4
+  url: https://presentations.copernicus.org/EGU2014/EGU2014-14442_presentation.pdf
+- title: Global modelling of surface and internal tides
+  event: Applied Mathematics seminars
+  location: University of Leeds
+  year: 2014
+  month: 3
+- title: Numerical modelling of surface and internal tides
+  event: Applied seminars
+  location: University of Birmingham
+  year: 2014
+  month: 1
+- title: Numerical modelling of tides
+  event: MACSI seminars
+  location: University of Limerick
+  year: 2013
+  month: 10
+- title: Global modelling of surface and internal tides
+  event: 19th Conference on Atmospheric and Oceanic Fluid Dynamics of the AMS
+  location: Rhode Island
+  year: 2013
+  month: 6
+  url: https://ams.confex.com/ams/19Fluid17Middle/webprogram/Paper227193.html
+- title: Challenges in global modelling of ocean tide
+  event: The British Applied Mathematics Colloquium
+  location: University of Leeds
+  year: 2013
+  month: 4
+- title: 'Rimming and coating flows: examples of problems beyond the lubrication theory'
+  event: Applied Mathematics seminars
+  location: Keele University
+  year: 2012
+  month: 5
+- title: Shocks in thin film flows and resonant over-reflection of waves in GFD
+  event: Fluids and MHD seminars
+  location: University of Leeds
+  year: 2011
+  month: 11
+- title: Resonant over-reflection of waves as a marginally stable solution
+  event: 4th meeting of the Wave-Flow Interactions Network
+  location: University of Cambridge
+  year: 2011
+  month: 4
+  url: https://webhomes.maths.ed.ac.uk/waveflow/cambridgemeeting/programme.shtml
+- title: Shocks in coating flows in a rotating horizontal cylinder
+  event: BAMC 2011
+  location: University of Birmingham
+  year: 2011
+  month: 4
+- title: Shocks in coating flows in a rotating horizontal cylinder
+  event: SIAM Conference on Nonlinear Waves
+  location: Philadelphia
+  year: 2010
+  month: 8
+- title: Shocks in coating flows in a rotating horizontal cylinder
+  event: ECMI 2010
+  location: "Bergische Universit\xE4t"
+  year: 2010
+  month: 7
+- title: Radiating instabilities and hyper-reflection of waves by jets in a rotating
+    ocean
+  event: MACSI colloquium
+  location: University of Limerick
+  year: 2009
+  month: 12
+- title: Spectral stability analysis of the perfectly plastic Couette flow
+  event: Lomonosov's readings
+  location: Moscow State University
+  year: 2008
+  month: 4
+- title: PDEs on the sphere
+  year: 2012
+  month: 9
+  url: https://www.newton.ac.uk/event/ammw02/
+  location: Cambridge
+  event: Isaac Newton Institute
+  details: poster
+- title: 2nd Wave-Flow Interactions Network meeting
+  year: 2009
+  month: 5
+  url: null
+  location: Edinburgh
+  event: 2nd Wave-Flow Interactions Network meeting
+  details: poster
+- title: Variational and Topological Methods and Water Waves
+  year: 2009
+  month: 5
+  url: null
+  location: null
+  event: Workshop University of Bath
+  details: poster

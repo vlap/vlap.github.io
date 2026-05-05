@@ -1,0 +1,130 @@
+baseURL = "https://vlap.github.io/"
+locale = "en-us"
+title = "Vladimir Lapin"
+theme = "PaperMod"
+
+description = "Personal website of Dr. Vladimir Lapin, Senior Research Engineer at BSC. Specialized in Climate Modelling, HPC Engineering, Applied Mathematics, and Machine Learning."
+keywords = ["Vladimir Lapin", "Climate Modelling", "HPC Engineering", "Applied Mathematics", "Machine Learning", "BSC", "Barcelona Supercomputing Center", "Data Assimilation"]
+
+[params]
+    defaultTheme = "auto"
+    showCodeCopyButtons = true
+    author = "Dr. Vladimir Lapin"
+    
+    # SEO & Social Cards
+    description = "Senior Research Engineer at BSC | Bridging Climate Science with ML & HPC"
+    images = ["images/decor/vladimir_lapin.jpg"]
+    
+    # Minification
+    [params.minify]
+        disableHTML = false
+        disableJS = false
+        disableCSS = false
+    
+    # Post & Navigation Features
+    ShowReadingTime = true
+    ShowShareButtons = true
+    ShowPostNavLinks = true
+    ShowBreadCrumbs = true
+    ShowCodeCopyButtons = true
+    ShowToc = false
+    ShowScrollToTop = true
+    
+    [params.assets]
+        favicon = "favicon.svg"
+        favicon16x16 = "favicon.svg"
+        favicon32x32 = "favicon.svg"
+        apple_touch_icon = "favicon.svg"
+        safari_pinned_tab = "favicon.svg"
+    
+    [params.profileMode]
+        enabled = false
+        title = "Dr. Vladimir Lapin"
+        subtitle = "Senior Research Engineer at BSC | Bridging Climate Science with ML & HPC"
+        imageUrl = "images/decor/vladimir_lapin.jpg"
+        imageWidth = 120
+        imageHeight = 120
+        imageTitle = "Vladimir Lapin"
+        
+        [[params.profileMode.buttons]]
+            name = "Software"
+            url = "/software/"
+        [[params.profileMode.buttons]]
+            name = "CV"
+            url = "/cv/"
+        [[params.profileMode.buttons]]
+            name = "Tools"
+            url = "/tools/"
+
+    [params.homeInfoParams]
+        Title = "Dr. Vladimir Lapin"
+        Image = "images/decor/vladimir_lapin.jpg"
+        Content = """
+Senior Research Engineer at the **Barcelona Supercomputing Center (BSC)**.
+
+Specializing in the intersection of **Climate Modelling, HPC Engineering, and Machine Learning**. I develop high-performance data workflows and AI-driven enhancements for complex physical simulations.
+
+[View Software Portfolio](/software) | [Detailed CV](/cv) | [Technical Stack](/tools) | [Get in Touch](/contact)
+"""
+
+    [[params.socialIcons]]
+        name = "github"
+        url = "https://github.com/vlap"
+    [[params.socialIcons]]
+        name = "linkedin"
+        url = "https://linkedin.com/in/vladimir-lapin"
+    [[params.socialIcons]]
+        name = "googlescholar"
+        url = "https://scholar.google.com/citations?user=ZVQF-ggAAAAJ&hl=en"
+    [[params.socialIcons]]
+        name = "orcid"
+        url = "https://orcid.org/0000-0001-7302-8539"
+
+[outputs]
+    home = ["HTML", "RSS", "JSON"]
+
+[menu]
+    [[menu.main]]
+        identifier = "software"
+        name = "Software"
+        url = "/software/"
+        weight = 5
+    [[menu.main]]
+        identifier = "cv"
+        name = "CV"
+        url = "/cv/"
+        weight = 10
+    [[menu.main]]
+        identifier = "trainings"
+        parent = "cv"
+        name = "Trainings"
+        url = "/cv/trainings/"
+        weight = 11
+    [[menu.main]]
+        identifier = "presentations"
+        parent = "cv"
+        name = "Presentations"
+        url = "/cv/presentations/"
+        weight = 12
+    [[menu.main]]
+        identifier = "tools"
+        name = "Tools"
+        url = "/tools/"
+        weight = 20
+    [[menu.main]]
+        identifier = "publications"
+        name = "Publications"
+        url = "/publications/"
+        weight = 30
+    [[menu.main]]
+        identifier = "contact"
+        name = "Contact"
+        url = "/contact/"
+        weight = 40
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+    noClasses = false

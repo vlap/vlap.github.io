@@ -1,0 +1,21 @@
+{{ $file := .Get "file" }}
+{{ $data := index hugo.Data $file }}
+
+<div class="pub-section">
+  {{ range $data }}
+  <div class="pub-item" style="margin-bottom: 1.5em;">
+    <h4 style="margin: 0;">{{ .title }}</h4>
+    <div style="font-size: 0.9em;">
+      {{ if .author }}<span>{{ .author }}</span>{{ end }}
+    </div>
+    <div style="font-size: 0.9em; color: #666;">
+      {{ if .journal }}<em>{{ .journal }}</em>{{ end }}
+      {{ if .booktitle }}<em>{{ .booktitle }}</em>{{ end }}
+      {{ if .year }} | <span>{{ .year }}</span>{{ end }}
+    </div>
+    {{ if .url }}
+    <a href="{{ .url }}" target="_blank" style="font-size: 0.8em;">View Publication</a>
+    {{ end }}
+  </div>
+  {{ end }}
+</div>

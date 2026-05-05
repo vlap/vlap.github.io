@@ -1,0 +1,199 @@
+# Completed and Ongoing Trainings
+# Categories: AI, HPC, Climate, Data, GFD, etc.
+- title: "EPICURE High Scalability Workshop"
+  url: "https://epicure-hpc.eu/2026/03/02/high-scalability-workshop-on-marenostrum-5/"
+  year: 2026
+  month: 3
+  institution: "EPICURE"
+  category: "HPC"
+  duration: "3 days"
+  skills: ["MPI", "OpenMP", "Performance Analysis", "MareNostrum 5"]
+
+- title: "Reinforcement Learning"
+  url: "https://bsc-aifactory.eu/training/reinforcement-learning/"
+  year: 2026
+  month: 7
+  institution: "BSC AI Factory"
+  category: "AI"
+  duration: "4 days"
+  skills: ["Q-Learning", "Policy Gradients", "Stable Baselines3", "Gymnasium"]
+
+- title: "Advanced HPC training"
+  url: "https://events.ecmwf.int/event/500/"
+  year: 2026
+  month: 6
+  institution: "ECMWF"
+  category: "HPC"
+  duration: "4 days"
+  skills: ["Parallel I/O", "GPU Programming", "HPC Workflows"]
+
+- title: "Fundamentals of Deep Learning"
+  url: "https://bsc-aifactory.eu/training/fundamentals-of-deep-learning/"
+  year: 2026
+  month: 4
+  institution: "BSC AI Factory"
+  category: "AI"
+  duration: "1 day"
+  skills: ["Neural Networks", "Computer Vision", "PyTorch"]
+
+- title: "Industrial Computational Fluids Dynamics"
+  url: "https://bsc-aifactory.eu/training/industrial-cfd/"
+  year: 2026
+  month: 4
+  institution: "BSC AI Factory"
+  category: "HPC"
+  duration: "3 days"
+  skills: ["CFD", "OpenFOAM", "HPC for Engineering"]
+
+- title: "Generative and Self-Supervised ML"
+  url: "https://bsc-aifactory.eu/training/generative-and-self-supervised-ml/"
+  year: 2026
+  month: 1
+  institution: "BSC AI Factory"
+  category: "AI"
+  duration: "4 days"
+  skills: ["GANs", "Transformers", "Self-Supervised Learning"]
+
+- title: "Data assimilation"
+  url: "https://events.ecmwf.int/event/376/"
+  year: 2024
+  month: 3
+  institution: "ECMWF"
+  category: "Climate"
+  duration: "5 days"
+  skills: ["4D-Var", "Ensemble Methods", "Numerical Weather Prediction"]
+
+- title: "Energy transfers in Atmosphere and Ocean"
+  year: 2017
+  month: 5
+  url: "https://www.trr-energytransfers.de/events/workshop-2017"
+  institution: "University of Hamburg"
+  category: "GFD"
+  skills: ["Atmospheric Dynamics", "Ocean Dynamics", "Turbulence"]
+
+- title: "ICON developer meeting"
+  year: 2016
+  month: 9
+  institution: "Löwenstein"
+  category: "Climate Modelling"
+  skills: ["ICON Model", "Fortran", "Unstructured Grids"]
+
+- title: "3D Visualization with ParaView"
+  year: 2016
+  month: 4
+  institution: "DKRZ"
+  category: "Data Visualization"
+  skills: ["ParaView", "VTK", "Scientific Visualization"]
+
+- title: "Energy transfers in Atmosphere and Ocean"
+  year: 2015
+  month: 5
+  institution: "University of Hamburg"
+  category: "GFD"
+  skills: ["Wave-Flow Interactions", "Energy Cascades"]
+
+- title: "9th Earth System Modeling School"
+  year: 2015
+  month: 9
+  institution: "MPI-M"
+  category: "Climate Modelling"
+  skills: ["ESM Couplers", "Climate Dynamics", "HPC Infrastructure"]
+
+- title: "ESGI 100"
+  year: 2014
+  month: 4
+  url: "https://www.maths.ox.ac.uk/events/conferences/esgi-100"
+  institution: "University of Oxford"
+  category: "Study Group"
+  skills: ["Industrial Mathematics", "Mathematical Modelling", "Problem Solving"]
+
+- title: "The Dynamics of Rotating Fluids Meeting"
+  year: 2014
+  month: 1
+  url: "https://www.ucl.ac.uk/mathematical-physical-sciences/maths/events/previous-events/previous-dynamics-rotating-fluids-meetings/dynamics-rotating-fluids-meeting-2014"
+  institution: "UCL"
+  category: "GFD"
+  skills: ["Rotating Fluids", "Geophysical Fluid Dynamics"]
+
+- title: "3rd DNVA-RSE Norway-Scotland Waves Symposium"
+  year: 2013
+  month: 10
+  url: "https://www.mn.uio.no/math/english/research/groups/mechanics/events/conferences/3rd-norway-scotland-waves-symposium.html"
+  institution: "Oslo"
+  category: "GFD"
+  skills: ["Wave Dynamics", "Internal Tides"]
+
+- title: "Nonlinear Waves in Fluids"
+  year: 2012
+  month: 9
+  institution: "Loughborough University"
+  category: "CFD"
+  skills: ["Nonlinear Waves", "Numerical Methods", "Fluid Mechanics"]
+
+- title: "ESGI 82"
+  year: 2011
+  month: 6
+  url: "https://miis.maths.ox.ac.uk/view/studygroups/esgi82.html"
+  institution: "University of Limerick"
+  category: "Study Group"
+  skills: ["Applied Mathematics", "Optimization"]
+
+- title: "1st Russian Study Group with Industry"
+  year: 2010
+  month: 10
+  institution: "Moscow"
+  category: "Study Group"
+  skills: ["Mathematical Modelling", "Industry Collaboration"]
+
+- title: "ESGI 75"
+  year: 2010
+  month: 6
+  url: "https://miis.maths.ox.ac.uk/view/studygroups/esgi75.html"
+  institution: "University of Limerick"
+  category: "Study Group"
+  skills: ["Mathematical Physics", "Stochastic Processes"]
+
+- title: "3rd Wave-Flow Interactions Network meeting"
+  year: 2010
+  month: 6
+  url: "https://webhomes.maths.ed.ac.uk/waveflow/"
+  institution: "University of St Andrews"
+  category: "GFD"
+  skills: ["Wave-Flow Interaction", "Geostrophic Flows"]
+
+- title: "Asymptotic Methods in Fluid Mechanics"
+  year: 2009
+  month: 9
+  institution: "Udine"
+  category: "CFD"
+  skills: ["Asymptotic Analysis", "Perturbation Methods"]
+
+- title: "Multiscale and Adaptivity: Modeling, Numerics and Applications"
+  year: 2009
+  month: 7
+  institution: "Cetraro"
+  category: "Applied Mathematics"
+  skills: ["Numerical Analysis", "Multiscale Modelling"]
+
+- title: "ESGI 70"
+  year: 2009
+  month: 7
+  url: "https://miis.maths.ox.ac.uk/view/studygroups/esgi70.html"
+  institution: "University of Limerick"
+  category: "Study Group"
+  skills: ["Data Analysis", "Mathematical Finance"]
+
+- title: "Nonlinear PDE & Free Boundary Problems"
+  year: 2009
+  month: 6
+  institution: "University of Warwick"
+  category: "Applied Mathematics"
+  skills: ["Partial Differential Equations", "Free Boundary Problems"]
+
+- title: "Mathematics of Weather and Climate Prediction"
+  year: 2009
+  month: 4
+  url: "https://www.maths.ox.ac.uk/groups/oxpde/archive/previous-events/2009/workshop-mathematics-weather-and-climate-prediction"
+  institution: "Met Office"
+  category: "GFD"
+  skills: ["Numerical Weather Prediction", "Climate Dynamics"]
