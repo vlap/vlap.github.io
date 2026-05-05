@@ -6,7 +6,7 @@ endif
 
 # Configuration
 REPO_ROOT := $(shell pwd)
-PYTHON    := python3
+PYTHON    := /home/volant/miniconda2/bin/python3
 HUGO      := hugo
 
 .PHONY: help sync build serve deploy watch
