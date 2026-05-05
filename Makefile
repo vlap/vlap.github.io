@@ -24,6 +24,8 @@ help:
 sync:
 	@echo "==> Fetching ORCID data..."
 	@$(PYTHON) scripts/fetch_orcid.py
+	@echo "==> Fetching Google Scholar stats..."
+	@$(PYTHON) scripts/fetch_scholar.py
 	@echo "==> Fetching GitHub activity..."
 	@$(PYTHON) scripts/fetch_github.py
 	@echo "==> Mirroring YAML data and conversion..."

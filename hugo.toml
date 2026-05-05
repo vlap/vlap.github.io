@@ -85,6 +85,11 @@ keywords = ["Vladimir Lapin", "Climate Modelling", "HPC Engineering", "Applied M
         url = "/software/"
         weight = 10
     [[menu.main]]
+        identifier = "simulations"
+        name = "Simulations"
+        url = "/simulations/"
+        weight = 15
+    [[menu.main]]
         identifier = "publications"
         name = "Publications"
         url = "/publications/"

@@ -467,3 +467,61 @@ lay: none !important;
     color: var(--primary);
     margin: 0;
 }
+
+/* Simulation Gallery */
+.simulation-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.sim-item {
+    background: var(--entry);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.sim-item:hover {
+    transform: translateY(-5px);
+}
+
+.sim-video {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    overflow: hidden;
+}
+
+.sim-video iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.sim-info {
+    padding: 15px;
+}
+
+.sim-title {
+    margin: 0 0 8px 0;
+    font-size: 1.1rem;
+    color: var(--primary);
+}
+
+.sim-desc {
+    font-size: 0.85rem;
+    color: var(--secondary);
+    line-height: 1.4;
+    margin: 0;
+}
+
+.gallery-footer {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 1rem;
+}

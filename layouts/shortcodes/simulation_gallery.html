@@ -1,0 +1,24 @@
+{{- $sims := site.Data.simulations }}
+<div class="simulation-gallery">
+    {{- range $sims }}
+    <div class="sim-item">
+        <div class="sim-video">
+            <iframe 
+                src="https://www.youtube.com/embed/{{ .id }}" 
+                title="{{ .title }}" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                allowfullscreen>
+            </iframe>
+        </div>
+        <div class="sim-info">
+            <h3 class="sim-title">{{ .title }}</h3>
+            <p class="sim-desc">{{ .description }}</p>
+        </div>
+    </div>
+    {{- end }}
+</div>
+
+<div class="gallery-footer">
+    <p>View more on my <a href="https://www.youtube.com/playlist?list=PLbABsNMD2jhy5zsINz9VIuOzVsrM0_vwu" target="_blank" rel="noopener">Simulation Playlist</a></p>
+</div>

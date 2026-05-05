@@ -23,6 +23,9 @@ jobs:
       - name: Fetch ORCID Data
         run: python3 scripts/fetch_orcid.py
 
+      - name: Fetch Google Scholar Stats
+        run: python3 scripts/fetch_scholar.py
+
       - name: Fetch GitHub Activity
         run: python3 scripts/fetch_github.py
         env:

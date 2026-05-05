@@ -1,5 +1,6 @@
 {{- $profile := site.Data.profile }}
 {{- $stats := site.Data.stats }}
+{{- $scholar := site.Data.scholar_stats }}
 
 <article class="first-entry home-info">
     {{- if site.Params.homeInfoParams.Image -}}
@@ -31,15 +32,21 @@
     <div class="impact-metrics">
         <a href="{{ "/publications/" | absURL }}" class="metric-item">
             <span class="metric-value">{{ $stats.publications }}</span>
-            <span class="metric-label">Publications</span>
+            <span class="metric-label">Papers</span>
         </a>
+        {{- if $scholar }}
+        <a href="{{ $profile.social.googlescholar }}" target="_blank" rel="noopener" class="metric-item">
+            <span class="metric-value">{{ $scholar.citations }}</span>
+            <span class="metric-label">Citations</span>
+        </a>
+        <a href="{{ $profile.social.googlescholar }}" target="_blank" rel="noopener" class="metric-item">
+            <span class="metric-value">{{ $scholar.h_index }}</span>
+            <span class="metric-label">h-index</span>
+        </a>
+        {{- end }}
         <a href="{{ "/software/" | absURL }}" class="metric-item">
             <span class="metric-value">{{ $stats.software }}</span>
-            <span class="metric-label">Software Tools</span>
-        </a>
-        <a href="{{ "/cv/trainings/" | absURL }}" class="metric-item">
-            <span class="metric-value">{{ $stats.trainings }}</span>
-            <span class="metric-label">Trainings</span>
+            <span class="metric-label">Tools</span>
         </a>
     </div>
 
