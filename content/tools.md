@@ -5,7 +5,7 @@ draft: false
 showToc: false
 ---
 
-I leverage a multidisciplinary stack to bridge the gap between high-level project coordination and deep technical implementation in AI and Earth Sciences.
+I leverage a multidisciplinary stack to bridge the gap between high-level project coordination and technical implementation in Earth Sciences and emerging MLOps workflows.
 
 <div class="badge-container">
     <span class="badge badge-ai">PyTorch</span>
@@ -17,10 +17,10 @@ I leverage a multidisciplinary stack to bridge the gap between high-level projec
     <span class="badge">Autosubmit</span>
 </div>
 
-### AI & Data Engineering (The AI Factory Focus)
-- **MLOps & Scaling:** Architecting end-to-end pipelines for AI surrogates using **PyTorch**, focusing on model deployment and monitoring on the **MN5 AI partition**.
-- **Data Workflows:** Expert-level manipulation of terabyte-scale datasets using **Xarray**, **Dask**, and **NetCDF**, ensuring high-throughput data availability for AI training.
-- **AI Integration:** Strategic alignment of AI services with traditional Earth System Models (EC-Earth, NEMO) to accelerate physical simulations.
+### AI & MLOps Exploration (Learning Phase)
+- **MLOps Foundations:** Exploring end-to-end pipelines for AI surrogates using **PyTorch**, with a current focus on model deployment and monitoring workflows on the **MN5 AI partition**.
+- **Data Engineering for AI:** Building robust workflows for manipulating large-scale datasets using **Xarray**, **Dask**, and **NetCDF** to support AI training and evaluation.
+- **AI Integration Studies:** Investigating the strategic alignment of AI services with traditional Earth System Models (EC-Earth, NEMO) to enhance physical simulations.
 
 ### HPC Orchestration & Project Management
 - **Workflow Coordination:** Lead developer of **Autosubmit** templates, managing reproducible, multi-institution research workflows on Tier-0 systems.

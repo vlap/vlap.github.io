@@ -5,6 +5,9 @@ on:
     - cron: '0 0 * * *' # Every day at midnight
   workflow_dispatch: # Allow manual trigger
 
+permissions:
+  contents: write
+
 jobs:
   update-data:
     runs-on: ubuntu-latest
@@ -16,22 +19,29 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+          cache: 'pip'
+          cache-dependency-path: 'scripts/requirements.txt'
 
       - name: Install dependencies
-        run: pip install requests pyyaml scholarly
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/requirements.txt
 
       - name: Fetch ORCID Data
         run: python3 scripts/fetch_orcid.py
+        continue-on-error: true
 
       - name: Fetch Google Scholar Stats
         run: python3 scripts/fetch_scholar.py
+        continue-on-error: true
 
       - name: Fetch GitHub Activity
         run: python3 scripts/fetch_github.py
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        continue-on-error: true
 
-      - name: Update Stats
+      - name: Update Consolidated Stats
         run: python3 scripts/update_stats.py
 
       - name: Commit and Push
