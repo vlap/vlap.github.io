@@ -1,6 +1,6 @@
 ---
-title: "New Publication: Supplementary material to "Multi-decadal initialized climate predictions using the EC-Earth3 global climate model""
-date: 2026-05-06T10:57:10+02:00
+title: 'New Publication: Supplementary material to "Multi-decadal initialized climate predictions using the EC-Earth3 global climate model"'
+date: 2026-05-06T12:40:31+02:00
 draft: false
 type: "posts"
 layout: "micro"
