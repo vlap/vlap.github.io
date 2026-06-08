@@ -1,3 +1,9 @@
+- name: vlap.github.io
+  description: Vladimir Lapin, climate modeller
+  url: https://github.com/vlap/vlap.github.io
+  stars: 0
+  language: PostScript
+  updated: '2026-06-07T04:15:38Z'
 - name: ece4-recipe
   description: A tool for managing EC-Earth4 experiment configuration files with a
     modular YAML overlay system.
@@ -5,12 +11,6 @@
   stars: 0
   language: Python
   updated: '2026-06-06T17:03:57Z'
-- name: vlap.github.io
-  description: Vladimir Lapin, climate modeller
-  url: https://github.com/vlap/vlap.github.io
-  stars: 0
-  language: PostScript
-  updated: '2026-06-06T03:49:57Z'
 - name: baro_tides_fd
   description: Global finite difference model of barotropic tides
   url: https://github.com/vlap/baro_tides_fd
