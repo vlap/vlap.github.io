@@ -1,15 +1,15 @@
+- name: vlap.github.io
+  description: Vladimir Lapin, climate modeller
+  url: https://github.com/vlap/vlap.github.io
+  stars: 0
+  language: PostScript
+  updated: '2026-06-16T04:58:22Z'
 - name: scriptengine-bench
   description: A/B performance benchmark for ScriptEngine on HPC (Lustre)
   url: https://github.com/vlap/scriptengine-bench
   stars: 0
   language: Shell
   updated: '2026-06-15T16:14:15Z'
-- name: vlap.github.io
-  description: Vladimir Lapin, climate modeller
-  url: https://github.com/vlap/vlap.github.io
-  stars: 0
-  language: PostScript
-  updated: '2026-06-15T04:47:16Z'
 - name: ece4-exp
   description: A tool for managing EC-Earth4 experiment configuration files with a
     modular YAML overlay system.
