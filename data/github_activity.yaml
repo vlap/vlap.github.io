@@ -1,9 +1,15 @@
+- name: pisces-inidata
+  description: Global Biogeochemical Initial Conditions Generator for PISCES and EC-Earth4
+  url: https://github.com/vlap/pisces-inidata
+  stars: 0
+  language: Python
+  updated: '2026-09-15T22:05:51Z'
 - name: vlap.github.io
   description: Vladimir Lapin, climate modeller
   url: https://github.com/vlap/vlap.github.io
   stars: 0
   language: PostScript
-  updated: '2026-09-14T04:02:36Z'
+  updated: '2026-09-15T04:01:18Z'
 - name: scriptengine-bench
   description: A/B performance benchmark for ScriptEngine on HPC (Lustre)
   url: https://github.com/vlap/scriptengine-bench
@@ -23,10 +29,3 @@
   stars: 0
   language: FORTRAN
   updated: '2017-01-13T15:26:51Z'
-- name: internal_tides_fd
-  description: Global coupled finite difference model of barotropic and baroclinic
-    tides
-  url: https://github.com/vlap/internal_tides_fd
-  stars: 0
-  language: FORTRAN
-  updated: '2017-01-13T14:47:42Z'
