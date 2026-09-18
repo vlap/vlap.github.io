@@ -3,13 +3,13 @@
   url: https://github.com/vlap/pisces-inidata
   stars: 0
   language: Python
-  updated: '2026-09-16T23:26:22Z'
+  updated: '2026-09-17T22:17:26Z'
 - name: vlap.github.io
   description: Vladimir Lapin, climate modeller
   url: https://github.com/vlap/vlap.github.io
   stars: 0
   language: PostScript
-  updated: '2026-09-16T03:59:03Z'
+  updated: '2026-09-17T04:05:18Z'
 - name: scriptengine-bench
   description: A/B performance benchmark for ScriptEngine on HPC (Lustre)
   url: https://github.com/vlap/scriptengine-bench
