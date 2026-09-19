@@ -1,31 +1,30 @@
+- name: cvc-commons
+  description: 'Climate Commons: A living documentation system for BSC climate workflows'
+  url: https://github.com/vlap/cvc-commons
+  stars: 0
+  language: Python
+  updated: '2026-09-18T23:40:55Z'
+- name: prediction-data-workflow
+  description: null
+  url: https://github.com/vlap/prediction-data-workflow
+  stars: 0
+  language: Shell
+  updated: '2026-09-18T22:48:58Z'
+- name: vlap.github.io
+  description: Vladimir Lapin, climate modeller
+  url: https://github.com/vlap/vlap.github.io
+  stars: 0
+  language: PostScript
+  updated: '2026-09-18T03:51:34Z'
 - name: pisces-inidata
   description: Global Biogeochemical Initial Conditions Generator for PISCES and EC-Earth4
   url: https://github.com/vlap/pisces-inidata
   stars: 0
   language: Python
   updated: '2026-09-17T22:17:26Z'
-- name: vlap.github.io
-  description: Vladimir Lapin, climate modeller
-  url: https://github.com/vlap/vlap.github.io
-  stars: 0
-  language: PostScript
-  updated: '2026-09-17T04:05:18Z'
 - name: scriptengine-bench
   description: A/B performance benchmark for ScriptEngine on HPC (Lustre)
   url: https://github.com/vlap/scriptengine-bench
   stars: 0
   language: Shell
   updated: '2026-06-15T16:14:15Z'
-- name: ece4-exp
-  description: A tool for managing EC-Earth4 experiment configuration files with a
-    modular YAML overlay system.
-  url: https://github.com/vlap/ece4-exp
-  stars: 1
-  language: Python
-  updated: '2026-06-11T22:36:33Z'
-- name: baro_tides_fd
-  description: Global finite difference model of barotropic tides
-  url: https://github.com/vlap/baro_tides_fd
-  stars: 0
-  language: FORTRAN
-  updated: '2017-01-13T15:26:51Z'
