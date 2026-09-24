@@ -19,7 +19,7 @@ Every time an agent session begins in this repository, the agent **MUST** perfor
    * The tone of the site—especially the Research Log—is **conversational and peer-to-peer**, as if talking to a close colleague over coffee or sharing insights in a lab notebook.
    * **Strictly prohibit marketing buzzwords and corporate fluff:** Never use phrases like *"leading technical coordination at the intersection of..."*, *"pioneering schemas"*, or *"spearheading digital transformation"*.
    * **Ground everything in real engineering:** Use actual equations (KaTeX), benchmark numbers, cluster telemetry, and specific models (ECMWF OpenIFS CY48R1.1, EC-Earth4, NEMO/PISCES, MareNostrum 5).
-   * **Do not cite papers as a substitute for explaining the mission:** The mission at BSC is to *modernize how we build, verify, and run Earth system prediction workflows on supercomputers—replacing fragile scripts with automated schemas, deterministic tests, and AI-assisted engineering*.
+   * **Do not cite papers as a substitute for explaining the mission:** For years, advancing the fidelity of Earth system models has been hindered by escalating code and physical complexity; the mission at BSC is leveraging AI adoption and automated verification to make high-fidelity climate prediction affordable to science again.
 3. **Verify Build Determinism:**
    Always verify changes locally with:
    ```bash

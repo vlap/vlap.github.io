@@ -4,7 +4,7 @@ tagline: "Senior Research Engineer · Climate & Geophysical Models · HPC · Pre
 affiliation: "Barcelona Supercomputing Center (BSC)"
 description: "Senior Research Engineer · Climate & Geophysical Models · HPC · Predictions · AI Adoption"
 bio: |
-  Senior Research Engineer at the Barcelona Supercomputing Center (BSC) working on Earth system models (EC-Earth4, OpenIFS, NEMO) and leading Climate Commons ([`cvc-commons`](https://github.com/vlap/cvc-commons)). My mission is to modernize how we build, verify, and run Earth system prediction workflows on supercomputers—replacing fragile scripts with automated schemas, deterministic tests, and AI-assisted engineering.
+  Senior Research Engineer at the Barcelona Supercomputing Center (BSC) working on Earth system models (EC-Earth4, OpenIFS, NEMO), co-leading Auto-EC-Earth4 ensemble workflows on MareNostrum 5, and leading AI adoption across the research group. For years, advancing the fidelity of Earth system models has been hindered by escalating code and physical complexity; my mission is leveraging AI and automated verification to make high-fidelity climate prediction affordable to science again.
 current_focus: "Tracer mass conservation & stochastic rounding in OpenIFS CY48R1.1, and preparing EC-Earth4 for CMIP7 on MareNostrum 5"
 social:
   github: "https://github.com/vlap"
