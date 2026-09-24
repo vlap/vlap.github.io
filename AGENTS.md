@@ -55,9 +55,13 @@ Navigation is consolidated into five distinct sections:
   * `pisces-inidata` (featured)
 * **Never** list private BSC GitLab repositories (`gitlab.earth.bsc.es`) or personal dotfiles repositories.
 
-### 3. Mathematics & Visuals
-* Math equations are rendered via **KaTeX** using `math: true` in page frontmatter.
-* Images must be stored in `static/images/` or `static/images/posts/`.
+### 3. Mathematics, Visuals & UI Patterns
+* **Mathematics:** Rendered via **KaTeX** using `math: true` in page frontmatter. Display equations (`$$...$$`) must have responsive horizontal scroll hygiene (`.katex-display { overflow-x: auto; }`).
+* **Post Covers & Diagrams:** In-depth articles in `content/posts/` must feature clean technical diagrams (`.svg` or `.png` in `static/images/posts/`), defined via `cover:` in frontmatter.
+* **Table of Contents:** Enabled on deep-dive technical posts using `ShowToc: true` and `TocOpen: false`.
+* **Zero-Dependency Video Facades:** Simulation videos in `/software/` must use lightweight facades (`sim-facade`) with local poster thumbnails and lazy-loaded iframes on click to eliminate third-party blocking scripts and payload bloat.
+* **1-Click Citations:** Publications feed features instant BibTeX copying (`copyBibTeX`) with visual feedback.
+* **Print-to-PDF Hygiene:** Full `@media print` rules ensure clean, distraction-free PDF generation from the browser on `/cv/` and `/publications/` (avoiding card page-breaks and hiding site chrome).
 
 ---
 
