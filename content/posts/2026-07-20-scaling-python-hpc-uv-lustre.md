@@ -5,6 +5,12 @@ draft: false
 type: "posts"
 summary: "We've all watched a 64-node Slurm job stall for three minutes just importing xarray. Here is why standard Conda environments choke parallel filesystems like Lustre, and how pairing Astral uv with system LMOD modules eliminates job startup lag on MareNostrum 5."
 tags: ["HPC", "Python", "Lustre", "Slurm", "Workflow Optimization", "MareNostrum 5"]
+ShowToc: true
+TocOpen: false
+cover:
+    image: "images/posts/uv_lustre_metadata_benchmark.svg"
+    alt: "MareNostrum 5 Lustre MDT Contention & Astral uv Benchmark"
+    relative: false
 ---
 
 We've all been there: you submit a 64-node Slurm batch job on MareNostrum 5, and before your code does a single calculation, the job sits stalled for two or three minutes.

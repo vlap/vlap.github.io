@@ -6,6 +6,12 @@ type: "posts"
 math: true
 summary: "Single-step validation loss is dangerously misleading when training neural operators on fluid PDEs. Here is what we learned building an end-to-end training pipeline for the 2D Shallow Water Equations on PDEBench, formatting for The Well, and evaluating autoregressive rollouts."
 tags: ["AI Surrogates", "Geophysical Fluid Dynamics", "PDEBench", "PyTorch", "HPC", "Machine Learning"]
+ShowToc: true
+TocOpen: false
+cover:
+    image: "images/posts/neural_surrogate_swe_rollout.svg"
+    alt: "PDEBench 2D SWE Neural Surrogate Error & Autoregressive Rollout"
+    relative: false
 ---
 
 If you're training neural operators or deep learning surrogates on fluid dynamics equations, there is one common trap almost everyone falls into early on: **trusting single-step validation loss.**

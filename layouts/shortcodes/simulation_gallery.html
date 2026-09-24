@@ -2,15 +2,15 @@
 <div class="simulation-gallery">
     {{- range $sims }}
     <div class="sim-item">
-        <div class="sim-video">
-            <iframe 
-                src="https://www.youtube-nocookie.com/embed/{{ .id }}" 
-                title="{{ .title }}" 
-                loading="lazy"
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                allowfullscreen>
-            </iframe>
+        <div class="sim-video" data-id="{{ .id }}" data-title="{{ .title }}">
+            <div class="sim-facade" onclick="playSimVideo(this)" role="button" tabindex="0" aria-label="Play {{ .title }}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();playSimVideo(this);}">
+                <img src="https://i.ytimg.com/vi/{{ .id }}/hqdefault.jpg" alt="{{ .title }}" loading="lazy" class="sim-poster">
+                <div class="sim-play-overlay">
+                    <div class="sim-play-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="sim-info">
             <h3 class="sim-title">{{ .title }}</h3>
@@ -30,6 +30,22 @@
     </div>
     {{- end }}
 </div>
+
+<script>
+function playSimVideo(facade) {
+    var container = facade.closest('.sim-video');
+    var id = container.getAttribute('data-id');
+    var title = container.getAttribute('data-title');
+    var iframe = document.createElement('iframe');
+    iframe.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1';
+    iframe.title = title;
+    iframe.frameBorder = '0';
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    iframe.allowFullscreen = true;
+    container.innerHTML = '';
+    container.appendChild(iframe);
+}
+</script>
 
 <div class="gallery-footer">
     <p>View complete simulation playlists on <a href="https://www.youtube.com/playlist?list=PLbABsNMD2jhy5zsINz9VIuOzVsrM0_vwu" target="_blank" rel="noopener">YouTube &rarr;</a></p>

@@ -6,6 +6,12 @@ type: "posts"
 math: true
 summary: "Engineering lessons from managing multi-member Earth system model ensembles on MareNostrum 5: orchestrating DAGs with Autosubmit, tuning Lustre striping for NetCDF outputs, and NUMA-aware MPI rank placement."
 tags: ["HPC", "Autosubmit", "MareNostrum 5", "Slurm", "Lustre", "EC-Earth", "Climate Modeling"]
+ShowToc: true
+TocOpen: false
+cover:
+    image: "images/posts/hpc_ensemble_dag_architecture.svg"
+    alt: "MareNostrum 5 Autosubmit Ensemble DAG Architecture"
+    relative: false
 ---
 
 When running a single coupled Earth System Model experiment (like EC-Earth4 with OpenIFS atmosphere and NEMO4 ocean), the setup is reasonably predictable: you allocate your compute nodes, launch the coupled executable via `srun`, and monitor simulated years per day (SYPD).

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0c1222" />
+      <stop offset="100%" stop-color="#1a2234" />
+    </linearGradient>
+    <linearGradient id="boxGrad3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="420" fill="url(#bgGrad3)" rx="8" />
+
+  <!-- Title Badge -->
+  <rect x="40" y="30" width="450" height="34" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1" />
+  <text x="55" y="52" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#38bdf8" letter-spacing="0.5">MARENOSTRUM 5 LUSTRE · MDT LOCK CONTENTION</text>
+
+  <!-- Left: Conda Standard -->
+  <g transform="translate(60, 95)">
+    <rect width="310" height="255" rx="8" fill="url(#boxGrad3)" stroke="#ef4444" stroke-width="1.5" />
+    <text x="155" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700" fill="#ef4444" text-anchor="middle">Standard Shared Conda Env</text>
+    <text x="155" y="52" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle">64 nodes $\times$ 112 cores = 7,168 workers</text>
+
+    <!-- Metrics -->
+    <rect x="30" y="75" width="250" height="42" rx="4" fill="#334155" opacity="0.6" />
+    <text x="45" y="94" font-family="monospace" font-size="11" fill="#f8fafc">Inode Lookups:</text>
+    <text x="265" y="94" font-family="monospace" font-size="11" font-weight="700" fill="#ef4444" text-anchor="end">~430,000,000</text>
+    <text x="45" y="108" font-family="monospace" font-size="10" fill="#94a3b8">MDT Distributed Lock Contention</text>
+
+    <rect x="30" y="130" width="250" height="42" rx="4" fill="#334155" opacity="0.6" />
+    <text x="45" y="149" font-family="monospace" font-size="11" fill="#f8fafc">Startup I/O Wait:</text>
+    <text x="265" y="149" font-family="monospace" font-size="11" font-weight="700" fill="#ef4444" text-anchor="end">185 seconds</text>
+    <text x="45" y="163" font-family="monospace" font-size="10" fill="#94a3b8">Uninterruptible 'D' sleep</text>
+
+    <text x="155" y="215" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#ef4444" text-anchor="middle">Cluster MDT Pinned at 100%</text>
+    <text x="155" y="235" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#94a3b8" text-anchor="middle">Massive small-file open() storm</text>
+  </g>
+
+  <!-- Right: Astral uv + LMOD -->
+  <g transform="translate(430, 95)">
+    <rect width="310" height="255" rx="8" fill="url(#boxGrad3)" stroke="#10b981" stroke-width="1.5" />
+    <text x="155" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700" fill="#10b981" text-anchor="middle">Astral uv + Node-Local Cache</text>
+    <text x="155" y="52" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle">LMOD C-libs + uv standalone venv</text>
+
+    <!-- Metrics -->
+    <rect x="30" y="75" width="250" height="42" rx="4" fill="#334155" opacity="0.6" />
+    <text x="45" y="94" font-family="monospace" font-size="11" fill="#f8fafc">Inode Lookups:</text>
+    <text x="265" y="94" font-family="monospace" font-size="11" font-weight="700" fill="#10b981" text-anchor="end">&lt; 1,500</text>
+    <text x="45" y="108" font-family="monospace" font-size="10" fill="#94a3b8">Cached wheel extraction</text>
+
+    <rect x="30" y="130" width="250" height="42" rx="4" fill="#334155" opacity="0.6" />
+    <text x="45" y="149" font-family="monospace" font-size="11" fill="#f8fafc">Startup I/O Wait:</text>
+    <text x="265" y="149" font-family="monospace" font-size="11" font-weight="700" fill="#10b981" text-anchor="end">&lt; 2.4 seconds</text>
+    <text x="45" y="163" font-family="monospace" font-size="10" fill="#94a3b8">Zero filesystem blocking</text>
+
+    <text x="155" y="215" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#10b981" text-anchor="middle">77x Faster Job Initialization</text>
+    <text x="155" y="235" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#94a3b8" text-anchor="middle">HPC allocation spent on compute, not I/O</text>
+  </g>
+
+  <!-- Bottom Summary -->
+  <text x="400" y="385" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">Separating system NetCDF/MPI libraries from Python packages avoids metadata choking on parallel filesystems.</text>
+</svg>

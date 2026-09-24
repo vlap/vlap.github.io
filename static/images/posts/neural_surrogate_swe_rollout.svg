@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#090d16" />
+      <stop offset="100%" stop-color="#1e1b4b" />
+    </linearGradient>
+    <linearGradient id="boxGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <marker id="arrow2" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#f43f5e" />
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#10b981" />
+    </marker>
+  </defs>
+
+  <rect width="800" height="420" fill="url(#bgGrad2)" rx="8" />
+
+  <!-- Badge -->
+  <rect x="40" y="30" width="410" height="34" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1" />
+  <text x="55" y="52" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#f43f5e" letter-spacing="0.5">PDEBENCH 2D SWE · NEURAL SURROGATE ERROR</text>
+
+  <!-- Left Side: Single-Step Fallacy -->
+  <g transform="translate(60, 95)">
+    <rect width="310" height="260" rx="8" fill="url(#boxGrad2)" stroke="#f43f5e" stroke-width="1.5" />
+    <text x="155" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700" fill="#f43f5e" text-anchor="middle">Single-Step Fallacy</text>
+    <text x="155" y="54" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle">Loss computed on $t \rightarrow t+\Delta t$</text>
+
+    <!-- Bar chart simulation -->
+    <rect x="35" y="80" width="40" height="130" fill="#334155" rx="3" />
+    <rect x="95" y="190" width="40" height="20" fill="#f43f5e" rx="3" />
+    <rect x="155" y="195" width="40" height="15" fill="#f43f5e" rx="3" />
+    <rect x="215" y="198" width="40" height="12" fill="#f43f5e" rx="3" />
+
+    <text x="55" y="230" font-family="monospace" font-size="10" fill="#94a3b8" text-anchor="middle">Epoch 0</text>
+    <text x="115" y="230" font-family="monospace" font-size="10" fill="#94a3b8" text-anchor="middle">Ep 20</text>
+    <text x="175" y="230" font-family="monospace" font-size="10" fill="#94a3b8" text-anchor="middle">Ep 50</text>
+    <text x="235" y="230" font-family="monospace" font-size="10" fill="#94a3b8" text-anchor="middle">Ep 100</text>
+
+    <text x="155" y="250" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#f43f5e" text-anchor="middle">Apparent Convergence: 0.003 MSE</text>
+  </g>
+
+  <!-- Right Side: Autoregressive Reality -->
+  <g transform="translate(430, 95)">
+    <rect width="310" height="260" rx="8" fill="url(#boxGrad2)" stroke="#10b981" stroke-width="1.5" />
+    <text x="155" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700" fill="#10b981" text-anchor="middle">Autoregressive Rollout</text>
+    <text x="155" y="54" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle">Evaluation over $t \rightarrow t+50\Delta t$</text>
+
+    <!-- Exponential curve simulation -->
+    <path d="M 35 200 Q 120 195, 180 140 T 275 75" fill="none" stroke="#f43f5e" stroke-width="2.5" />
+    <circle cx="275" cy="75" r="4" fill="#f43f5e" />
+    <text x="260" y="65" font-family="monospace" font-size="10" fill="#f43f5e">Spectral Blowup</text>
+
+    <!-- Stabilized curve -->
+    <path d="M 35 200 Q 120 198, 180 185 T 275 170" fill="none" stroke="#10b981" stroke-width="2.5" />
+    <circle cx="275" cy="170" r="4" fill="#10b981" />
+    <text x="250" y="160" font-family="monospace" font-size="10" fill="#10b981">Multi-Step Loss</text>
+
+    <text x="35" y="230" font-family="monospace" font-size="10" fill="#94a3b8">t=0</text>
+    <text x="145" y="230" font-family="monospace" font-size="10" fill="#94a3b8">t=25Δt</text>
+    <text x="255" y="230" font-family="monospace" font-size="10" fill="#94a3b8">t=50Δt</text>
+
+    <text x="155" y="250" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#10b981" text-anchor="middle">Stabilized via Autoregressive Pushforward</text>
+  </g>
+
+  <!-- Bottom Caption -->
+  <text x="400" y="390" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">Single-step training guarantees low one-step error but fails to constrain high-frequency wave dispersion.</text>
+</svg>

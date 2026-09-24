@@ -76,15 +76,20 @@
         </a>
         {{- end }}
 
+        <button type="button" class="pub-badge-btn pub-copy-btn" onclick="copyBibTeX(this)" title="Copy BibTeX entry to clipboard">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          <span class="pub-copy-text">Copy BibTeX</span>
+        </button>
+
         <details class="pub-bibtex-details">
-          <summary class="pub-bibtex-summary">Cite / BibTeX</summary>
+          <summary class="pub-bibtex-summary">View BibTeX</summary>
           <div class="pub-bibtex-block">
             <pre><code>@{{ or .type "article" }}{{ printf "{" }}{{ or .key (printf "lapin%s" (or .year "work")) }},
   title = {{ printf "{" }}{{ .title }}{{ printf "}" }},
   author = {{ printf "{" }}{{ .author }}{{ printf "}" }},{{ if .journal }}
   journal = {{ printf "{" }}{{ .journal }}{{ printf "}" }},{{ end }}{{ if .booktitle }}
-  booktitle = {{ printf "{" }}{{ .booktitle }}{{ printf "}" }},{{ end }}{{ if .year }}
-  year = {{ printf "{" }}{{ .year }}{{ printf "}" }},{{ end }}{{ if .month }}
+  booktitle = {{ printf "{" }}{{ .booktitle }}{{ printf "}" }},{{ end }}
+  year = {{ printf "{" }}{{ or .year "2026" }}{{ printf "}" }},{{ if .month }}
   month = {{ printf "{" }}{{ .month }}{{ printf "}" }},{{ end }}{{ if .doi }}
   doi = {{ printf "{" }}{{ .doi }}{{ printf "}" }},{{ end }}{{ if .url }}
   url = {{ printf "{" }}{{ .url }}{{ printf "}" }},{{ end }}
@@ -98,3 +103,22 @@
     </div><!-- close last group -->
   {{- end }}
 </div>
+
+<script>
+function copyBibTeX(btn) {
+  var card = btn.closest('.pub-card');
+  if (!card) return;
+  var code = card.querySelector('.pub-bibtex-block code');
+  if (!code) return;
+  navigator.clipboard.writeText(code.innerText.trim()).then(function() {
+    var textSpan = btn.querySelector('.pub-copy-text');
+    var orig = textSpan.innerText;
+    textSpan.innerText = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(function() {
+      textSpan.innerText = orig;
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+</script>
