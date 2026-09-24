@@ -38,6 +38,8 @@ def parse_bib(file_path):
         field_matches = re.findall(r'(\w+)\s*=\s*[\{"](.*?)[\"\}]', fields_raw)
         for k, v in field_matches:
             clean_val = v.strip().replace('{', '').replace('}', '')
+            clean_val = clean_val.replace(r'\_', '_').replace(r'\&', '&').replace(r'\"', '"')
+            clean_val = re.sub(r'[ \t]+', ' ', clean_val)
             fields[k.lower()] = clean_val
 
         parsed.append({

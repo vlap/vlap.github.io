@@ -1,29 +1,100 @@
 {{- $pubs := hugo.Data.publications }}
-<div class="publication-list">
-    {{- range $pubs }}
-    <div class="pub-item">
-        <div class="pub-year">{{ or .year "In Prep" }}</div>
-        <div class="pub-details">
-            <h4 class="pub-title">
-                {{- if .url }}
-                <a href="{{ .url }}" target="_blank" rel="noopener">{{ .title }}</a>
-                {{- else if .doi }}
-                <a href="https://doi.org/{{ .doi }}" target="_blank" rel="noopener">{{ .title }}</a>
-                {{- else }}
-                {{ .title }}
-                {{- end }}
-            </h4>
-            {{- if .author }}
-            <div class="pub-author">{{ .author }}</div>
-            {{- end }}
-            <div class="pub-journal">
-                {{- if .journal }}<em>{{ .journal }}</em>{{ end }}
-                {{- if .month }} · {{ .month }}{{ end }}
-            </div>
-            {{- if .doi }}
-            <div class="pub-doi">DOI: <a href="https://doi.org/{{ .doi }}" target="_blank" rel="noopener">{{ .doi }}</a></div>
-            {{- end }}
-        </div>
-    </div>
+{{- $scratch := newScratch }}
+{{- $scratch.Set "years" (slice) }}
+{{- range $pubs }}
+    {{- $y := or .year "Other" }}
+    {{- $currentYears := $scratch.Get "years" }}
+    {{- if not (in $currentYears $y) }}
+        {{- $scratch.Set "years" ($currentYears | append $y) }}
     {{- end }}
+{{- end }}
+{{- $years := $scratch.Get "years" }}
+
+<div class="pub-year-nav">
+  <span class="pub-year-nav-label">Jump to year:</span>
+  {{- range $years }}
+  <a href="#year-{{ . }}" class="pub-year-pill">{{ . }}</a>
+  {{- end }}
+</div>
+
+<div class="publication-feed">
+  {{- $scratch.Set "prevYear" "" }}
+  {{- range $index, $pub := $pubs }}
+    {{- $y := or .year "Other" }}
+    {{- $prev := $scratch.Get "prevYear" }}
+    {{- if ne $y $prev }}
+      {{- if ne $prev "" }}
+        </div><!-- close previous group -->
+      {{- end }}
+      <div class="pub-year-group" id="year-{{ $y }}">
+        <div class="pub-year-heading-wrapper">
+          <h3 class="pub-year-heading">{{ $y }}</h3>
+          <span class="pub-year-divider"></span>
+        </div>
+      {{- $scratch.Set "prevYear" $y }}
+    {{- end }}
+
+    <div class="pub-card">
+      <div class="pub-card-header">
+        <h4 class="pub-card-title">
+          {{- if .doi }}
+          <a href="https://doi.org/{{ .doi }}" target="_blank" rel="noopener">{{ .title }}</a>
+          {{- else if .url }}
+          <a href="{{ .url }}" target="_blank" rel="noopener">{{ .title }}</a>
+          {{- else }}
+          {{ .title }}
+          {{- end }}
+        </h4>
+      </div>
+
+      {{- if .author }}
+      <div class="pub-card-authors">
+        {{- $authorClean := .author | replaceRE " and " ", " }}
+        {{- $authorFormatted := $authorClean | replaceRE "(Vladimir\\s+Lapin|Lapin,\\s+Vladimir|Lapin,\\s+V(\\.\\s*N\\.)?|Lapin,\\s+V\\b|V\\.\\s*N\\.\\s*Lapin|V\\.\\s+Lapin)" "<strong class=\"pub-self-author\">$1</strong>" }}
+        {{- $authorFormatted | safeHTML }}
+      </div>
+      {{- end }}
+
+      <div class="pub-card-venue">
+        {{- if .journal }}<span class="pub-journal-name"><em>{{ .journal }}</em></span>{{ end }}
+        {{- if .booktitle }}<span class="pub-journal-name"><em>{{ .booktitle }}</em></span>{{ end }}
+        {{- if .publisher }}<span class="pub-publisher"> · {{ .publisher }}</span>{{ end }}
+        {{- if .month }}<span class="pub-month"> · {{ .month }}</span>{{ end }}
+        {{- if .year }}<span class="pub-card-year"> · {{ .year }}</span>{{ end }}
+      </div>
+
+      <div class="pub-card-actions">
+        {{- if .doi }}
+        <a href="https://doi.org/{{ .doi }}" target="_blank" rel="noopener" class="pub-badge-btn pub-doi-btn">
+          <span>DOI</span> ↗
+        </a>
+        {{- end }}
+
+        {{- if and .url (not (findRE "^https?://(dx\\.)?doi\\.org" .url)) }}
+        <a href="{{ .url }}" target="_blank" rel="noopener" class="pub-badge-btn pub-link-btn">
+          <span>URL</span> ↗
+        </a>
+        {{- end }}
+
+        <details class="pub-bibtex-details">
+          <summary class="pub-bibtex-summary">Cite / BibTeX</summary>
+          <div class="pub-bibtex-block">
+            <pre><code>@{{ or .type "article" }}{{ printf "{" }}{{ or .key (printf "lapin%s" (or .year "work")) }},
+  title = {{ printf "{" }}{{ .title }}{{ printf "}" }},
+  author = {{ printf "{" }}{{ .author }}{{ printf "}" }},{{ if .journal }}
+  journal = {{ printf "{" }}{{ .journal }}{{ printf "}" }},{{ end }}{{ if .booktitle }}
+  booktitle = {{ printf "{" }}{{ .booktitle }}{{ printf "}" }},{{ end }}{{ if .year }}
+  year = {{ printf "{" }}{{ .year }}{{ printf "}" }},{{ end }}{{ if .month }}
+  month = {{ printf "{" }}{{ .month }}{{ printf "}" }},{{ end }}{{ if .doi }}
+  doi = {{ printf "{" }}{{ .doi }}{{ printf "}" }},{{ end }}{{ if .url }}
+  url = {{ printf "{" }}{{ .url }}{{ printf "}" }},{{ end }}
+}</code></pre>
+          </div>
+        </details>
+      </div>
+    </div>
+  {{- end }}
+  {{- if ne ($scratch.Get "prevYear") "" }}
+    </div><!-- close last group -->
+  {{- end }}
 </div>
