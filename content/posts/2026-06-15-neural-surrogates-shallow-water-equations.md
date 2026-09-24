@@ -9,8 +9,8 @@ tags: ["Flowers", "AI Surrogates", "Neural Operators", "Geophysical Fluid Dynami
 ShowToc: true
 TocOpen: false
 cover:
-    image: "images/posts/neural_surrogate_swe_rollout.svg"
-    alt: "PDEBench 2D SWE Neural Surrogate Error & Autoregressive Rollout with Flowers"
+    image: "images/posts/flowers_banner.png"
+    alt: "Flowers: A Warp Drive for Neural PDE Solvers"
     relative: false
 ---
 
@@ -46,6 +46,9 @@ Flowers embeds this physical mechanism directly as a neural primitive:
 3. Stacking these multihead warps across a multiscale residual block scaffold achieves **adaptive, global spatial interactions at strictly linear computational cost $\mathcal{O}(N)$**.
 
 It is, quite literally, semi-Lagrangian transport turned into a differentiable neural operator.
+
+![Flowers Multihead Coordinate Warpfield Overlay on Shear Flow](/images/posts/flowers_warpfield.png)
+*Figure from the Flowers repository ([t-muser/flowers](https://github.com/t-muser/flowers)): Learned coordinate displacement fields $\mathbf{x} + \mathbf{v}_k(\mathbf{x})$ overlaid on fluid shear flow.*
 
 ---
 
@@ -125,6 +128,9 @@ Here is what we observed:
    Because Flowers computes coordinate displacements along the flow trajectories, moving wave fronts and discontinuities remained sharp. Rather than blurring or ringing, the learned warps deform space along the physical characteristic directions. The rollout remained stable all the way to $t = 50 \Delta t$, with total fluid mass $\iint h \, dx dy$ staying tightly bounded.
 3. **Efficiency & Footprint:**
    The compact ~17M parameter Flowers model trained significantly faster than attention-based baselines while consuming a fraction of the GPU VRAM. Because the displacement fields are predicted pointwise and sampled via `grid_sample`, memory scales linearly with grid resolution.
+
+![PDEBench 2D SWE Neural Surrogate Error & Autoregressive Rollout](/images/posts/neural_surrogate_swe_rollout.svg)
+*Autoregressive rollout comparison on 2D Shallow Water Equations: FNO accumulates dispersion errors leading to numerical blowup by $t = 25\Delta t$, while Flowers' learned warps maintain stable characteristic fronts through $t = 50\Delta t$.*
 
 ---
 
