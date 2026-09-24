@@ -1,0 +1,14 @@
+name: "Dr. Vladimir Lapin"
+title: "Senior Research Engineer"
+tagline: "Senior Research Engineer · Climate & Geophysical Models · HPC · Predictions · AI Adoption"
+affiliation: "Barcelona Supercomputing Center (BSC)"
+description: "Senior Research Engineer · Climate & Geophysical Models · HPC · Predictions · AI Adoption"
+bio: |
+  Senior Research Engineer at the Barcelona Supercomputing Center (BSC) working on Earth system models (EC-Earth4, OpenIFS, NEMO) and leading Climate Commons ([`cvc-commons`](https://github.com/vlap/cvc-commons)). My mission is to modernize how we build, verify, and run Earth system prediction workflows on supercomputers—replacing fragile scripts with automated schemas, deterministic tests, and AI-assisted engineering.
+current_focus: "Tracer mass conservation & stochastic rounding in OpenIFS CY48R1.1, and preparing EC-Earth4 for CMIP7 on MareNostrum 5"
+social:
+  github: "https://github.com/vlap"
+  linkedin: "https://linkedin.com/in/vladimir-lapin"
+  googlescholar: "https://scholar.google.com/citations?user=ZVQF-ggAAAAJ&hl=en"
+  orcid: "https://orcid.org/0000-0001-7302-8539"
+orcid_id: "0000-0001-7302-8539"

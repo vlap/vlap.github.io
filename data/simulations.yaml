@@ -1,0 +1,11 @@
+- id: "q965Zz8Bq5Q"
+  title: "High-resolution Sea Ice Simulation with ICON"
+  description: "Visualizing complex sea ice dynamics using the ICON model at high resolution."
+
+- id: "A7oM-v5r7r8"
+  title: "Global Ocean Tide Simulation"
+  description: "Global modelling of surface and internal tides using advanced finite-difference methods."
+
+- id: "Z9_3Z_t_L0c"
+  title: "MareNostrum 5 Deployment: EC-Earth4"
+  description: "Showcasing the large-scale deployment and performance of EC-Earth4 on the latest BSC supercomputer."

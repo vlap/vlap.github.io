@@ -1,0 +1,41 @@
+- name: "Climate Commons (cvc-commons)"
+  description: "Curated workflows, data preprocessing pipelines, and infrastructure patterns for climate computing at BSC. Implements schema-validated tasks (JSON Schema) and deterministic CI verification."
+  url: "https://github.com/vlap/cvc-commons"
+  tags: ["Deterministic CI", "Python", "Bash", "Schemas", "AI Adoption"]
+  featured: true
+
+- name: "EC-Earth4"
+  description: "Core technical contributions to the European Earth System Model. Focus on OpenIFS integration, OASIS3-MCT coupling, and CMIP7 preparation."
+  url: "https://ec-earth.org/ec-earth/ec-earth4/"
+  tags: ["Fortran", "C++", "HPC", "OASIS3-MCT"]
+  featured: true
+
+- name: "Prediction Data Workflow"
+  description: "Modular framework for preprocessing and interpolating climate datasets (EN4, ERA5, ORAS5) for climate predictions."
+  url: "https://github.com/vlap/prediction-data-workflow"
+  tags: ["Python", "CDO", "Data Engineering", "Predictions"]
+  featured: true
+
+- name: "ece4-exp"
+  description: "A tool for managing EC-Earth4 experiment configuration files with a modular YAML overlay system on MareNostrum 5."
+  url: "https://github.com/vlap/ece4-exp"
+  tags: ["Python", "YAML", "Slurm", "EC-Earth"]
+  featured: true
+
+- name: "baro_tides_fd"
+  description: "Global finite difference solver for barotropic ocean tides on a rotating sphere. Discretizes 2D shallow water equations with astronomical tidal forcing and bottom friction on a spherical staggered grid."
+  url: "https://github.com/vlap/baro_tides_fd"
+  tags: ["Fortran", "Numerical Modeling", "Fluid Dynamics", "Tides"]
+  featured: true
+
+- name: "internal_tides_fd"
+  description: "Coupled finite difference solver for global barotropic and internal baroclinic ocean tides. Implements Sturm-Liouville vertical eigenvalue modal decomposition under continuous ocean stratification."
+  url: "https://github.com/vlap/internal_tides_fd"
+  tags: ["Fortran", "Internal Tides", "Geophysical Flows", "Eigenvalue Solvers"]
+  featured: true
+
+- name: "pisces-inidata"
+  description: "Declarative initial conditions generator and remapping engine for the PISCES biogeochemical model in NEMO and EC-Earth4. Decouples raw observational packages from model targets via catalog schemas."
+  url: "https://github.com/vlap/pisces-inidata"
+  tags: ["Python", "Biogeochemistry", "NetCDF", "Catalog Schemas"]
+  featured: true

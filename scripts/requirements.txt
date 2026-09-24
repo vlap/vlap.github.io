@@ -1,0 +1,5 @@
+requests
+pyyaml
+scholarly
+bibtexparser
+PyGithub
