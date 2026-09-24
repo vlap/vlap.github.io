@@ -1,0 +1,48 @@
+{{- define "main" }}
+
+{{- if site.Params.homeInfoParams }}
+{{- partial "home_info.html" . }}
+{{- end }}
+
+{{- $pages := (where site.RegularPages "Section" "posts").ByDate.Reverse }}
+
+{{- if gt (len $pages) 0 }}
+<div class="home-posts">
+    <div class="home-posts-header">
+        <h2 class="section-title">Recent Research Log</h2>
+    </div>
+    {{- range first 5 $pages }}
+    <article class="post-entry">
+        <header class="entry-header">
+            <h2 class="entry-hint-parent">
+                {{- .Title }}
+            </h2>
+        </header>
+        {{- if (ne (.Param "hideSummary") true) }}
+        <div class="entry-content">
+            <p>{{ .Summary | plainify | htmlUnescape }}{{ if .Truncated }}...{{ end }}</p>
+        </div>
+        {{- end }}
+        <footer class="entry-footer">
+            {{- if not (.Param "hideMeta") }}
+            <span class="post-meta">{{- partial "post_meta.html" . -}}</span>
+            {{- end }}
+            {{- with .Params.tags }}
+            <div class="entry-tags">
+                {{- range . }}
+                <a href="{{ (printf "tags/%s/" (. | urlize)) | absURL }}" class="post-tag">#{{ . }}</a>
+                {{- end }}
+            </div>
+            {{- end }}
+        </footer>
+        <a class="entry-link" aria-label="post link to {{ .Title | plainify }}" href="{{ .Permalink }}"></a>
+    </article>
+    {{- end }}
+    
+    <div class="home-posts-footer">
+        <a class="view-all-link" href="{{ "/posts/" | absURL }}">View all log entries &rarr;</a>
+    </div>
+</div>
+{{- end }}
+
+{{- end }}{{/* end main */}}
