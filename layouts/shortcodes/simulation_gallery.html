@@ -4,8 +4,9 @@
     <div class="sim-item">
         <div class="sim-video">
             <iframe 
-                src="https://www.youtube.com/embed/{{ .id }}" 
+                src="https://www.youtube-nocookie.com/embed/{{ .id }}" 
                 title="{{ .title }}" 
+                loading="lazy"
                 frameborder="0" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                 allowfullscreen>
@@ -13,12 +14,23 @@
         </div>
         <div class="sim-info">
             <h3 class="sim-title">{{ .title }}</h3>
+            {{- if or .model .platform }}
+            <div class="sim-specs">
+                {{- if .model }}<span class="sim-spec-pill"><strong>Model:</strong> {{ .model }}</span>{{ end }}
+                {{- if .platform }}<span class="sim-spec-pill"><strong>Platform:</strong> {{ .platform }}</span>{{ end }}
+            </div>
+            {{- end }}
             <p class="sim-desc">{{ .description }}</p>
+            {{- if .physics }}
+            <div class="sim-physics">
+                <strong>Numerics &amp; Physics:</strong> {{ .physics }}
+            </div>
+            {{- end }}
         </div>
     </div>
     {{- end }}
 </div>
 
 <div class="gallery-footer">
-    <p>View more on my <a href="https://www.youtube.com/playlist?list=PLbABsNMD2jhy5zsINz9VIuOzVsrM0_vwu" target="_blank" rel="noopener">Simulation Playlist</a></p>
+    <p>View complete simulation playlists on <a href="https://www.youtube.com/playlist?list=PLbABsNMD2jhy5zsINz9VIuOzVsrM0_vwu" target="_blank" rel="noopener">YouTube &rarr;</a></p>
 </div>

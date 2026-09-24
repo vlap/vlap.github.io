@@ -663,6 +663,53 @@
     margin: 0;
 }
 
+.sim-specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 6px 0 10px 0;
+}
+
+.sim-spec-pill {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--tertiary);
+    color: var(--secondary);
+    border: 1px solid var(--border);
+}
+
+.sim-spec-pill strong {
+    color: var(--primary);
+}
+
+.sim-physics {
+    font-size: 0.8rem;
+    color: var(--secondary);
+    background: var(--tertiary);
+    border-left: 2px solid var(--primary);
+    padding: 8px 12px;
+    border-radius: 0 4px 4px 0;
+    margin-top: 10px;
+    line-height: 1.4;
+}
+
+.sim-physics strong {
+    color: var(--primary);
+}
+
+.software-github-link {
+    color: var(--secondary);
+    display: inline-flex;
+    align-items: center;
+    transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.software-github-link:hover {
+    color: var(--primary);
+    transform: scale(1.1);
+}
+
 .gallery-footer {
     margin-top: 40px;
     text-align: center;
