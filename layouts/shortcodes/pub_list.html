@@ -9,6 +9,16 @@
     {{- end }}
 {{- end }}
 {{- $years := $scratch.Get "years" }}
+<div class="pub-filter-container">
+  <div class="pub-filter-input-wrapper">
+    <svg class="pub-filter-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    <input type="text" id="pubFilterInput" placeholder="Filter publications by keyword, topic, venue, or co-author..." oninput="filterPublications(this.value)" autocomplete="off" spellcheck="false" aria-label="Filter publications" />
+    <button type="button" id="pubFilterClear" onclick="clearPubFilter()" style="display: none;" title="Clear filter" aria-label="Clear filter">&times;</button>
+  </div>
+  <div class="pub-filter-status" id="pubFilterStatus">
+    Showing all {{ len $pubs }} publications
+  </div>
+</div>
 
 <div class="pub-year-nav">
   <span class="pub-year-nav-label">Jump to year:</span>
@@ -120,5 +130,57 @@ function copyBibTeX(btn) {
       btn.classList.remove('copied');
     }, 2000);
   });
+}
+
+function filterPublications(query) {
+  var q = (query || '').trim().toLowerCase();
+  var clearBtn = document.getElementById('pubFilterClear');
+  var status = document.getElementById('pubFilterStatus');
+  if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+
+  var cards = document.querySelectorAll('.pub-card');
+  var groups = document.querySelectorAll('.pub-year-group');
+  var yearNav = document.querySelector('.pub-year-nav');
+  var visibleCount = 0;
+
+  cards.forEach(function(card) {
+    var title = (card.querySelector('.pub-card-title') || {}).innerText || '';
+    var authors = (card.querySelector('.pub-card-authors') || {}).innerText || '';
+    var venue = (card.querySelector('.pub-card-venue') || {}).innerText || '';
+    var text = (title + ' ' + authors + ' ' + venue).toLowerCase();
+    var match = !q || text.indexOf(q) !== -1;
+    card.style.display = match ? '' : 'none';
+    if (match) visibleCount++;
+  });
+
+  groups.forEach(function(group) {
+    var hasVisible = false;
+    var groupCards = group.querySelectorAll('.pub-card');
+    groupCards.forEach(function(c) {
+      if (c.style.display !== 'none') hasVisible = true;
+    });
+    group.style.display = hasVisible ? '' : 'none';
+  });
+
+  if (yearNav) {
+    yearNav.style.display = q ? 'none' : 'flex';
+  }
+
+  if (status) {
+    if (q) {
+      status.textContent = 'Showing ' + visibleCount + ' of ' + cards.length + ' publications';
+    } else {
+      status.textContent = 'Showing all ' + cards.length + ' publications';
+    }
+  }
+}
+
+function clearPubFilter() {
+  var input = document.getElementById('pubFilterInput');
+  if (input) {
+    input.value = '';
+    filterPublications('');
+    input.focus();
+  }
 }
 </script>

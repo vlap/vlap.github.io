@@ -18,6 +18,13 @@
             </a>
             {{- end }}
         </div>
+        {{- if or .ecosystem .license }}
+        <div class="software-card-meta">
+            {{ if .ecosystem }}<span class="software-meta-ecosystem">{{ .ecosystem }}</span>{{ end }}
+            {{ if and .ecosystem .license }} · {{ end }}
+            {{ if .license }}<span class="software-meta-license">{{ .license }}</span>{{ end }}
+        </div>
+        {{- end }}
         <p class="software-desc">{{ .description }}</p>
         <div class="software-tags">
             {{- range .tags }}

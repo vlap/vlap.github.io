@@ -8,6 +8,8 @@ summary: "Engineering lessons from managing multi-member Earth system model ense
 tags: ["HPC", "Autosubmit", "MareNostrum 5", "Slurm", "Lustre", "EC-Earth", "Climate Modeling"]
 ShowToc: true
 TocOpen: false
+aliases:
+    - "/posts/senior-dev-hpc-workflows/"
 cover:
     image: "images/posts/hpc_ensemble_dag_architecture.svg"
     alt: "MareNostrum 5 Autosubmit Ensemble DAG Architecture"
