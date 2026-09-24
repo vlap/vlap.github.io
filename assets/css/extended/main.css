@@ -709,3 +709,188 @@
     }
 }
 
+/* ==========================================================================
+   CV Page Styling & Timeline
+   ========================================================================== */
+
+/* Download Bar */
+.cv-download-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 1.5rem 0 1.2rem 0;
+}
+
+.cv-download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--entry);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--primary);
+    font-size: 0.88rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.cv-download-btn:hover {
+    background: var(--tertiary);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    color: var(--primary);
+}
+
+/* Quick Jump Anchors */
+.cv-nav-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0.8rem 0 2rem 0;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.cv-nav-link {
+    font-size: 0.82rem;
+    padding: 4px 12px;
+    border-radius: 14px;
+    background: var(--tertiary);
+    color: var(--secondary);
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.cv-nav-link:hover {
+    color: var(--primary);
+    background: var(--border);
+}
+
+/* Vertical Timeline Structure */
+.cv-timeline {
+    position: relative;
+    border-left: 2px solid var(--border);
+    margin: 1.5rem 0 2.5rem 0.5rem;
+    padding-left: 1.5rem;
+}
+
+.cv-entry {
+    position: relative;
+    margin-bottom: 2.2rem;
+}
+
+.cv-entry::before {
+    content: "";
+    position: absolute;
+    left: calc(-1.5rem - 6px);
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 2px solid var(--theme);
+}
+
+.cv-entry-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 0.4rem;
+}
+
+.cv-entry-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin: 0;
+}
+
+.cv-date-badge {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--secondary);
+    background: var(--tertiary);
+    padding: 2px 8px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+.cv-institution {
+    font-size: 0.95rem;
+    font-style: italic;
+    color: var(--secondary);
+    margin-bottom: 0.8rem;
+}
+
+.cv-bullets {
+    margin: 0.5rem 0 0 0;
+    padding-left: 1.2rem;
+    line-height: 1.6;
+    font-size: 0.92rem;
+}
+
+.cv-bullets li {
+    margin-bottom: 0.5rem;
+}
+
+/* CV Shortcode Items (Trainings & Presentations) */
+.cv-item {
+    padding: 14px 18px;
+    background: var(--entry);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+}
+
+.cv-item:hover {
+    border-color: var(--primary);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+}
+
+.cv-item-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 6px 0;
+    color: var(--primary);
+}
+
+.cv-item-meta {
+    font-size: 0.86rem;
+    color: var(--secondary);
+    margin-bottom: 6px;
+    line-height: 1.4;
+}
+
+.cv-link {
+    font-size: 0.82rem;
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.cv-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.cv-skills-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--tertiary);
+    color: var(--secondary);
+    font-weight: 500;
+}
+
+

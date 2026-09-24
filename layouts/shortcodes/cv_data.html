@@ -3,20 +3,23 @@
 
 <div class="cv-section">
   {{ range $data }}
-  <div class="cv-item" style="margin-bottom: 1.5em;">
-    <h4 style="margin: 0;">{{ .title }}</h4>
-    <div style="font-size: 0.9em; color: var(--secondary);">
+  <div class="cv-item">
+    <div class="cv-entry-header">
+      <h4 class="cv-item-title">{{ .title }}</h4>
+      <span class="cv-date-badge">{{ .year }}{{ if .month }}-{{ printf "%02d" .month }}{{ end }}</span>
+    </div>
+    <div class="cv-item-meta">
       {{ if .event }}<span>{{ .event }}</span>{{ end }}
+      {{ if and .event .institution }} | {{ end }}
       {{ if .institution }}<span>{{ .institution }}</span>{{ end }}
       {{ if .location }} | <span>{{ .location }}</span>{{ end }}
-      | <span>{{ .year }}-{{ printf "%02d" .month }}</span>
+      {{ if .url }} | <a href="{{ .url }}" target="_blank" rel="noopener" class="cv-link">Link &rarr;</a>{{ end }}
     </div>
-    {{ if .url }}
-    <a href="{{ .url }}" target="_blank" style="font-size: 0.8em;">Link</a>
-    {{ end }}
     {{ if .skills }}
-    <div style="font-size: 0.8em; margin-top: 0.3em;">
-      <strong>Skills:</strong> {{ range $index, $skill := .skills }}{{ if $index }}, {{ end }}{{ $skill }}{{ end }}
+    <div class="cv-skills">
+      {{ range .skills }}
+      <span class="cv-skills-tag">{{ . }}</span>
+      {{ end }}
     </div>
     {{ end }}
   </div>
