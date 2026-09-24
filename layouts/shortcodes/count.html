@@ -1,3 +1,4 @@
-{{ $type := .Get "type" }}
-{{ $count := index hugo.Data.counts $type }}
-{{ if $count }}<strong>{{ $count }}+</strong>{{ end }}
+{{- $type := .Get "type" -}}
+{{- $stats := hugo.Data.stats -}}
+{{- $count := or (index $stats $type) (index hugo.Data.counts $type) -}}
+{{- if $count }}<strong>{{ $count }}</strong>{{ end -}}

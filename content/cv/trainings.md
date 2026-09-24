@@ -10,4 +10,4 @@ I regularly participate in professional trainings to stay updated with the lates
 {{< cv_data file="trainings" >}}
 
 ---
-[Download full CV (PDF)](/downloads/vladimir-lapin-cv.pdf)
+[Download Research CV (PDF)](/downloads/vladimir-lapin-cv-research-full.pdf) | [View Full Interactive CV & Timeline](/cv/)

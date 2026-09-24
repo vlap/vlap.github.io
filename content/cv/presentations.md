@@ -10,4 +10,4 @@ A selection of {{< count type="presentations" >}} presentations given at various
 {{< cv_data file="presentations" >}}
 
 ---
-[Download full CV (PDF)](/downloads/vladimir-lapin-cv.pdf)
+[Download Research CV (PDF)](/downloads/vladimir-lapin-cv-research-full.pdf) | [View Full Interactive CV & Timeline](/cv/)

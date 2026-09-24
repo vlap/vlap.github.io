@@ -2,5 +2,5 @@
 title: "Search"
 layout: "search"
 summary: "search"
-placeholder: "Search my portfolio, publications, or insights..."
+placeholder: "Search articles, publications, software, or HPC notes..."
 ---
