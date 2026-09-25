@@ -1,15 +1,15 @@
+- name: vlap.github.io
+  description: Vladimir Lapin, climate modeller
+  url: https://github.com/vlap/vlap.github.io
+  stars: 0
+  language: PostScript
+  updated: '2026-09-24T23:24:05Z'
 - name: cvc-commons
   description: 'Climate Commons: A living documentation system for BSC climate workflows'
   url: https://github.com/vlap/cvc-commons
   stars: 0
   language: Shell
   updated: '2026-09-23T09:27:35Z'
-- name: vlap.github.io
-  description: Vladimir Lapin, climate modeller
-  url: https://github.com/vlap/vlap.github.io
-  stars: 0
-  language: PostScript
-  updated: '2026-09-23T03:56:40Z'
 - name: prediction-data-workflow
   description: null
   url: https://github.com/vlap/prediction-data-workflow
