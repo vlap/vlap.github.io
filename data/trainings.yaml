@@ -1,5 +1,14 @@
 # Completed and Ongoing Trainings
 # Categories: AI, HPC, Climate, Data, GFD, etc.
+- title: "Masterclass: LLMs from Zero to Production"
+  year: 2026
+  month: 11
+  institution: "BSC AI Factory"
+  category: "AI"
+  duration: "2.5 hours"
+  dates: "17 November 2026"
+  skills: ["LLMs", "Transformers", "RAG", "Agentic AI", "LLM Deployment"]
+
 - title: "ML for Earth System Modeling: the Anemoi Framework"
   url: "https://bsc-aifactory.eu/training/machine-learning-for-earth-system-modeling-the-anemoi-framework/"
   year: 2026

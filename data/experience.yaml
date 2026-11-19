@@ -1,0 +1,64 @@
+employment:
+  - title: Senior Research Engineer
+    dates: "04/2025 – Present"
+    institution: Barcelona Supercomputing Center (BSC)
+    location: Barcelona, Spain
+    bullets:
+      - lead: "Prediction Workflows:"
+        text: "I co-lead Auto-EC-Earth4 (Autosubmit/Slurm), building automated production DAG workflows from initial-condition generation and 50–100 member ensemble runs to postprocessing and evaluation against observations for CMIP7 and WMO/DCPP."
+      - lead: "Coupled Model Development & Tuning:"
+        text: "Co-maintain the EC-Earth4 coupled model across a consortium of 30 European institutes; implemented single-precision execution, load balancing, and MPI optimizations cutting coupled runtime by 2–3× for Destination Earth and CMIP7."
+      - lead: "Hybrid ML & Verification:"
+        text: "Designed interfaces to couple neural emulators with EC-Earth4, adapted the Flowers neural PDE solver for 3D tracers, co-developed a GNN ocean biogeochemistry emulator, and trained GNNs in Anemoi with automated mass-conservation and drift checks."
+  - title: Recognized Research Engineer (R2)
+    dates: "03/2019 – 03/2025"
+    institution: Barcelona Supercomputing Center (BSC)
+    location: Barcelona, Spain
+    bullets:
+      - lead: "Data Assimilation & State Estimation:"
+        text: "Implemented ensemble Kalman filter (EnKF) and nudging methods in NEMO/EC-Earth3 (1M+ variables) to assimilate satellite sea-ice and ocean observations, reducing initialization shock and SST/sea-ice forecast bias (Environ. Res. Lett., 2022)."
+      - lead: "Ensemble Runs & 3D Tracer Budgets:"
+        text: "Ran 50–100 member decadal predictions for the WMO Climate Update (BAMS, 2022) and built 3D advective-diffusive tracer diagnostics in NEMO to close carbon and heat budgets (ESD, 2024; Sci. Adv., 2026)."
+  - title: Career Break
+    dates: "09/2017 – 03/2019"
+    institution: ""
+    location: ""
+    bullets: []
+  - title: Postdoctoral Scientist
+    dates: "03/2015 – 09/2017"
+    institution: Max Planck Institute for Meteorology (MPI-M)
+    location: Hamburg, Germany
+    bullets:
+      - lead: "Unstructured-Grid Sea-Ice Solver:"
+        text: "Implemented an iterative elastic-viscous-plastic (EVP) rheology solver with subcycling in parallel Fortran/MPI for ICON-ESM on icosahedral grids (down to 10 km resolution), keeping the scheme stable under stiff stress regimes."
+      - lead: "Model Evaluation & Scaling:"
+        text: "Tested numerical conservation, ran parallel scaling benchmarks across 100s of HPC nodes, and validated coupled ocean-sea-ice simulations against observations."
+  - title: Research Fellow
+    dates: "11/2011 – 12/2014"
+    institution: University of Leeds
+    location: Leeds, United Kingdom
+    bullets:
+      - lead: "Global Tide & Internal Wave Solver:"
+        text: "Built a parallel spectral-finite-difference solver from scratch for barotropic and baroclinic tides at 2 arc-minute resolution (1M+ unknowns, Fortran/MPI) and validated wave energy dissipation against global observations (Rev. Geophys., 2014)."
+      - lead: "Boundary Discretization:"
+        text: "Improved finite-difference accuracy at coastlines, where I developed a novel second-order C-grid boundary scheme removing O(1) staircase errors at irregular boundaries (Ocean Modelling, 2014)."
+
+education:
+  - title: PhD in Applied Mathematics
+    dates: "09/2008 – 11/2011"
+    institution: University of Limerick
+    location: Limerick, Ireland
+    bullets:
+      - lead: "Thesis:"
+        text: "Resonant over-reflection of waves by jets"
+      - lead: "Fluid Mechanics:"
+        text: "Hydrodynamic stability, wave dynamics, and thin-film Stokes flows using asymptotic analysis and numerical PDE solvers (Matlab, COMSOL); Teaching Assistant across 4 courses and Mathematics Learning Centre tutor."
+  - title: MSc in Applied Mathematics and Mechanics
+    dates: "09/2003 – 06/2008"
+    institution: Lomonosov Moscow State University
+    location: Moscow, Russia
+    bullets:
+      - lead: "Grades:"
+        text: "4.85/5, 1st Honours"
+      - lead: "Thesis:"
+        text: "On the stability of the plane flows of visco-plastic fluids"

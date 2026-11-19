@@ -1,0 +1,22 @@
+{{- $section := .Get "section" -}}
+{{- $entries := index hugo.Data.experience $section -}}
+<div class="cv-timeline">
+  {{- range $entries }}
+  <div class="cv-entry">
+    <div class="cv-entry-header">
+      <h3 class="cv-entry-title">{{ .title }}</h3>
+      <span class="cv-date-badge">{{ .dates }}</span>
+    </div>
+    {{- if .institution }}
+    <div class="cv-institution">{{ .institution }}{{ if .location }} · {{ .location }}{{ end }}</div>
+    {{- end }}
+    {{- if .bullets }}
+    <ul class="cv-bullets">
+      {{- range .bullets }}
+      <li><strong>{{ .lead }}</strong> {{ .text }}</li>
+      {{- end }}
+    </ul>
+    {{- end }}
+  </div>
+  {{- end }}
+</div>

@@ -49,6 +49,4 @@ A visual collection of high-resolution climate, sea-ice, and fluid dynamics simu
 
 {{< simulation_gallery >}}
 
-{{< github_feed >}}
-
 *For a full list of my code contributions, visit my [GitHub profile](https://github.com/vlap).*
