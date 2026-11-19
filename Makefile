@@ -6,9 +6,9 @@ endif
 
 # Configuration
 REPO_ROOT := $(shell pwd)
-PYTHON    := python3
-HUGO      := hugo
-CV_DIR    ?= ../cv
+PYTHON := python3
+HUGO := hugo
+CV_DIR ?= ../cv
 
 .PHONY: help sync build serve deploy fetch-web-stats
 
