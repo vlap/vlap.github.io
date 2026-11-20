@@ -6,6 +6,8 @@
 {{- else }}
 <meta name="robots" content="noindex, nofollow">
 {{- end }}
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="color-scheme" content="light dark">
 
 {{- /* Title */}}
 <title>{{ if .IsHome }}{{ else }}{{ if .Title }}{{ .Title }} | {{ end }}{{ end }}{{ site.Title }}</title>
@@ -86,8 +88,8 @@
 
 {{- /* Favicons */}}
 <link rel="icon" href="{{ site.Params.assets.favicon | default "favicon.svg" | absURL }}?v=2">
-<link rel="icon" type="image/png" sizes="16x16" href="{{ site.Params.assets.favicon16x16 | default "favicon.svg" | absURL }}?v=2">
-<link rel="icon" type="image/png" sizes="32x32" href="{{ site.Params.assets.favicon32x32 | default "favicon.svg" | absURL }}?v=2">
+<link rel="icon" type="image/svg+xml" sizes="16x16" href="{{ site.Params.assets.favicon16x16 | default "favicon.svg" | absURL }}?v=2">
+<link rel="icon" type="image/svg+xml" sizes="32x32" href="{{ site.Params.assets.favicon32x32 | default "favicon.svg" | absURL }}?v=2">
 <link rel="apple-touch-icon" href="{{ site.Params.assets.apple_touch_icon | default "favicon.svg" | absURL }}?v=2">
 <link rel="mask-icon" href="{{ site.Params.assets.safari_pinned_tab | default "favicon.svg" | absURL }}?v=2">
 <meta name="theme-color" content="{{ site.Params.assets.theme_color | default "#2e2e33" }}">
@@ -143,43 +145,69 @@
 {{- /* theme is light */}}
 {{- if (eq site.Params.defaultTheme "light") }}
 <script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.querySelector("html").dataset.theme = 'dark';
-    }
-
+    (function () {
+        var meta = document.querySelector('meta[name="color-scheme"]');
+        var pref = null;
+        try { pref = localStorage.getItem("pref-theme"); } catch (e) {}
+        if (pref === "dark") {
+            document.documentElement.dataset.theme = 'dark';
+            if (meta) meta.content = 'dark';
+        } else if (meta) {
+            meta.content = 'light';
+        }
+    })();
 </script>
 {{- /* theme is dark */}}
 {{- else if (eq site.Params.defaultTheme "dark") }}
 <script>
-    if (localStorage.getItem("pref-theme") === "light") {
-        document.querySelector("html").dataset.theme = 'light';
-    }
-
+    (function () {
+        var meta = document.querySelector('meta[name="color-scheme"]');
+        var pref = null;
+        try { pref = localStorage.getItem("pref-theme"); } catch (e) {}
+        if (pref === "light") {
+            document.documentElement.dataset.theme = 'light';
+            if (meta) meta.content = 'light';
+        } else if (meta) {
+            meta.content = 'dark';
+        }
+    })();
 </script>
 {{- else }}
 {{- /* theme is auto */}}
 <script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else if (localStorage.getItem("pref-theme") === "light") {
-       document.querySelector("html").dataset.theme = 'light';
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else {
-        document.querySelector("html").dataset.theme = 'light';
-    }
-
+    (function () {
+        var meta = document.querySelector('meta[name="color-scheme"]');
+        var pref = null;
+        try { pref = localStorage.getItem("pref-theme"); } catch (e) {}
+        if (pref === "dark") {
+            document.documentElement.dataset.theme = 'dark';
+            if (meta) meta.content = 'dark';
+        } else if (pref === "light") {
+            document.documentElement.dataset.theme = 'light';
+            if (meta) meta.content = 'light';
+        } else {
+            if (meta) meta.content = 'light dark';
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.dataset.theme = 'dark';
+            } else {
+                document.documentElement.dataset.theme = 'light';
+            }
+        }
+    })();
 </script>
 {{- end }}
 {{- /* theme-toggle is disabled and theme is auto */}}
 {{- else if (and (ne site.Params.defaultTheme "light") (ne site.Params.defaultTheme "dark"))}}
 <script>
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else {
-        document.querySelector("html").dataset.theme = 'light';
-    }
-
+    (function () {
+        var meta = document.querySelector('meta[name="color-scheme"]');
+        if (meta) meta.content = 'light dark';
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.dataset.theme = 'dark';
+        } else {
+            document.documentElement.dataset.theme = 'light';
+        }
+    })();
 </script>
 {{- end }}
 

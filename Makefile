@@ -10,7 +10,7 @@ PYTHON := python3
 HUGO := hugo
 CV_DIR ?= ../cv
 
-.PHONY: help sync build serve deploy fetch-web-stats
+.PHONY: help sync build build-site serve deploy fetch-web-stats test test-browser scan verify
 
 help:
 	@echo "Usage: make [target]"
@@ -19,6 +19,11 @@ help:
 	@echo "  sync             Sync sanitized CV data and PDFs from $(CV_DIR)"
 	@echo "  fetch-web-stats  Fetch external metrics from OpenAlex and update stats"
 	@echo "  build            Sync and build the Hugo site"
+	@echo "  build-site       Build the Hugo site without syncing $(CV_DIR)"
+	@echo "  test             Run Python static build, DOM, CSS, and script tests"
+	@echo "  test-browser     Run headless Chromium E2E, accessibility, and CWV tests"
+	@echo "  scan             Run modern-web-guidance legacy-scan for first-party code"
+	@echo "  verify           Run build-site, test, test-browser, and scan"
 	@echo "  serve            Run Hugo local development server"
 	@echo "  deploy           Build and push changes to GitHub"
 
@@ -36,7 +41,25 @@ sync:
 
 build: sync
 	@echo "==> Building site..."
-	@$(HUGO) --gc --minify
+	@$(HUGO) --gc --minify --cleanDestinationDir
+
+build-site:
+	@echo "==> Building site..."
+	@$(HUGO) --gc --minify --cleanDestinationDir
+
+test:
+	@echo "==> Running pytest suite..."
+	@$(PYTHON) -m pytest -q
+
+test-browser:
+	@echo "==> Running headless Chromium verification..."
+	@node --test tests/browser_verify.mjs
+
+scan:
+	@echo "==> Running modern-web-guidance legacy-scan..."
+	@$(PYTHON) scripts/check_modern_web.py
+
+verify: build-site test test-browser scan
 
 serve:
 	@$(HUGO) server -D

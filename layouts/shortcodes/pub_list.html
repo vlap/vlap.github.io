@@ -11,13 +11,14 @@
 {{- $years := $scratch.Get "years" }}
 <div class="pub-filter-container">
   <div class="pub-filter-input-wrapper">
-    <svg class="pub-filter-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    <svg class="pub-filter-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
     <input type="text" id="pubFilterInput" placeholder="Filter publications by keyword, topic, venue, or co-author..." oninput="filterPublications(this.value)" autocomplete="off" spellcheck="false" aria-label="Filter publications" />
     <button type="button" id="pubFilterClear" onclick="clearPubFilter()" style="display: none;" title="Clear filter" aria-label="Clear filter">&times;</button>
   </div>
-  <div class="pub-filter-status" id="pubFilterStatus">
+  <div class="pub-filter-status" id="pubFilterStatus" role="status" aria-live="polite">
     Showing all {{ len $pubs }} publications
   </div>
+  <div class="visually-hidden" id="pubCopyStatus" role="status" aria-live="polite"></div>
 </div>
 
 <div class="pub-year-nav">
@@ -87,22 +88,26 @@
         {{- end }}
 
         <button type="button" class="pub-badge-btn pub-copy-btn" onclick="copyBibTeX(this)" title="Copy BibTeX entry to clipboard">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
           <span class="pub-copy-text">Copy BibTeX</span>
         </button>
 
         <details class="pub-bibtex-details">
           <summary class="pub-bibtex-summary">View BibTeX</summary>
           <div class="pub-bibtex-block">
-            <pre><code>@{{ or .type "article" }}{{ printf "{" }}{{ or .key (printf "lapin%s" (or .year "work")) }},
-  title = {{ printf "{" }}{{ .title }}{{ printf "}" }},
-  author = {{ printf "{" }}{{ .author }}{{ printf "}" }},{{ if .journal }}
-  journal = {{ printf "{" }}{{ .journal }}{{ printf "}" }},{{ end }}{{ if .booktitle }}
-  booktitle = {{ printf "{" }}{{ .booktitle }}{{ printf "}" }},{{ end }}
-  year = {{ printf "{" }}{{ or .year "2026" }}{{ printf "}" }},{{ if .month }}
-  month = {{ printf "{" }}{{ .month }}{{ printf "}" }},{{ end }}{{ if .doi }}
-  doi = {{ printf "{" }}{{ .doi }}{{ printf "}" }},{{ end }}{{ if .url }}
-  url = {{ printf "{" }}{{ .url }}{{ printf "}" }},{{ end }}
+            {{- $bibFields := slice -}}
+            {{- if .title }}{{ $bibFields = $bibFields | append (printf "  title = {%s}" .title) }}{{ end -}}
+            {{- if .author }}{{ $bibFields = $bibFields | append (printf "  author = {%s}" .author) }}{{ end -}}
+            {{- if .journal }}{{ $bibFields = $bibFields | append (printf "  journal = {%s}" .journal) }}{{ end -}}
+            {{- if .booktitle }}{{ $bibFields = $bibFields | append (printf "  booktitle = {%s}" .booktitle) }}{{ end -}}
+            {{- if .school }}{{ $bibFields = $bibFields | append (printf "  school = {%s}" .school) }}{{ end -}}
+            {{- if .year }}{{ $bibFields = $bibFields | append (printf "  year = {%v}" .year) }}{{ end -}}
+            {{- if .month }}{{ $bibFields = $bibFields | append (printf "  month = {%s}" .month) }}{{ end -}}
+            {{- if .doi }}{{ $bibFields = $bibFields | append (printf "  doi = {%s}" .doi) }}{{ end -}}
+            {{- if .url }}{{ $bibFields = $bibFields | append (printf "  url = {%s}" .url) }}{{ end -}}
+            {{- if .note }}{{ $bibFields = $bibFields | append (printf "  note = {%s}" .note) }}{{ end -}}
+            <pre><code>@{{ or .type "article" }}{{ printf "{" }}{{ or .key (printf "lapin%v" (or .year "work")) }},
+{{ delimit $bibFields ",\n" }}
 }</code></pre>
           </div>
         </details>
@@ -112,23 +117,55 @@
   {{- if ne ($scratch.Get "prevYear") "" }}
     </div><!-- close last group -->
   {{- end }}
+  <div id="pubEmptyState" class="pub-empty-state" hidden>
+    <p class="pub-empty-message">No publications match <strong id="pubEmptyQuery"></strong>.</p>
+    <button type="button" class="pub-empty-reset-btn" onclick="clearPubFilter()">Clear filter</button>
+  </div>
 </div>
 
 <script>
+var copyTimers = new WeakMap();
+var copyStatusTimer = null;
+
+function setCopyFeedback(btn, text, stateClass) {
+  var textSpan = btn.querySelector('.pub-copy-text');
+  if (!textSpan) return;
+  if (!btn.dataset.origLabel) {
+    btn.dataset.origLabel = textSpan.textContent.trim() || 'Copy BibTeX';
+  }
+  clearTimeout(copyTimers.get(btn));
+  textSpan.textContent = text;
+  btn.classList.remove('copied', 'copy-failed');
+  if (stateClass) btn.classList.add(stateClass);
+
+  var statusEl = document.getElementById('pubCopyStatus');
+  if (statusEl) {
+    clearTimeout(copyStatusTimer);
+    statusEl.textContent = statusEl.textContent === text ? text + '\u00A0' : text;
+    copyStatusTimer = setTimeout(function() {
+      statusEl.textContent = '';
+    }, 2000);
+  }
+
+  copyTimers.set(btn, setTimeout(function() {
+    textSpan.textContent = btn.dataset.origLabel;
+    btn.classList.remove('copied', 'copy-failed');
+  }, 2000));
+}
+
 function copyBibTeX(btn) {
   var card = btn.closest('.pub-card');
   if (!card) return;
   var code = card.querySelector('.pub-bibtex-block code');
   if (!code) return;
-  navigator.clipboard.writeText(code.innerText.trim()).then(function() {
-    var textSpan = btn.querySelector('.pub-copy-text');
-    var orig = textSpan.innerText;
-    textSpan.innerText = 'Copied!';
-    btn.classList.add('copied');
-    setTimeout(function() {
-      textSpan.innerText = orig;
-      btn.classList.remove('copied');
-    }, 2000);
+  if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+    setCopyFeedback(btn, 'Copy failed', 'copy-failed');
+    return;
+  }
+  navigator.clipboard.writeText(code.textContent.trim()).then(function() {
+    setCopyFeedback(btn, 'Copied!', 'copied');
+  }).catch(function() {
+    setCopyFeedback(btn, 'Copy failed', 'copy-failed');
   });
 }
 
@@ -144,9 +181,9 @@ function filterPublications(query) {
   var visibleCount = 0;
 
   cards.forEach(function(card) {
-    var title = (card.querySelector('.pub-card-title') || {}).innerText || '';
-    var authors = (card.querySelector('.pub-card-authors') || {}).innerText || '';
-    var venue = (card.querySelector('.pub-card-venue') || {}).innerText || '';
+    var title = (card.querySelector('.pub-card-title') || {}).textContent || '';
+    var authors = (card.querySelector('.pub-card-authors') || {}).textContent || '';
+    var venue = (card.querySelector('.pub-card-venue') || {}).textContent || '';
     var text = (title + ' ' + authors + ' ' + venue).toLowerCase();
     var match = !q || text.indexOf(q) !== -1;
     card.style.display = match ? '' : 'none';
@@ -171,6 +208,15 @@ function filterPublications(query) {
       status.textContent = 'Showing ' + visibleCount + ' of ' + cards.length + ' publications';
     } else {
       status.textContent = 'Showing all ' + cards.length + ' publications';
+    }
+  }
+
+  var emptyState = document.getElementById('pubEmptyState');
+  var emptyQuery = document.getElementById('pubEmptyQuery');
+  if (emptyState) {
+    emptyState.hidden = visibleCount > 0;
+    if (emptyQuery) {
+      emptyQuery.textContent = (query || '').trim() || 'your filter';
     }
   }
 }

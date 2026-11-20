@@ -1,46 +1,121 @@
 /* Custom Badge & Accent Variables */
 :root {
-    --badge-hpc-bg: rgba(0, 102, 204, 0.1);
-    --badge-hpc-text: #0066cc;
-    --badge-hpc-border: rgba(0, 102, 204, 0.35);
+    color-scheme: light dark;
 
-    --badge-ai-bg: rgba(204, 0, 102, 0.1);
-    --badge-ai-text: #cc0066;
-    --badge-ai-border: rgba(204, 0, 102, 0.35);
+    --badge-hpc-bg-light: rgba(0, 102, 204, 0.1);
+    --badge-hpc-bg-dark: rgba(56, 161, 255, 0.15);
+    --badge-hpc-text-light: #0066cc;
+    --badge-hpc-text-dark: #58a6ff;
+    --badge-hpc-border-light: rgba(0, 102, 204, 0.35);
+    --badge-hpc-border-dark: rgba(88, 166, 255, 0.4);
 
-    --badge-lead-bg: rgba(0, 153, 76, 0.1);
-    --badge-lead-text: #008744;
-    --badge-lead-border: rgba(0, 153, 76, 0.35);
+    --badge-ai-bg-light: rgba(204, 0, 102, 0.1);
+    --badge-ai-bg-dark: rgba(247, 120, 186, 0.15);
+    --badge-ai-text-light: #cc0066;
+    --badge-ai-text-dark: #f778ba;
+    --badge-ai-border-light: rgba(204, 0, 102, 0.35);
+    --badge-ai-border-dark: rgba(247, 120, 186, 0.4);
+
+    --badge-lead-bg-light: rgba(0, 153, 76, 0.1);
+    --badge-lead-bg-dark: rgba(57, 211, 83, 0.15);
+    --badge-lead-text-light: #008744;
+    --badge-lead-text-dark: #56d364;
+    --badge-lead-border-light: rgba(0, 153, 76, 0.35);
+    --badge-lead-border-dark: rgba(86, 211, 100, 0.4);
+
+    --badge-hpc-bg: var(--badge-hpc-bg-light);
+    --badge-hpc-text: var(--badge-hpc-text-light);
+    --badge-hpc-border: var(--badge-hpc-border-light);
+
+    --badge-ai-bg: var(--badge-ai-bg-light);
+    --badge-ai-text: var(--badge-ai-text-light);
+    --badge-ai-border: var(--badge-ai-border-light);
+
+    --badge-lead-bg: var(--badge-lead-bg-light);
+    --badge-lead-text: var(--badge-lead-text-light);
+    --badge-lead-border: var(--badge-lead-border-light);
 }
 
 :root[data-theme="dark"] {
-    --badge-hpc-bg: rgba(56, 161, 255, 0.15);
-    --badge-hpc-text: #58a6ff;
-    --badge-hpc-border: rgba(88, 166, 255, 0.4);
-
-    --badge-ai-bg: rgba(247, 120, 186, 0.15);
-    --badge-ai-text: #f778ba;
-    --badge-ai-border: rgba(247, 120, 186, 0.4);
-
-    --badge-lead-bg: rgba(57, 211, 83, 0.15);
-    --badge-lead-text: #56d364;
-    --badge-lead-border: rgba(86, 211, 100, 0.4);
+    color-scheme: dark;
 }
 
-@media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-        --badge-hpc-bg: rgba(56, 161, 255, 0.15);
-        --badge-hpc-text: #58a6ff;
-        --badge-hpc-border: rgba(88, 166, 255, 0.4);
+:root[data-theme="light"] {
+    color-scheme: light;
+}
 
-        --badge-ai-bg: rgba(247, 120, 186, 0.15);
-        --badge-ai-text: #f778ba;
-        --badge-ai-border: rgba(247, 120, 186, 0.4);
+@supports not (color: light-dark(white, black)) {
+    :root[data-theme="dark"] {
+        --badge-hpc-bg: var(--badge-hpc-bg-dark);
+        --badge-hpc-text: var(--badge-hpc-text-dark);
+        --badge-hpc-border: var(--badge-hpc-border-dark);
 
-        --badge-lead-bg: rgba(57, 211, 83, 0.15);
-        --badge-lead-text: #56d364;
-        --badge-lead-border: rgba(86, 211, 100, 0.4);
+        --badge-ai-bg: var(--badge-ai-bg-dark);
+        --badge-ai-text: var(--badge-ai-text-dark);
+        --badge-ai-border: var(--badge-ai-border-dark);
+
+        --badge-lead-bg: var(--badge-lead-bg-dark);
+        --badge-lead-text: var(--badge-lead-text-dark);
+        --badge-lead-border: var(--badge-lead-border-dark);
     }
+
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+            --badge-hpc-bg: var(--badge-hpc-bg-dark);
+            --badge-hpc-text: var(--badge-hpc-text-dark);
+            --badge-hpc-border: var(--badge-hpc-border-dark);
+
+            --badge-ai-bg: var(--badge-ai-bg-dark);
+            --badge-ai-text: var(--badge-ai-text-dark);
+            --badge-ai-border: var(--badge-ai-border-dark);
+
+            --badge-lead-bg: var(--badge-lead-bg-dark);
+            --badge-lead-text: var(--badge-lead-text-dark);
+            --badge-lead-border: var(--badge-lead-border-dark);
+        }
+    }
+}
+
+@supports (color: light-dark(white, black)) {
+    :root {
+        --badge-hpc-bg: light-dark(var(--badge-hpc-bg-light), var(--badge-hpc-bg-dark));
+        --badge-hpc-text: light-dark(var(--badge-hpc-text-light), var(--badge-hpc-text-dark));
+        --badge-hpc-border: light-dark(var(--badge-hpc-border-light), var(--badge-hpc-border-dark));
+
+        --badge-ai-bg: light-dark(var(--badge-ai-bg-light), var(--badge-ai-bg-dark));
+        --badge-ai-text: light-dark(var(--badge-ai-text-light), var(--badge-ai-text-dark));
+        --badge-ai-border: light-dark(var(--badge-ai-border-light), var(--badge-ai-border-dark));
+
+        --badge-lead-bg: light-dark(var(--badge-lead-bg-light), var(--badge-lead-bg-dark));
+        --badge-lead-text: light-dark(var(--badge-lead-text-light), var(--badge-lead-text-dark));
+        --badge-lead-border: light-dark(var(--badge-lead-border-light), var(--badge-lead-border-dark));
+    }
+}
+
+/* Accessibility, Focus & Touch Target Baseline */
+#searchInput:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+#theme-toggle {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.visually-hidden:where(:not(:focus-within, :active)) {
+    position: absolute !important;
+    clip-path: inset(50%) !important;
+    overflow: hidden !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: -1px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    white-space: nowrap !important;
 }
 
 /* Home Info Customizations */
@@ -204,6 +279,12 @@
     a {
         text-decoration: none !important;
         color: #111 !important;
+    }
+
+    .pub-year-group,
+    .cv-item {
+        content-visibility: visible !important;
+        contain-intrinsic-size: none !important;
     }
 }
 
@@ -644,10 +725,17 @@
     left: 0;
     width: 100%;
     height: 100%;
+    border: 0;
+    padding: 0;
     cursor: pointer;
     overflow: hidden;
     background: #0f172a;
     display: block;
+}
+
+.sim-facade:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
 }
 
 .sim-poster {
@@ -687,7 +775,7 @@
     justify-content: center;
     color: #ffffff;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease, border-color 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .sim-play-icon svg {
@@ -742,10 +830,11 @@
 .sim-physics {
     font-size: 0.8rem;
     color: var(--secondary);
-    background: var(--tertiary);
-    border-left: 2px solid var(--primary);
-    padding: 8px 12px;
-    border-radius: 0 4px 4px 0;
+    background: transparent;
+    border-top: 1px solid var(--border);
+    border-left: 0;
+    border-radius: 0;
+    padding: 0.5rem 0 0;
     margin-top: 10px;
     line-height: 1.4;
 }
@@ -1029,8 +1118,9 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
-#pubFilterInput:focus {
-    outline: none;
+#pubFilterInput:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
     border-color: var(--primary);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
@@ -1095,6 +1185,12 @@
 
 .pub-year-group {
     margin-bottom: 2.2rem;
+}
+
+.pub-year-group:nth-of-type(n+3),
+.cv-item:nth-of-type(n+6) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto none auto 220px;
 }
 
 .pub-year-heading-wrapper {
@@ -1267,14 +1363,73 @@
 
 .pub-copy-btn.copied {
     background: rgba(34, 197, 94, 0.12) !important;
-    border-color: #22c55e !important;
-    color: #16a34a !important;
+    border-color: #15803d !important;
+    color: #15803d !important;
 }
 
 [data-theme="dark"] .pub-copy-btn.copied {
     background: rgba(34, 197, 94, 0.2) !important;
     border-color: #4ade80 !important;
     color: #4ade80 !important;
+}
+
+.pub-copy-btn.copy-failed {
+    background: rgba(239, 68, 68, 0.12) !important;
+    border-color: #b91c1c !important;
+    color: #b91c1c !important;
+}
+
+[data-theme="dark"] .pub-copy-btn.copy-failed {
+    background: rgba(239, 68, 68, 0.2) !important;
+    border-color: #fca5a5 !important;
+    color: #fca5a5 !important;
+}
+
+.pub-empty-state[hidden] {
+    display: none;
+}
+
+.pub-empty-state {
+    text-align: center;
+    padding: 2rem 1.25rem;
+    margin: 1rem 0;
+    background: var(--entry);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    color: var(--secondary);
+}
+
+.pub-empty-message {
+    margin: 0 0 1rem 0;
+    font-size: 0.95rem;
+}
+
+.pub-empty-reset-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0.5rem 1.1rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--primary);
+    background: var(--tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.pub-empty-reset-btn:hover {
+    background: var(--border);
+    border-color: var(--primary);
+}
+
+.pub-empty-reset-btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
 }
 
 /* ==========================================================================
@@ -1380,6 +1535,44 @@ details.toc a:hover {
     padding: 0.5rem 0;
     max-width: 100%;
     -webkit-overflow-scrolling: touch;
+}
+
+/* ==========================================================================
+   Reduced Motion Overrides (must follow all transform/transition rules)
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .badge,
+    .highlight-item,
+    .view-all-link,
+    .metric-item,
+    .software-card,
+    .sim-item,
+    .sim-poster,
+    .sim-play-icon,
+    .software-github-link,
+    .cv-download-btn,
+    .cv-item,
+    .pub-card {
+        transition: none;
+    }
+
+    .badge:hover,
+    .highlight-item:hover,
+    .view-all-link:hover,
+    .metric-item:hover,
+    .software-card:hover,
+    .sim-item:hover,
+    .sim-facade:hover .sim-poster,
+    .sim-facade:focus .sim-poster,
+    .sim-facade:hover .sim-play-icon,
+    .sim-facade:focus .sim-play-icon,
+    .software-github-link:hover,
+    .cv-download-btn:hover,
+    .cv-item:hover,
+    .pub-card:hover {
+        transform: none;
+    }
 }
 
 

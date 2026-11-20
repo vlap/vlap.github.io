@@ -51,12 +51,12 @@
     <!-- Exponential curve simulation -->
     <path d="M 35 200 Q 120 195, 180 140 T 275 75" fill="none" stroke="#f43f5e" stroke-width="2.5" />
     <circle cx="275" cy="75" r="4" fill="#f43f5e" />
-    <text x="230" y="65" font-family="monospace" font-size="10" fill="#f43f5e">FNO: Dispersion Blowup</text>
+    <text x="290" y="66" font-family="monospace" font-size="10" fill="#f43f5e" text-anchor="end">FNO: Dispersion Blowup</text>
 
     <!-- Stabilized curve -->
     <path d="M 35 200 Q 120 198, 180 185 T 275 170" fill="none" stroke="#10b981" stroke-width="2.5" />
     <circle cx="275" cy="170" r="4" fill="#10b981" />
-    <text x="210" y="160" font-family="monospace" font-size="10" fill="#10b981">Flowers: Stable Rollout</text>
+    <text x="290" y="158" font-family="monospace" font-size="10" fill="#10b981" text-anchor="end">Flowers: Stable Rollout</text>
 
     <text x="35" y="230" font-family="monospace" font-size="10" fill="#94a3b8">t=0</text>
     <text x="145" y="230" font-family="monospace" font-size="10" fill="#94a3b8">t=25Δt</text>

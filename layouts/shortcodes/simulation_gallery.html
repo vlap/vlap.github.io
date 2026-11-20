@@ -3,14 +3,14 @@
     {{- range $sims }}
     <div class="sim-item">
         <div class="sim-video" data-id="{{ .id }}" data-title="{{ .title }}">
-            <div class="sim-facade" onclick="playSimVideo(this)" role="button" tabindex="0" aria-label="Play {{ .title }}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();playSimVideo(this);}">
-                <img src="https://i.ytimg.com/vi/{{ .id }}/hqdefault.jpg" alt="{{ .title }}" loading="lazy" class="sim-poster">
-                <div class="sim-play-overlay">
-                    <div class="sim-play-icon" aria-hidden="true">
+            <button type="button" class="sim-facade" onclick="playSimVideo(this)" aria-label="Play {{ .title }}">
+                <img src="https://i.ytimg.com/vi/{{ .id }}/hqdefault.jpg" alt="{{ .title }}" width="480" height="360" loading="lazy" class="sim-poster">
+                <span class="sim-play-overlay">
+                    <span class="sim-play-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                    </div>
-                </div>
-            </div>
+                    </span>
+                </span>
+            </button>
         </div>
         <div class="sim-info">
             <h3 class="sim-title">{{ .title }}</h3>
@@ -42,8 +42,7 @@ function playSimVideo(facade) {
     iframe.frameBorder = '0';
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
     iframe.allowFullscreen = true;
-    container.innerHTML = '';
-    container.appendChild(iframe);
+    container.replaceChildren(iframe);
 }
 </script>
 

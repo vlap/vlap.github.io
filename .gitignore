@@ -2,6 +2,8 @@
 public/
 resources/
 .hugo_build.lock
+_tmp_hugo_*/
+_tmp_chrome_profile_*/
 
 # OS files
 .DS_Store

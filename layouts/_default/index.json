@@ -1,6 +1,6 @@
 {{- $.Scratch.Add "index" slice -}}
 {{- range site.RegularPages -}}
-    {{- if and (not .Params.searchHidden) (ne .Layout `archives`) (ne .Layout `search`) }}
+    {{- if and (not .Params.searchHidden) (ne .Layout `archives`) (ne .Layout `search`) (ne .Layout `404`) }}
     {{- $summary := (or .Summary .Plain) | plainify | htmlUnescape | truncate 160 -}}
     {{- $contentSnippet := .Plain | plainify | htmlUnescape | truncate 300 -}}
     {{- $tags := delimit (or .Params.tags slice) " " -}}

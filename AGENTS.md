@@ -46,6 +46,7 @@ Operating rules, editorial voice, architecture, and workflows for `vlap.github.i
 - `make sync`: Runs `$(CV_DIR)/tex/scripts/export_site_bundle.py --site-dir .` (`CV_DIR ?= ../cv`, `/home/volant/code/career/cv`) and `scripts/update_stats.py` to refresh sanitized `data/{publications,trainings,presentations,experience,profile}.yaml` and `static/downloads/*.pdf`.
 - `make fetch-web-stats`: Runs `scripts/fetch_openalex.py` and `scripts/update_stats.py` to update `data/scholar_stats.yaml`.
 - `make build` / `make serve`: Builds site (`hugo --gc --minify`) or starts local preview at `http://localhost:1313`.
+- `make verify` (`build-site`, `test`, `test-browser`, `scan`): Runs the Hugo build, `pytest` DOM/CSS/SRI checks, headless Chromium E2E tests, and `modern-web-guidance` first-party scan. See `docs/testing-and-evaluation.md` for evaluation criteria and SRI maintenance.
 
 ### 2. GitHub Actions Automation
 - `.github/workflows/hugo.yml`: Builds and deploys to GitHub Pages on `push` to `main` and via `workflow_call`.

@@ -8,18 +8,11 @@ keywords = ["Vladimir Lapin", "Climate Modelling", "HPC Engineering", "Applied M
 
 [params]
     defaultTheme = "auto"
-    showCodeCopyButtons = true
     author = "Dr. Vladimir Lapin"
     
     # SEO & Social Cards
     description = "Senior Research Engineer · Climate & Geophysical Models · HPC · Predictions · AI Adoption"
     images = ["images/decor/vladimir_lapin.jpg"]
-    
-    # Minification
-    [params.minify]
-        disableHTML = false
-        disableJS = false
-        disableCSS = false
     
     # Post & Navigation Features
     ShowReadingTime = true
@@ -30,6 +23,12 @@ keywords = ["Vladimir Lapin", "Climate Modelling", "HPC Engineering", "Applied M
     ShowToc = false
     ShowScrollToTop = true
     mainSections = ["posts"]
+    
+    # Minification
+    [params.minify]
+        disableHTML = false
+        disableJS = false
+        disableCSS = false
 
     [params.assets]
 
@@ -54,9 +53,6 @@ keywords = ["Vladimir Lapin", "Climate Modelling", "HPC Engineering", "Applied M
         [[params.profileMode.buttons]]
             name = "CV"
             url = "/cv/"
-        [[params.profileMode.buttons]]
-            name = "Tools"
-            url = "/tools/"
 
     [params.homeInfoParams]
         Title = "Dr. Vladimir Lapin"
@@ -105,10 +101,15 @@ keywords = ["Vladimir Lapin", "Climate Modelling", "HPC Engineering", "Applied M
         url = "/cv/"
         weight = 50
     [[menu.main]]
+        identifier = "contact"
+        name = "Contact"
+        url = "/contact/"
+        weight = 60
+    [[menu.main]]
         identifier = "search"
         name = "Search"
         url = "/search/"
-        weight = 60
+        weight = 70
 
 [markup]
   [markup.goldmark]
