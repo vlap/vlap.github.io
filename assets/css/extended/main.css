@@ -1859,6 +1859,11 @@ table td {
     box-shadow: none;
 }
 
+#pubFilterInput::placeholder {
+    color: var(--secondary);
+    opacity: 1;
+}
+
 #pubFilterInput:focus-visible {
     outline: 2px solid var(--primary);
     outline-offset: 2px;
