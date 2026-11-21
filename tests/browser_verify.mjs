@@ -1438,4 +1438,116 @@ describe("vlap.github.io headless browser verification", () => {
     assert.equal(talkPageInfo.hasBlockquote, true, "Expected quoted abstract <blockquote> on talk page");
     assert.ok(talkPageInfo.h1Text.includes("Global modelling of surface and internal tides"));
   });
+
+  it("renders Section 6 verbatim prose across Home, Work, CV, and Publications", async () => {
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/`);
+    const homeProse = await cdp.eval(`(() => {
+      const norm = (el) => (el?.textContent || '').replace(/\\s+/g, ' ').trim();
+      return {
+        subtitle: norm(document.querySelector('.home-subtitle')),
+        bio: norm(document.querySelector('.home-info .entry-content')),
+        focus: norm(document.querySelector('.home-info .current-focus')),
+        links: [...document.querySelectorAll('.home-audience-links a')].map((a) => ({
+          title: norm(a.querySelector('.home-audience-title')),
+          href: a.getAttribute('href') || '',
+          desc: norm(a.querySelector('.home-audience-desc')),
+        })),
+      };
+    })()`);
+    assert.equal(homeProse.subtitle, "Senior Research Engineer, BSC · Climate models, HPC, ML emulators");
+    assert.equal(
+      homeProse.bio,
+      "I am a Senior Research Engineer at the Barcelona Supercomputing Center. I work on the EC-Earth4 climate model: coupling, performance on MareNostrum 5, and the ensemble workflows behind our decadal predictions for CMIP7. Before BSC, I wrote sea-ice and ocean-tide solvers at MPI-M and the University of Leeds. Climate models have become too expensive to improve, and I think AI tools and automated verification can make that work affordable again.",
+    );
+    assert.equal(
+      homeProse.focus,
+      "Current Focus: Preparing EC-Earth4 for CMIP7 on MareNostrum 5, tracer mass conservation in OpenIFS, and coupling neural emulators to EC-Earth4.",
+    );
+    assert.equal(homeProse.links.length, 3);
+    assert.deepEqual(
+      homeProse.links.map((l) => [l.title, l.desc]),
+      [
+        ["Collaborate", "what I work on, the code, and how to reach me."],
+        ["Hiring", "CV, career history and PDF downloads."],
+        ["Read", "notes, talks and papers."],
+      ],
+    );
+    assert.ok(homeProse.links[0].href.endsWith("/work/"));
+    assert.ok(homeProse.links[1].href.endsWith("/cv/"));
+    assert.ok(homeProse.links[2].href.endsWith("/posts/"));
+
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/work/`);
+    const workProse = await cdp.eval(`(() => {
+      const norm = (el) => (el?.textContent || '').replace(/\\s+/g, ' ').trim();
+      const firstP = document.querySelector('.post-content > p');
+      const emailLink = firstP?.querySelector('a[href="mailto:vladimir.lapin@bsc.es"]');
+      const projects = [...document.querySelectorAll('.post-content > ul:first-of-type > li')].map(norm);
+      const software = [...document.querySelectorAll('.software-card')].map((card) => [
+        norm(card.querySelector('h3')),
+        norm(card.querySelector('.software-desc')),
+      ]);
+      return {
+        intro: norm(firstP),
+        hasMailto: emailLink?.textContent.trim() === 'email me',
+        projects,
+        software,
+      };
+    })()`);
+    assert.equal(
+      workProse.intro,
+      "Projects I am on now, the public code, and some older simulations. If something here overlaps with your work, email me.",
+    );
+    assert.equal(workProse.hasMailto, true);
+    assert.deepEqual(workProse.projects, [
+      "Auto-EC-Earth4 — I co-lead the Autosubmit workflow for 50–100 member decadal ensembles (CMIP7, WMO/DCPP).",
+      "EC-Earth4 performance — single precision, load balancing and MPI tuning; coupled runs are 2–3× faster.",
+      "Emulators in EC-Earth4 — interfaces to couple neural emulators, and a GNN ocean biogeochemistry emulator with mass-conservation checks.",
+      "OpenIFS tracer mass conservation in CY48R1.1.",
+    ]);
+    assert.deepEqual(workProse.software, [
+      [
+        "Climate Commons (cvc-commons)",
+        "Shared workflow tasks and preprocessing scripts for climate computing at BSC, with schema checks and CI.",
+      ],
+      [
+        "EC-Earth4",
+        "The European community Earth system model. I work on OpenIFS integration, OASIS3-MCT coupling and CMIP7 runs.",
+      ],
+      [
+        "Prediction Data Workflow",
+        "Preprocessing and interpolation of EN4, ERA5 and ORAS5 data for climate predictions.",
+      ],
+      [
+        "ece4-exp",
+        "Manages EC-Earth4 experiment configuration with layered YAML files.",
+      ],
+      [
+        "baro_tides_fd",
+        "Global finite-difference solver for barotropic ocean tides (Fortran).",
+      ],
+      [
+        "internal_tides_fd",
+        "Global solver for barotropic and internal tides with vertical mode decomposition (Fortran).",
+      ],
+      [
+        "pisces-inidata",
+        "Builds PISCES biogeochemistry initial conditions for NEMO and EC-Earth4 from a data catalog.",
+      ],
+    ]);
+
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/cv/`);
+    const cvTools = await cdp.eval(
+      `(document.querySelector('.cv-tools-line')?.textContent || '').replace(/\\s+/g, ' ').trim()`,
+    );
+    assert.equal(
+      cvTools,
+      "Tools: Python (xarray, Dask, PyTorch), Fortran (MPI, OpenMP), Bash, Slurm, Autosubmit, CDO, NCO. Models: EC-Earth4, OpenIFS, NEMO/PISCES, OASIS3-MCT, ICON.",
+    );
+
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/publications/`);
+    const pubIntro = await cdp.eval(
+      `(document.querySelector('.pub-metrics-intro')?.textContent || '').replace(/\\s+/g, ' ').trim()`,
+    );
+    assert.match(pubIntro, /^\d+ papers · \d+ citations · h-index \d+ \(OpenAlex\)\.$/);
+  });
 });

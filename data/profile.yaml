@@ -1,10 +1,8 @@
 name: Dr. Vladimir Lapin
 title: Senior Research Engineer
-tagline: Senior Research Engineer · Climate & Geophysical Models · HPC · Predictions
-  · AI Adoption
+tagline: Senior Research Engineer, BSC · Climate models, HPC, ML emulators
 affiliation: Barcelona Supercomputing Center (BSC)
-description: Senior Research Engineer · Climate & Geophysical Models · HPC · Predictions
-  · AI Adoption
+description: Senior Research Engineer, BSC · Climate models, HPC, ML emulators
 bio: 'I am a Senior Research Engineer at the Barcelona Supercomputing Center. I work
   on the EC-Earth4 climate model: coupling, performance on MareNostrum 5, and the
   ensemble workflows behind our decadal predictions for CMIP7. Before BSC, I wrote

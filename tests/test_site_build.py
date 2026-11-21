@@ -1384,10 +1384,13 @@ def test_m3_publications_metrics_intro(built_site: Path) -> None:
     """Verify /publications/ intro line displays paper count, citations, and h-index from data/*.yaml."""
     stats = yaml.safe_load((REPO_ROOT / "data" / "stats.yaml").read_text(encoding="utf-8"))
     scholar = yaml.safe_load((REPO_ROOT / "data" / "scholar_stats.yaml").read_text(encoding="utf-8"))
-    pub_text = BeautifulSoup((built_site / "publications" / "index.html").read_text(encoding="utf-8"), "lxml").get_text(" ", strip=True)
+    pub_soup = BeautifulSoup((built_site / "publications" / "index.html").read_text(encoding="utf-8"), "lxml")
+    intro = pub_soup.select_one(".pub-metrics-intro")
+    assert intro is not None, "Missing .pub-metrics-intro on /publications/"
+    intro_text = re.sub(r"\s+", " ", intro.get_text()).strip()
 
-    expected = f"{stats['publications']} papers · {scholar['citations']} citations · h-index {scholar['h_index']}"
-    assert expected in pub_text, f"Expected {expected!r} in /publications/ intro, got: {pub_text[:300]}"
+    expected = f"{stats['publications']} papers · {scholar['citations']} citations · h-index {scholar['h_index']} (OpenAlex)."
+    assert intro_text == expected, f"Expected {expected!r} in .pub-metrics-intro, got: {intro_text!r}"
 
 
 def test_m3_log_kind_filters_badges_and_linkedin_probe(built_site: Path) -> None:
@@ -1449,3 +1452,178 @@ def test_m3_log_kind_filters_badges_and_linkedin_probe(built_site: Path) -> None
     finally:
         shutil.rmtree(probe_src, ignore_errors=True)
         shutil.rmtree(probe_out, ignore_errors=True)
+
+
+def test_m4_section6_verbatim_prose(
+    built_site: Path,
+    non_redirect_html_pages: list[tuple[Path, BeautifulSoup]],
+) -> None:
+    """Verify all 10 Spec Section 6 prose items verbatim across config, data, and built HTML."""
+    expected_tagline = "Senior Research Engineer, BSC · Climate models, HPC, ML emulators"
+    expected_bio = (
+        "I am a Senior Research Engineer at the Barcelona Supercomputing Center. I work on the "
+        "EC-Earth4 climate model: coupling, performance on MareNostrum 5, and the ensemble "
+        "workflows behind our decadal predictions for CMIP7. Before BSC, I wrote sea-ice and "
+        "ocean-tide solvers at MPI-M and the University of Leeds. Climate models have become "
+        "too expensive to improve, and I think AI tools and automated verification can make "
+        "that work affordable again."
+    )
+    expected_focus = (
+        "Preparing EC-Earth4 for CMIP7 on MareNostrum 5, tracer mass conservation in OpenIFS, "
+        "and coupling neural emulators to EC-Earth4."
+    )
+    expected_home_links = [
+        ("Collaborate", "/work/", "what I work on, the code, and how to reach me."),
+        ("Hiring", "/cv/", "CV, career history and PDF downloads."),
+        ("Read", "/posts/", "notes, talks and papers."),
+    ]
+    expected_work_intro = (
+        "Projects I am on now, the public code, and some older simulations. "
+        "If something here overlaps with your work, email me."
+    )
+    expected_work_projects = [
+        "Auto-EC-Earth4 — I co-lead the Autosubmit workflow for 50–100 member decadal ensembles (CMIP7, WMO/DCPP).",
+        "EC-Earth4 performance — single precision, load balancing and MPI tuning; coupled runs are 2–3× faster.",
+        "Emulators in EC-Earth4 — interfaces to couple neural emulators, and a GNN ocean biogeochemistry emulator with mass-conservation checks.",
+        "OpenIFS tracer mass conservation in CY48R1.1.",
+    ]
+    expected_software = [
+        (
+            "Climate Commons (cvc-commons)",
+            "Shared workflow tasks and preprocessing scripts for climate computing at BSC, with schema checks and CI.",
+        ),
+        (
+            "EC-Earth4",
+            "The European community Earth system model. I work on OpenIFS integration, OASIS3-MCT coupling and CMIP7 runs.",
+        ),
+        (
+            "Prediction Data Workflow",
+            "Preprocessing and interpolation of EN4, ERA5 and ORAS5 data for climate predictions.",
+        ),
+        (
+            "ece4-exp",
+            "Manages EC-Earth4 experiment configuration with layered YAML files.",
+        ),
+        (
+            "baro_tides_fd",
+            "Global finite-difference solver for barotropic ocean tides (Fortran).",
+        ),
+        (
+            "internal_tides_fd",
+            "Global solver for barotropic and internal tides with vertical mode decomposition (Fortran).",
+        ),
+        (
+            "pisces-inidata",
+            "Builds PISCES biogeochemistry initial conditions for NEMO and EC-Earth4 from a data catalog.",
+        ),
+    ]
+    expected_cv_tools = (
+        "Tools: Python (xarray, Dask, PyTorch), Fortran (MPI, OpenMP), Bash, Slurm, Autosubmit, CDO, NCO. "
+        "Models: EC-Earth4, OpenIFS, NEMO/PISCES, OASIS3-MCT, ICON."
+    )
+    expected_site_desc = "Vladimir Lapin, Senior Research Engineer at BSC. Climate models, HPC and ML emulators."
+
+    profile = yaml.safe_load((REPO_ROOT / "data" / "profile.yaml").read_text(encoding="utf-8"))
+    hugo_cfg = tomllib.loads((REPO_ROOT / "hugo.toml").read_text(encoding="utf-8"))
+    home_soup = BeautifulSoup((built_site / "index.html").read_text(encoding="utf-8"), "lxml")
+
+    # 1. Tagline
+    assert re.sub(r"\s+", " ", profile.get("tagline") or "").strip() == expected_tagline
+    assert re.sub(r"\s+", " ", profile.get("description") or "").strip() == expected_tagline
+    assert hugo_cfg["params"]["profileMode"]["subtitle"] == expected_tagline
+    home_subtitle = home_soup.select_one(".home-subtitle")
+    assert home_subtitle is not None
+    assert re.sub(r"\s+", " ", home_subtitle.get_text()).strip() == expected_tagline
+
+    # 2. Bio
+    assert re.sub(r"\s+", " ", profile.get("bio") or "").strip() == expected_bio
+    home_bio = home_soup.select_one(".home-info .entry-content")
+    assert home_bio is not None
+    assert re.sub(r"\s+", " ", home_bio.get_text()).strip() == expected_bio
+
+    # 3. Focus
+    assert re.sub(r"\s+", " ", profile.get("current_focus") or "").strip() == expected_focus
+    home_focus = home_soup.select_one(".home-info .current-focus")
+    assert home_focus is not None
+    assert re.sub(r"\s+", " ", home_focus.get_text()).strip() == f"Current Focus: {expected_focus}"
+
+    # 4. Home links
+    audience_links = home_soup.select(".home-audience-links a")
+    actual_links = [
+        (
+            re.sub(r"\s+", " ", a.select_one(".home-audience-title").get_text()).strip(),
+            a.get("href") or "",
+            re.sub(r"\s+", " ", a.select_one(".home-audience-desc").get_text()).strip(),
+        )
+        for a in audience_links
+    ]
+    assert len(actual_links) == len(expected_home_links)
+    for (got_title, got_href, got_desc), (exp_title, exp_path, exp_desc) in zip(actual_links, expected_home_links):
+        assert got_title == exp_title
+        assert got_href.endswith(exp_path), f"Expected href ending in {exp_path}, got {got_href!r}"
+        assert got_desc == exp_desc
+
+    # 5 & 6. Work intro and current projects
+    work_soup = BeautifulSoup((built_site / "work" / "index.html").read_text(encoding="utf-8"), "lxml")
+    work_content = work_soup.select_one(".post-content")
+    assert work_content is not None
+    first_p = work_content.select_one(":scope > p")
+    assert first_p is not None
+    assert re.sub(r"\s+", " ", first_p.get_text()).strip() == expected_work_intro
+    email_link = first_p.find("a", string="email me")
+    assert email_link is not None and email_link.get("href") == "mailto:vladimir.lapin@bsc.es"
+
+    project_lis = work_content.select(":scope > ul:first-of-type > li")
+    actual_projects = [re.sub(r"\s+", " ", li.get_text()).strip() for li in project_lis]
+    assert actual_projects == expected_work_projects
+
+    # 7. Software descriptions (YAML and rendered /work/)
+    software_yaml = yaml.safe_load((REPO_ROOT / "data" / "curated_software.yaml").read_text(encoding="utf-8"))
+    yaml_pairs = [(item["name"], item["description"]) for item in software_yaml]
+    assert yaml_pairs == expected_software
+    for _, desc in yaml_pairs:
+        assert "$" not in desc, f"Unexpected math markup in software description: {desc!r}"
+
+    rendered_cards = [
+        (
+            re.sub(r"\s+", " ", card.select_one("h3").get_text()).strip(),
+            re.sub(r"\s+", " ", card.select_one(".software-desc").get_text()).strip(),
+        )
+        for card in work_content.select(".software-card")
+    ]
+    assert rendered_cards == expected_software
+
+    # 8. CV tools line
+    cv_soup = BeautifulSoup((built_site / "cv" / "index.html").read_text(encoding="utf-8"), "lxml")
+    cv_tools = cv_soup.select_one(".cv-tools-line")
+    assert cv_tools is not None
+    assert re.sub(r"\s+", " ", cv_tools.get_text()).strip() == expected_cv_tools
+
+    # 9. Publications intro
+    stats = yaml.safe_load((REPO_ROOT / "data" / "stats.yaml").read_text(encoding="utf-8"))
+    scholar = yaml.safe_load((REPO_ROOT / "data" / "scholar_stats.yaml").read_text(encoding="utf-8"))
+    pub_soup = BeautifulSoup((built_site / "publications" / "index.html").read_text(encoding="utf-8"), "lxml")
+    pub_intro = pub_soup.select_one(".pub-metrics-intro")
+    assert pub_intro is not None
+    assert re.sub(r"\s+", " ", pub_intro.get_text()).strip() == (
+        f"{stats['publications']} papers · {scholar['citations']} citations · h-index {scholar['h_index']} (OpenAlex)."
+    )
+
+    # 10. hugo.toml description, meta description, and JSON-LD description on every page
+    assert hugo_cfg["description"] == expected_site_desc
+    assert hugo_cfg["params"]["description"] == expected_site_desc
+    meta_desc = home_soup.find("meta", attrs={"name": "description"})
+    assert meta_desc is not None and meta_desc.get("content") == expected_site_desc
+
+    for rel, page_soup in non_redirect_html_pages:
+        ld_scripts = page_soup.find_all("script", attrs={"type": "application/ld+json"})
+        assert ld_scripts, f"Missing JSON-LD script on {rel}"
+        found_person = False
+        for sc in ld_scripts:
+            payload = json.loads(sc.string or "")
+            if payload.get("@type") == "Person":
+                found_person = True
+                assert payload.get("description") == expected_site_desc, f"Person JSON-LD mismatch on {rel}"
+            elif payload.get("@type") == "Organization":
+                assert payload.get("description") == expected_site_desc, f"Organization JSON-LD mismatch on {rel}"
+        assert found_person, f"Missing Person JSON-LD on {rel}"

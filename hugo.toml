@@ -41,7 +41,7 @@ keywords = ["Vladimir Lapin", "Climate Modelling", "HPC Engineering", "Applied M
     [params.profileMode]
         enabled = false
         title = "Dr. Vladimir Lapin"
-        subtitle = "Senior Research Engineer · Climate & Geophysical Models · HPC · Predictions · AI Adoption"
+        subtitle = "Senior Research Engineer, BSC · Climate models, HPC, ML emulators"
         imageUrl = "images/decor/vladimir_lapin.jpg"
         imageWidth = 120
         imageHeight = 120
