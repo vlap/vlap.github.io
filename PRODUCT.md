@@ -8,56 +8,64 @@ web
 
 ## Users
 
-Primary visitors are HPC, climate modeling, and AI engineering leads, Principal Investigators (PIs), and technical or academic hiring committees evaluating Dr. Vladimir Lapin's numerical modeling rigor, workflow engineering, and research leadership.
+Three audiences, in this order:
 
-Secondary visitors are fellow Earth system modelers and consortium collaborators (EC-Earth, BSC, ECMWF) reading Research Log notes, checking software repositories, exporting BibTeX citations, or downloading CV and thesis artifacts.
+1. **Collaborators** (Earth system modelers, HPC and ML engineers, EC-Earth/BSC/ECMWF partners). They want to know what I work on now, see my public code, and find how to reach me.
+2. **HR and hiring committees.** They want a fast check of my fit, my career history, and a CV PDF.
+3. **Me.** I use the site to publish notes, talks (with slides) and short notes on my papers.
 
 ## Product Purpose
 
-Present Vladimir Lapin's career trajectory, mathematical and HPC engineering depth, peer-reviewed publications, and technical log clearly so evaluators can verify research and engineering fit within minutes, supporting career growth across BSC leadership, international climate/AI collaborations, and senior research or applied science roles.
+A personal research site that answers each audience in one click from Home: Collaborate → `/work/`, Hiring → `/cv/`, Read → `/posts/`. It is one part of the `career/` system (`cv/`, `job_applications/`, `vlap.github.io/`). The site displays facts that other repos own. It does not own the bio, career history or publications.
 
 ## Positioning
 
-An authentic applied mathematician's technical monograph and lab notebook grounded in verifiable Tier-0 supercomputing work (MareNostrum 5, OpenIFS CY48R1.1, EC-Earth4, NEMO/PISCES, `cvc-commons`) and a continuous physical-modeling lineage (`MSU 2003–2008 -> Limerick 2008–2011 -> Leeds 2011–2014 -> MPI-M 2015–2017 -> BSC 2019–present`), contrasting directly with generic executive summaries and corporate buzzword portfolios.
+An applied mathematician and research engineer's site, written in plain first-person prose. The claims are checkable: public repos, papers, slides and CV entries. It is not a portfolio with marketing copy.
 
 ## Operating Context
 
-Visitors operate primarily in Read and Operate modes: reading long-form Research Log essays with KaTeX equations and Fortran/Python code, filtering 24+ publications with instant BibTeX copy, playing self-hosted geophysical and fluid-dynamics simulation clips, scanning or printing the CV, and downloading audience-specific CV PDFs or historical MSc and PhD theses.
-
-CV data (`data/experience.yaml`, `data/publications.yaml`, `data/presentations.yaml`, `data/trainings.yaml`) and PDF CV variants sync from `../cv` via `make sync`; bibliometric counts (`data/scholar_stats.yaml`) sync monthly from OpenAlex via GitHub Actions.
+- Pages: Home, Work, Log, CV. Publications is linked from Work and CV. There are no About, Contact, Search or Archives pages. Their old URLs redirect.
+- Log is one feed with a `kinds` taxonomy (`note`, `talk`, `paper`). A talk page has an abstract, venue, date and a slide link.
+- Data ownership (single source per fact):
+  - `cv/tex/data/metadata.yaml`: name, title, bio, focus, public email, social links.
+  - `cv/tex`: experience, publications, presentations, trainings and CV PDFs. These reach the site through `make sync`.
+  - OpenAlex: citations and h-index (monthly CI).
+  - Site-owned: `data/curated_software.yaml`, `content/work.md` project lines, `content/posts/`, `static/slides/`.
+- A LinkedIn mirror (`cv` → LinkedIn) is future work.
 
 ## Capabilities and Constraints
 
-- Static Hugo site deployed to GitHub Pages; zero runtime backend or server-side database.
-- `themes/PaperMod/` is a read-only git submodule and must remain unmodified.
-- `make sync` overwrites `data/experience.yaml` and deletes `static/downloads/vladimir-lapin-cv*.pdf`, so non-`vladimir-lapin-cv*.pdf` assets (such as `phd-thesis-vlapin.pdf` and `msc-thesis-vlapin.pdf`) and template-level thesis links in `layouts/shortcodes/cv_timeline.html` must survive `make sync`.
-- Strict anti-buzzword prose policy (`AGENTS.md`): peer-to-peer clarity backed by equations, cluster telemetry, and verifiable public repositories; never expose private BSC GitLab hosts, internal cluster hostnames, or credentials.
-- Snap-confined Hugo (`v0.170.1`) cannot read or write `/tmp`; temporary test builds use `_tmp_*` inside the repository root.
+- Static Hugo site on GitHub Pages. No backend.
+- `themes/PaperMod/` is a read-only submodule.
+- `make sync` overwrites `data/profile.yaml`, `data/experience.yaml` and the `vladimir-lapin-cv*.pdf` files. Thesis PDFs and other downloads must survive it.
+- Never expose private BSC GitLab repos, internal hostnames or credentials. Only public repos go in `curated_software.yaml`.
+- Snap-confined Hugo cannot use `/tmp`. Temporary builds use `_tmp_*` in the repo root.
 
 ## Brand Commitments
 
-- **Candid Applied-Mathematician Voice:** Carry forward the direct mathematical and practical engineering voice of the legacy site (*"Frankly speaking, as an applied mathematician, I would give a go at modelling of any physical process with a rich mathematical structure"*; tools that *"save researchers from banging their heads against the wall for too long"*).
-- **Minimalist Read/Operate Restraint:** Keep navigation, filtering, and reading surfaces free of filler copy, nested ornament, or artificial celebration.
-- **Heritage Continuity:** Preserve continuity with the legacy `"Save The Earth"` site through its pine and ocean editorial accents, serif monograph headings, and authentic fluid/ocean simulation artifacts.
+- **Plain voice:** short sentences, first person, no filler and no buzzwords. Each fact appears once.
+- **Restraint:** three menu items, no metric banners, no decorative cards.
+- **Visual continuity:** the visual system lives in `DESIGN.md`.
 
 ## Evidence on Hand
 
-- `data/experience.yaml`: Verified career lineage across MSU (2003–2008), University of Limerick / MACSI (2008–2011), University of Leeds (2011–2014), Max Planck Institute for Meteorology (2015–2017), and Barcelona Supercomputing Center (2019–present).
-- `data/publications.yaml` (24 entries), `data/curated_software.yaml` (7 public repositories), `data/presentations.yaml` (21 entries), `data/trainings.yaml` (28 entries), and `data/scholar_stats.yaml` (OpenAlex citations and h-index).
-- `static/downloads/`: 5 role-tailored CV PDFs synced from `../cv`, plus `phd-thesis-vlapin.pdf` and `msc-thesis-vlapin.pdf` from `/home/volant/vlap.github.io.legacy`.
-- `static/videos/simulations/` & `static/images/simulations/`: Self-hosted legacy simulations (`global-ocean-tides`, `overturning-wave`, `rimming-flow`) replacing dead third-party video embeds.
-- `content/posts/`: 5 peer-to-peer technical deep dives with KaTeX derivations, Fortran/Python listings, and diagnostic figures.
+- `data/experience.yaml`: MSU, Limerick, Leeds, MPI-M, BSC.
+- `data/publications.yaml`, `data/presentations.yaml`, `data/trainings.yaml` (synced from `cv`). `data/scholar_stats.yaml` (OpenAlex).
+- `data/curated_software.yaml`: 7 public repositories.
+- `static/downloads/`: CV PDFs (Research full and Industry have buttons), PhD and MSc theses.
+- `static/videos/simulations/`, `static/images/simulations/`: older tide, wave and rimming-flow simulations.
+- Log: one published note (neural surrogates) and backfilled talks (EGU2014, AMS 2013).
 
 ## Product Principles
 
-1. **Evidence before assertion:** Anchor every capability claim in equations, cluster benchmarks, public repositories, or downloadable PDFs.
-2. **Progressive disclosure for busy reviewers:** Surface primary decision artifacts (CV PDFs, Research Experience, Education, featured software, recent posts) first while keeping full trainings, presentations, and BibTeX records one click away.
-3. **Peer-to-peer candor:** Write like an engineer talking to a colleague in a lab notebook; never use corporate fluff.
-4. **Deterministic reproducibility:** Keep data sync, Hugo builds, DOM/CSS tests, Chromium E2E checks, and `modern-web-guidance` scans reproducible via `make sync` and `make verify`.
-5. **Universal access:** Deliver full keyboard navigability, print-ready CV/publication layouts, and light/dark readability without requiring JavaScript for core reading.
+1. **One click per audience:** Home routes collaborators, hiring and readers directly.
+2. **One owner per fact:** text lives in one repo. Other places render it.
+3. **Evidence before assertion:** link a repo, paper, slide or CV entry for each claim.
+4. **Own words only:** no AI-written prose is published without the author's review.
+5. **Reproducible builds:** `make sync` and `make verify` stay deterministic.
 
 ## Accessibility & Inclusion
 
-- WCAG 2.1 AA computed contrast (`>= 4.5:1` for text, `>= 3:1` for controls, icons, and focus indicators) in both light and dark modes.
-- Full keyboard navigation, visible `:focus-visible` outlines, minimum `44x44px` mobile touch targets, and `prefers-reduced-motion` compliance.
-- Semantic heading hierarchy without skipped levels, print-expanded `<details>` disclosures (`@media print`), and descriptive labels for icon-only controls and media facades.
+- WCAG 2.1 AA contrast in light and dark modes.
+- Full keyboard navigation, visible focus, 44×44 px touch targets, `prefers-reduced-motion` support.
+- Semantic headings, print-ready CV and publications, core reading without JavaScript.
