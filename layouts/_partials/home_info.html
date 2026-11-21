@@ -1,21 +1,28 @@
 {{- $profile := hugo.Data.profile }}
 
 <article class="first-entry home-info">
-    {{- if site.Params.homeInfoParams.Image -}}
-    <div class="home-info-image">
-        <picture>
-            <source srcset="{{ "images/decor/vladimir_lapin.webp" | absURL }}" type="image/webp">
-            <img src="{{ site.Params.homeInfoParams.Image | absURL }}" alt="{{ or $profile.name site.Params.homeInfoParams.Title "Dr. Vladimir Lapin" }}" width="150" height="150" fetchpriority="high">
-        </picture>
+    <div class="home-masthead">
+        <div class="home-identity-row">
+            {{- if site.Params.homeInfoParams.Image -}}
+            <div class="home-info-image">
+                <picture>
+                    <source srcset="{{ "images/decor/vladimir_lapin.webp" | absURL }}" type="image/webp">
+                    <img src="{{ site.Params.homeInfoParams.Image | absURL }}"
+                         alt="{{ or $profile.name site.Params.homeInfoParams.Title "Dr. Vladimir Lapin" }}"
+                         width="96" height="96" fetchpriority="high" decoding="async">
+                </picture>
+            </div>
+            {{- end }}
+            <header class="entry-header">
+                <h1>{{ or $profile.name site.Params.homeInfoParams.Title "Dr. Vladimir Lapin" }}</h1>
+                <p class="home-subtitle">{{ or $profile.tagline "Senior Research Engineer, BSC · Climate models, HPC, ML emulators" }}</p>
+            </header>
+        </div>
+        <div class="tidal-field-band" aria-hidden="true">
+            {{- partial "tidal_field.html" . }}
+        </div>
     </div>
-    {{- end }}
-    <header class="entry-header">
-        <h1>
-            {{ or $profile.name site.Params.homeInfoParams.Title "Dr. Vladimir Lapin" }}
-            <img src="/images/decor/profile-symbol.svg" alt="" aria-hidden="true" class="home-symbol-icon" width="28" height="28">
-        </h1>
-        <p class="home-subtitle">{{ or $profile.tagline "Senior Research Engineer, BSC · Climate models, HPC, ML emulators" }}</p>
-    </header>
+
     <div class="entry-content md-content">
         {{ $opts := dict "display" "block" }}
         {{ $profile.bio | $.Page.RenderString $opts }}
