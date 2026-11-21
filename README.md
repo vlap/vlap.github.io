@@ -5,14 +5,16 @@ See [`AGENTS.md`](AGENTS.md) for editorial voice and operating rules, and [`docs
 
 ---
 
-## Site Architecture (5 Core Pillars + Utilities)
+## Site Architecture
 
-- **About (`/about/`):** Background, research pillars, and technical stack.
-- **Log (`/posts/`):** Deep-dive engineering articles (`cover:` diagram, `ShowToc: true`) and Lab Notes (`tags: ["lab-note"]`, `draft: true`, `150–400` words). Empty publication micro-posts are never auto-generated.
-- **Software (`/software/`):** Curated public repositories, climate solvers, and simulation video facades.
-- **Publications (`/publications/`):** Counter-chronological publication feed with live keyword filtering and 1-click BibTeX copy.
-- **CV (`/cv/`):** Direct PDF downloads and dynamic career timeline.
-- **Utilities (`/contact/`, `/search/`):** Contact details and client-side Fuse.js search.
+Top navigation has 3 items: `Work`, `Log`, and `CV`.
+
+- **Home (`/`):** Profile photo, tagline, bio and current focus (synced from `../cv`), three audience links (`Collaborate` -> `/work/`, `Hiring` -> `/cv/`, `Read` -> `/posts/`), and `Latest from the Log` (rendered when 2 or more Log items are published).
+- **Work (`/work/`):** Active projects, curated public repositories (`data/curated_software.yaml`), 5 latest publications, and `simulation_gallery` native video facades.
+- **Log (`/posts/`):** Unified feed with `kinds` taxonomy (`note`, `talk`, `paper`) filterable at `/kinds/<kind>/`, optional `linkedin:` link, `cover:` diagram and opt-in `ShowToc: true` on deep dives, and Lab Notes (`tags: ["lab-note"]`, `draft: true`, `150–400` words). Empty publication micro-posts are never auto-generated.
+- **CV (`/cv/`):** Two PDF downloads (Full Research CV and Industry CV), Tools/Models line, and career timeline linking presentations to published Log `talk` pages.
+- **Publications (`/publications/`):** Counter-chronological feed linked from `/work/` and `/cv/`, with OpenAlex metrics intro, live keyword filter, and 1-click BibTeX copy.
+- **Redirects:** `/about/` and `/contact/` redirect to `/`; `/software/` redirects to `/work/`; `/archives/` redirects to `/posts/`. `/search/` and `index.json` are removed.
 
 ---
 
@@ -27,9 +29,9 @@ See [`AGENTS.md`](AGENTS.md) for editorial voice and operating rules, and [`docs
 | **Trainings** | `data/trainings.yaml` | Synced from `../cv`; courses and certifications. |
 | **CV PDFs** | `static/downloads/*.pdf` | Synced from `../cv`; downloadable CV variants. |
 | **Software Portfolio** | `data/curated_software.yaml` | Manually curated public repositories (`cvc-commons`, `EC-Earth4`, etc.). |
-| **Simulation Videos** | `data/simulations.yaml` | Video metadata and poster specs for `/software/`. |
-| **Scholar & Site Stats** | `data/scholar_stats.yaml`, `data/stats.yaml` | OpenAlex metrics and computed homepage counters. |
-| **Articles & Lab Notes** | `content/posts/*.md` | Deep-dive technical posts and Lab Notes (`static/images/posts/` media). |
+| **Simulation Videos** | `data/simulations.yaml` | Video metadata and poster specs for `/work/`. |
+| **Scholar & Site Stats** | `data/scholar_stats.yaml`, `data/stats.yaml` | OpenAlex metrics and computed publication counters. |
+| **Log Items** | `content/posts/*.md` | Log entries (`kinds: [note \| talk \| paper]`, `static/images/posts/` media). |
 
 ---
 
@@ -57,8 +59,8 @@ See [`AGENTS.md`](AGENTS.md) for editorial voice and operating rules, and [`docs
 ## Authoring & Git Workflow
 
 ### Creating a New Post
-- **Deep dive:** Create `content/posts/YYYY-MM-DD-slug.md` with a diagram in `static/images/posts/` (`cover:`), `ShowToc: true`, and `math: true` when rendering KaTeX.
-- **Lab Note:** Create a short `150–400` word note (`tags: ["lab-note"]`, `draft: true`, optional `.png`) via the `publish-note` workflow.
+- **Deep dive / talk / paper note:** Create `content/posts/YYYY-MM-DD-slug.md` with `kinds:` (`note`, `talk`, or `paper`), optional `linkedin:` URL, a diagram in `static/images/posts/` (`cover:`), opt-in `ShowToc: true`, and `math: true` when rendering KaTeX.
+- **Lab Note:** Create a short `150–400` word note (`kinds: [note]`, `tags: ["lab-note"]`, `draft: true`, optional `.png`) via the `publish-note` workflow.
 
 ### Remote Sync Before Editing
 Automated CI commits to `data/` and `static/downloads/` on `main`. Always sync before making local edits or pushing:

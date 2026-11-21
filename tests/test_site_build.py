@@ -747,16 +747,18 @@ def test_post_svgs_no_raw_latex_and_label_bounds(built_site: Path) -> None:
 
 
 def test_readme_synced_with_agents_md() -> None:
-    """Verify README.md documents current 5 pillars, workflows, and verification commands without obsolete claims."""
+    """Verify README.md documents the 3-item IA, workflows, and verification commands without obsolete claims."""
     readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     for required in (
-        "/about/",
+        "AGENTS.md",
+        "Work",
+        "Log",
+        "CV",
+        "/work/",
         "/posts/",
-        "/software/",
+        "/kinds/",
         "/publications/",
         "/cv/",
-        "/contact/",
-        "/search/",
         "make sync",
         "make fetch-web-stats",
         "make build",
@@ -768,6 +770,12 @@ def test_readme_synced_with_agents_md() -> None:
         assert required in readme, f"README.md missing expected reference: {required}"
 
     for obsolete in (
+        "5 Core Pillars",
+        "About (`/about/`)",
+        "Software (`/software/`)",
+        "Utilities (`/contact/`, `/search/`)",
+        "Fuse.js",
+        "for `/software/`",
         "every night at midnight",
         "Micro-post",
         "--kind micro",
@@ -776,6 +784,61 @@ def test_readme_synced_with_agents_md() -> None:
         "(requests, pyyaml)",
     ):
         assert obsolete not in readme, f"README.md still contains obsolete content: {obsolete}"
+
+
+def test_m5_agents_memory_budget_and_gemini_pointer() -> None:
+    """Verify AGENTS.md + MEMORY.md < 8,000 chars (CI-safe) and GEMINI.md is a 1-line pointer."""
+    agents_text = (REPO_ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    assert len(agents_text) <= 4500, (
+        f"AGENTS.md exceeds standalone 4500-char CI cap: {len(agents_text)} chars"
+    )
+
+    memory_path = Path.home() / ".gemini" / "antigravity-cli" / "knowledge" / "MEMORY.md"
+    if memory_path.is_file():
+        memory_text = memory_path.read_text(encoding="utf-8")
+        total_chars = len(agents_text) + len(memory_text)
+        assert total_chars < 8000, (
+            f"AGENTS.md ({len(agents_text)}) + MEMORY.md ({len(memory_text)}) = {total_chars} >= 8000 chars"
+        )
+
+    gemini_text = (REPO_ROOT / "GEMINI.md").read_text(encoding="utf-8")
+    lines = gemini_text.splitlines()
+    assert len(lines) == 1, f"GEMINI.md must be a single line, got {len(lines)} lines"
+    assert lines[0].strip() != "", "GEMINI.md single line must not be blank"
+    assert "AGENTS.md" in lines[0], f"GEMINI.md must point to AGENTS.md, got: {lines[0]!r}"
+
+
+def test_m5_agents_md_ia_and_core_rules() -> None:
+    """Verify AGENTS.md documents the new IA and retains core workflow, voice, and safety rules."""
+    agents_text = (REPO_ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    for required in (
+        "Work",
+        "Log",
+        "CV",
+        "/work/",
+        "/posts/",
+        "/kinds/",
+        "/cv/",
+        "/publications/",
+        "git fetch origin main",
+        "curated_software.yaml",
+        "gitlab.earth.bsc.es",
+        "make sync",
+        "make build",
+        "make verify",
+        "git push origin main",
+    ):
+        assert required in agents_text, f"AGENTS.md missing required reference/rule: {required}"
+
+    assert "buzzword" in agents_text.lower(), "AGENTS.md missing anti-buzzword editorial voice rule"
+
+    for obsolete in (
+        "5 Core Pillars",
+        "About (`/about/`)",
+        "Software (`/software/`)",
+        "lazy-loaded iframes",
+    ):
+        assert obsolete not in agents_text, f"AGENTS.md still contains obsolete claim: {obsolete}"
 
 
 def _hex_to_rgb(hex_str: str) -> tuple[float, float, float]:

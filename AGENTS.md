@@ -1,54 +1,39 @@
-# AGENTS.md — Agent Operating Instructions & Website Principles
+# AGENTS.md — `vlap.github.io`
 
-Operating rules, editorial voice, architecture, and workflows for `vlap.github.io` (`/home/volant/code/career/vlap.github.io`).
+Operating rules, voice, IA, and workflows for `vlap.github.io`.
 
----
+## Sync, Deploy, and Docs
 
-## Agent Instructions on Session Startup
+1. **Sync:** CI pushes to `data/` and `static/downloads/` (`.github/workflows/update_data.yml`, `vlap/cv/.github/workflows/publish_site.yml`). Run `git fetch origin main && git merge origin/main` first.
+2. **Deploy:** `.github/workflows/hugo.yml` deploys on `git push origin main`.
+3. **Boundary:** Site rules go in `AGENTS.md`; personal context goes in `~/.gemini/antigravity-cli/knowledge/MEMORY.md` (`< 8,000` chars combined).
 
-1. **Check Remote Sync:**
-   Automated CI pushes commits to `data/` and `static/downloads/` via `.github/workflows/update_data.yml` (monthly OpenAlex) and `vlap/cv/.github/workflows/publish_site.yml` (CV bundle sync). Always run `git fetch origin main` and merge (`git merge origin/main`) before editing.
-2. **Editorial Voice (Anti-Buzzword Standard):**
-   - Keep Research Log prose **conversational and peer-to-peer**, like talking to a colleague over coffee or writing a lab notebook.
-   - **Ban corporate fluff and buzzwords:** never write *"leading technical coordination at the intersection of..."*, *"pioneering schemas"*, or *"spearheading digital transformation"*.
-   - **Ground claims in real engineering:** KaTeX equations, benchmark numbers, cluster telemetry, and concrete models (ECMWF OpenIFS CY48R1.1, EC-Earth4, NEMO/PISCES, MareNostrum 5).
-   - **Explain the mission directly (do not hide behind citations):** advancing Earth system model fidelity has been slowed by escalating code and physical complexity; at BSC, AI adoption and automated verification make high-fidelity climate prediction affordable to science again.
-3. **Verify Build Determinism:** Run `make build` (`hugo --gc --minify` passes with zero warnings or template errors).
-4. **Deploy to GitHub Pages:** GitHub Pages deploys via `.github/workflows/hugo.yml` on every **`git push origin main`**. Always verify pushes hit `origin/main`.
-5. **Continuous Docs:** Record new site patterns in `AGENTS.md` and personal context in `~/.gemini/antigravity-cli/knowledge/MEMORY.md`.
+## Editorial Voice
 
----
+- Write Research Log prose in a conversational, peer-to-peer lab-notebook voice.
+- Ban corporate buzzwords: never write *"leading technical coordination at the intersection of..."*, *"pioneering schemas"*, or *"spearheading digital transformation"*.
+- Ground claims in KaTeX math, benchmarks, telemetry, `OpenIFS CY48R1.1`, `EC-Earth4`, `NEMO/PISCES`, `MareNostrum 5`.
+- State the mission directly: model complexity slowed progress; AI tools and automated verification make climate prediction affordable again.
 
-## Site Architecture & Content Standards
+## Site IA and Chrome
 
-### 1. The 5 Core Pillars
-- **About (`/about/`):** Personal overview, technical pillars, and tech stack.
-- **Log (`/posts/`):** Deep dives (`cover:` diagram, `ShowToc: true`, `TocOpen: false`) and Lab Notes (`tags: ["lab-note"]`, `draft: true`, `150–400` words, optional `.png` via global `publish-note` skill). Never auto-generate empty publication micro-posts.
-- **Software (`/software/`):** Curated public tools, CFD solvers, metadata catalogs, and simulation videos.
-- **Publications (`/publications/`):** Counter-chronological filterable feed (year, month).
-- **CV (`/cv/`):** Direct PDF downloads and dynamic timeline rendered by `layouts/shortcodes/cv_timeline.html` from `data/experience.yaml`.
+- **Nav & Footer:** Menu: `Work`, `Log`, `CV`. Footer: email, GitHub, LinkedIn, Scholar, ORCID, RSS.
+- **Home (`/`):** Photo, name, tagline, `profile.yaml` bio + focus (bio only here), 3 links (`Collaborate`->`/work/`, `Hiring`->`/cv/`, `Read`->`/posts/`), `Latest from the Log` (<= 3 items with kind labels when `>= 2` published).
+- **Work (`/work/`):** Intro, current projects, `curated_software.yaml` cards (1 sentence, no equations), `simulation_gallery` at bottom, 5 latest publications + `/publications/` link.
+- **Log (`/posts/`):** `kinds` (`note`, `talk`, `paper`) at `/kinds/<kind>/`, optional `linkedin:` link, `static/slides/` for new talks (external URLs for backfilled talks). Lab Notes: `tags: ["lab-note"]`, `draft: true`, `150–400` words, optional `.png` (`publish-note`). Never auto-generate empty publication micro-posts.
+- **CV (`/cv/`):** 2 PDF buttons (`vladimir-lapin-cv-research-full.pdf`, `vladimir-lapin-cv-industry.pdf`), tools line, `cv_timeline`, `cv_data` linking presentations to published `talk` posts matching `event` and `year`.
+- **Publications (`/publications/`):** Linked from Work/CV; OpenAlex metrics intro + counter-chronological filterable feed.
+- **Redirects & Chrome:** `/about/`->`/`, `/contact/`->`/`, `/software/`->`/work/`, `/archives/`->`/posts/`; `/search/` and home `JSON` removed. `ShowShareButtons=false`, `ShowReadingTime=false`, `ShowBreadCrumbs=false`, `ShowToc=false` (opt-in `ShowToc: true`), RSS on.
 
-### 2. Software & Public Footprint
-- List only public, consortium-verified repos in `data/curated_software.yaml`: `Climate Commons (cvc-commons)`, `EC-Earth4`, `Prediction Data Workflow`, `ece4-exp`, `baro_tides_fd`, `internal_tides_fd`, and `pisces-inidata` (all featured).
-- **Never** expose private BSC GitLab repos (`gitlab.earth.bsc.es`), internal cluster hosts, or personal dotfiles.
+## Public Code, Math, and UI
 
-### 3. Math, Visuals & UI Patterns
-- **KaTeX Math:** `math: true` in frontmatter; preserve `.katex-display { overflow-x: auto; }` horizontal scroll hygiene.
-- **Post Media:** Deep-dive articles require `.svg`/`.png` `cover:` diagrams in `static/images/posts/`; Lab Notes may omit or attach a sanitized `.png`.
-- **Video Facades:** `/software/` embeds use lightweight `sim-facade` posters with lazy-loaded iframes on click.
-- **1-Click Citations & Print Hygiene:** Publications provide instant BibTeX copy (`copyBibTeX`); `@media print` formats `/cv/` and `/publications/` cleanly without site chrome.
+- Only public consortium-verified repos in `data/curated_software.yaml`: `cvc-commons`, `EC-Earth4`, `Prediction Data Workflow`, `ece4-exp`, `baro_tides_fd`, `internal_tides_fd`, `pisces-inidata`. Never expose `gitlab.earth.bsc.es`, internal hosts, or dotfiles.
+- Keep `math: true` KaTeX scroll, `static/images/posts/` `cover:` diagrams, `button.sim-facade` `<video>` (`replaceChildren`), `copyBibTeX`, and `@media print` on `/cv/` and `/publications/`.
 
----
+## Build, Verify, and CI
 
-## Maintenance & Build Workflows
-
-### 1. Data Sync & Local Build
-- `make sync`: Runs `$(CV_DIR)/tex/scripts/export_site_bundle.py --site-dir .` (`CV_DIR ?= ../cv`, `/home/volant/code/career/cv`) and `scripts/update_stats.py` to refresh sanitized `data/{publications,trainings,presentations,experience,profile}.yaml` and `static/downloads/*.pdf`.
-- `make fetch-web-stats`: Runs `scripts/fetch_openalex.py` and `scripts/update_stats.py` to update `data/scholar_stats.yaml`.
-- `make build` / `make serve`: Builds site (`hugo --gc --minify`) or starts local preview at `http://localhost:1313`.
-- `make verify` (`build-site`, `test`, `test-browser`, `scan`): Runs the Hugo build, `pytest` DOM/CSS/SRI checks, headless Chromium E2E tests, and `modern-web-guidance` first-party scan. See `docs/testing-and-evaluation.md` for evaluation criteria and SRI maintenance.
-
-### 2. GitHub Actions Automation
-- `.github/workflows/hugo.yml`: Builds and deploys to GitHub Pages on `push` to `main` and via `workflow_call`.
-- `.github/workflows/update_data.yml`: Monthly cron (`0 3 1 * *`) running `scripts/fetch_openalex.py` + `scripts/update_stats.py`, staging only `data/scholar_stats.yaml` and `data/stats.yaml`, and triggering `hugo.yml` via `workflow_call`.
-- `vlap/cv/.github/workflows/publish_site.yml`: One-way deploy-key sync pushing updated CV YAML and PDFs from `/home/volant/code/career/cv`.
+- `make sync`: `$(CV_DIR)/tex/scripts/export_site_bundle.py --site-dir .` (`CV_DIR ?= ../cv`) + `scripts/update_stats.py` (`data/{publications,trainings,presentations,experience,profile}.yaml`, `static/downloads/*.pdf`).
+- `make fetch-web-stats`: updates `data/scholar_stats.yaml`, `data/stats.yaml`.
+- `make build` / `make build-site`: `hugo --gc --minify --cleanDestinationDir` (zero warnings). `make serve`: `http://localhost:1313`.
+- `make verify`: `build-site`, `test`, `test-browser`, `scan` (`docs/testing-and-evaluation.md`).
+- CI: `.github/workflows/hugo.yml`, `.github/workflows/update_data.yml`, `vlap/cv/.github/workflows/publish_site.yml`.
