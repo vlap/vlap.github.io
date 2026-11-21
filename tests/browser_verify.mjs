@@ -1221,17 +1221,75 @@ describe("vlap.github.io headless browser verification", () => {
     );
   });
 
-  it("applies modern CSS polish (68ch measure, text-wrap, scroll reading progress, and @view-transition) while respecting reduced motion", async () => {
+  it("preserves centered 720px alignment, clean pill links, modern CSS polish, and reduced motion", async () => {
     await cdp.send("Emulation.setDeviceMetricsOverride", {
       width: 1280,
       height: 800,
       deviceScaleFactor: 1,
       mobile: false,
     });
+
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/`);
+    const homeAlign = await cdp.eval(`(() => {
+      const m = document.querySelector('.main')?.getBoundingClientRect();
+      const hi = document.querySelector('.home-info')?.getBoundingClientRect();
+      const hp = document.querySelector('.home-posts')?.getBoundingClientRect();
+      const img = document.querySelector('.home-info-image img')?.getBoundingClientRect();
+      const h1 = document.querySelector('.home-info h1');
+      const range = document.createRange();
+      const textNode = [...(h1?.childNodes || [])].find((n) => n.nodeType === Node.TEXT_NODE && n.nodeValue.trim());
+      if (textNode) range.selectNodeContents(textNode);
+      const nameRect = textNode ? range.getBoundingClientRect() : h1?.getBoundingClientRect();
+      return {
+        clientWidth: document.documentElement.clientWidth,
+        mainWidth: m?.width || 0,
+        mainCenterX: m ? m.left + m.width / 2 : 0,
+        homeInfoLeft: hi?.left || 0,
+        homeInfoRight: hi?.right || 0,
+        homePostsLeft: hp?.left || 0,
+        homePostsRight: hp?.right || 0,
+        imgCenterX: img ? img.left + img.width / 2 : 0,
+        nameCenterX: nameRect ? nameRect.left + nameRect.width / 2 : 0,
+      };
+    })()`);
+    assert.ok(homeAlign.mainWidth <= 780, `Expected centered .main width <= 780px, got ${homeAlign.mainWidth}`);
+    assert.ok(Math.abs(homeAlign.mainCenterX - homeAlign.clientWidth / 2) <= 4);
+    assert.ok(Math.abs(homeAlign.homeInfoLeft - homeAlign.homePostsLeft) <= 2);
+    assert.ok(Math.abs(homeAlign.homeInfoRight - homeAlign.homePostsRight) <= 2);
+    assert.ok(Math.abs(homeAlign.imgCenterX - homeAlign.nameCenterX) <= 4);
+
+    for (const staticRoute of ["/about/", "/software/", "/publications/", "/cv/", "/contact/"]) {
+      await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}${staticRoute}`);
+      const hasMeta = await cdp.eval(`Boolean(document.querySelector('.post-meta'))`);
+      assert.equal(hasMeta, false, `Unexpected .post-meta on static portfolio route ${staticRoute}`);
+    }
+
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/cv/`);
+    const compactGap = await cdp.eval(`Boolean(document.querySelector('.cv-entry-compact'))`);
+    assert.equal(compactGap, true, "Expected .cv-entry-compact on Career Break entry");
+
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/publications/`);
+    const pubLinksClean = await cdp.eval(`(() => {
+      const pill = document.querySelector('.pub-year-pill');
+      const badge = document.querySelector('.pub-badge-btn');
+      return {
+        pillBoxShadow: pill ? getComputedStyle(pill).boxShadow : null,
+        pillTextDeco: pill ? getComputedStyle(pill).textDecorationLine : null,
+        badgeBoxShadow: badge ? getComputedStyle(badge).boxShadow : null,
+        badgeTextDeco: badge ? getComputedStyle(badge).textDecorationLine : null,
+      };
+    })()`);
+    assert.equal(pubLinksClean.pillBoxShadow, "none");
+    assert.equal(pubLinksClean.pillTextDeco, "none");
+    assert.equal(pubLinksClean.badgeBoxShadow, "none");
+    assert.equal(pubLinksClean.badgeTextDeco, "none");
+
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/posts/2026-09-24-openifs-mass-conservation-stochastic-rounding/`);
     const polish = await cdp.eval(`(() => {
+      const m = document.querySelector('.main')?.getBoundingClientRect();
       const h1 = document.querySelector('h1.post-title');
       const pc = document.querySelector('.post-content');
+      const h2 = document.querySelector('.post-content > h2');
       const proseP = [...document.querySelectorAll('.post-content > p')].find((el) => !el.querySelector('img'));
       const figImg = document.querySelector('.entry-cover img[src*="co2_90day_mass_budget_tracking.png"]');
       const dupInline = document.querySelector('.post-content img[src*="co2_90day_mass_budget_tracking.png"]');
@@ -1253,10 +1311,11 @@ describe("vlap.github.io headless browser verification", () => {
         } catch {}
       }
       return {
+        mainWidth: m?.width || 0,
         h1Wrap: h1Style.textWrap,
         pWrap: pStyle.textWrap,
-        pMaxWidthPx: parseFloat(pStyle.maxWidth),
-        pFontSizePx: parseFloat(pStyle.fontSize),
+        pWidth: proseP?.getBoundingClientRect().width || 0,
+        h2Width: h2?.getBoundingClientRect().width || 0,
         postContentWidth: pc?.getBoundingClientRect().width || 0,
         co2ImgComplete: Boolean(figImg?.complete && figImg?.naturalWidth > 0),
         co2ImgWidth: figImg?.getBoundingClientRect().width || 0,
@@ -1267,17 +1326,19 @@ describe("vlap.github.io headless browser verification", () => {
         hasViewTransition,
       };
     })()`);
+    assert.ok(polish.mainWidth <= 780, `Expected .main <= 780px on post, got ${polish.mainWidth}`);
     assert.equal(polish.h1Wrap, "balance");
     assert.equal(polish.pWrap, "pretty");
-    assert.ok(polish.pMaxWidthPx > 0 && polish.pMaxWidthPx <= 68 * polish.pFontSizePx, (
-      `Expected .post-content p maxWidth <= 68em (${68 * polish.pFontSizePx}px), got ${polish.pMaxWidthPx}px`
-    ));
+    assert.ok(
+      Math.abs(polish.pWidth - polish.postContentWidth) <= 4,
+      `Expected paragraph width (${polish.pWidth}px) to align with .post-content (${polish.postContentWidth}px)`,
+    );
+    assert.ok(
+      Math.abs(polish.h2Width - polish.postContentWidth) <= 4,
+      `Expected h2 width (${polish.h2Width}px) to align with .post-content (${polish.postContentWidth}px)`,
+    );
     assert.equal(polish.co2ImgComplete, true, "Expected co2_90day_mass_budget_tracking.png cover image to load");
     assert.equal(polish.hasDupInline, false, "Duplicate inline co2_90day_mass_budget_tracking.png must be removed");
-    assert.ok(
-      polish.co2ImgWidth > polish.pMaxWidthPx,
-      `Expected co2_90day_mass_budget_tracking.png width (${polish.co2ImgWidth}px) > 68ch prose cap (${polish.pMaxWidthPx}px)`,
-    );
     assert.ok(
       Math.abs(polish.co2ImgWidth - polish.postContentWidth) <= 4,
       `Expected co2_90day_mass_budget_tracking.png width (${polish.co2ImgWidth}px) to match .post-content (${polish.postContentWidth}px)`,
@@ -1290,7 +1351,6 @@ describe("vlap.github.io headless browser verification", () => {
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/posts/2026-06-15-neural-surrogates-shallow-water-equations/`);
     const sweFigures = await cdp.eval(`(async () => {
       const pc = document.querySelector('.post-content');
-      const proseP = [...document.querySelectorAll('.post-content > p')].find((el) => !el.querySelector('img'));
       const flowersImg = document.querySelector('.post-content img[src*="flowers_warpfield.png"]');
       const svgImg = document.querySelector('.post-content img[src*="neural_surrogate_swe_rollout.svg"]');
       for (const img of [flowersImg, svgImg]) {
@@ -1307,31 +1367,22 @@ describe("vlap.github.io headless browser verification", () => {
       await new Promise((r) => setTimeout(r, 50));
       return {
         postContentWidth: pc?.getBoundingClientRect().width || 0,
-        pMaxWidthPx: proseP ? parseFloat(getComputedStyle(proseP).maxWidth) : 0,
         flowersComplete: Boolean(flowersImg?.complete && flowersImg?.naturalWidth > 0),
         flowersWidth: flowersImg?.getBoundingClientRect().width || 0,
-        flowersParentMaxWidth: flowersImg ? getComputedStyle(flowersImg.parentElement).maxWidth : null,
         svgComplete: Boolean(svgImg?.complete && svgImg?.naturalWidth > 0),
         svgWidth: svgImg?.getBoundingClientRect().width || 0,
-        svgParentMaxWidth: svgImg ? getComputedStyle(svgImg.parentElement).maxWidth : null,
       };
     })()`);
     assert.equal(sweFigures.flowersComplete, true, "Expected flowers_warpfield.png to load");
     assert.ok(
-      sweFigures.flowersWidth > sweFigures.pMaxWidthPx,
-      `Expected flowers_warpfield.png width (${sweFigures.flowersWidth}px) > 68ch (${sweFigures.pMaxWidthPx}px)`,
-    );
-    assert.ok(
-      Math.abs(sweFigures.flowersWidth - sweFigures.postContentWidth) <= 2,
+      Math.abs(sweFigures.flowersWidth - sweFigures.postContentWidth) <= 4,
       `Expected flowers_warpfield.png width (${sweFigures.flowersWidth}px) to match .post-content (${sweFigures.postContentWidth}px)`,
     );
-    assert.equal(sweFigures.flowersParentMaxWidth, "100%");
     assert.equal(sweFigures.svgComplete, true, "Expected neural_surrogate_swe_rollout.svg to load");
     assert.ok(
-      Math.abs(sweFigures.svgWidth - sweFigures.postContentWidth) <= 2,
+      Math.abs(sweFigures.svgWidth - sweFigures.postContentWidth) <= 4,
       `Expected neural_surrogate_swe_rollout.svg width (${sweFigures.svgWidth}px) to match .post-content (${sweFigures.postContentWidth}px)`,
     );
-    assert.equal(sweFigures.svgParentMaxWidth, "100%");
 
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/posts/2026-09-24-openifs-mass-conservation-stochastic-rounding/`);
 

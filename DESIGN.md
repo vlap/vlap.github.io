@@ -24,19 +24,19 @@ colors:
   code-surface-dark: "#37383e"
 typography:
   display:
-    fontFamily: 'Georgia, "Times New Roman", Times, serif'
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
     fontSize: "2.2rem"
     fontWeight: 700
     lineHeight: 1.2
     letterSpacing: "0em"
   headline:
-    fontFamily: 'Georgia, "Times New Roman", Times, serif'
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
     fontSize: "1.6rem"
     fontWeight: 700
     lineHeight: 1.2
     letterSpacing: "0em"
   title:
-    fontFamily: 'Georgia, "Times New Roman", Times, serif'
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
     fontSize: "1.25rem"
     fontWeight: 600
     lineHeight: 1.3
@@ -104,12 +104,12 @@ components:
 
 **Creative North Star: "The Applied Mathematician's Monograph & Lab Notebook"**
 
-This design system unifies classical applied-mathematics publishing with modern engineering precision. Long-form technical articles, KaTeX derivations, Fortran kernels, and fluid-dynamics visualizations occupy calm, uncluttered columns anchored by crisp serif section headings and hairline pine dividers carried forward from the legacy "Save The Earth" site.
+This design system unifies technical research depth with minimalist engineering restraint. Long-form technical articles, KaTeX derivations, Fortran kernels, and fluid-dynamics visualizations occupy one aligned `720px` centered column anchored by crisp sans-serif headings and hairline dividers.
 
-Color and motion stay strictly subordinate to reading comprehension and operational speed. Neutrals carry the canvas and card geometry, while deep pine and ocean accents mark interactive links, selections, active states, and structural rules across both light and dark modes.
+Color and motion stay strictly subordinate to reading comprehension and operational speed. Neutrals carry the canvas and card geometry, while deep pine and ocean accents mark interactive links, selections, blockquote hairlines, active states, and structural highlights across both light and dark modes.
 
 **Key Characteristics:**
-- **Editorial Authority:** Georgia serif headings paired with hairline mid-pine bottom rules and a strict 68ch prose reading measure.
+- **Editorial Clarity:** Uniform sans-serif headings paired with calm hairline section dividers (`--border`) and a centered `720px` (`~66ch`) column.
 - **Flat Tactility:** Crisp 1px borders without resting ambient shadows or colored glow halos.
 - **Heritage Accents:** Deep pine and ocean ink tokens adapted explicitly for light and dark surfaces at >= 4.5:1 WCAG AA contrast.
 - **Operational Restraint:** Progressive `<details>` disclosures, instant CSS Highlights filtering, and lightweight local video facades.
@@ -120,7 +120,7 @@ The palette pairs neutral PaperMod paper and charcoal surfaces with a restrained
 
 ### Primary
 - **Deep Pine** (`#203931` light / `#6ee7b7` dark): Used for `::selection` highlights, native `accent-color` controls, interactive hover fills on primary links/play icons, and focus indicators.
-- **Mid Pine** (`#3E7060`): Used as the 1px structural hairline rule under section headings, blockquote hairlines, link underline decoration, and interactive card hover borders.
+- **Mid Pine** (`#3E7060`): Used as the 1px left blockquote rule, link underline decoration, and interactive card hover borders.
 
 ### Secondary
 - **Deep Ocean** (`#09434e` light / `#7dd3fc` dark): Used for inline prose hyperlinks and scholarly cross-references so links read distinctly from body copy without harsh neon saturation.
@@ -141,21 +141,21 @@ The palette pairs neutral PaperMod paper and charcoal surfaces with a restrained
 
 ## Typography
 
-**Display Font:** `Georgia, "Times New Roman", Times, serif` for `h1`, `h2`, and `.post-title`.
+**Display Font:** System UI sans (`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif`) for `h1`, `h2`, `.post-title`, and section titles.
 **Body Font:** System UI sans (`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif`) for body prose, navigation, and dense card titles.
 **Label/Mono Font:** System monospace (`ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace`) for Fortran/Python code listings, BibTeX records, and license pills.
 
-**Character:** Serif headings lend monograph gravitas to theoretical sections while crisp system sans keeps multi-column grids, CV dates, and mobile viewports effortless to scan.
+**Character:** Uniform system sans-serif keeps articles, publication feeds, and `/cv/` timelines clean, minimal, and fast to scan without extra webfont overhead.
 
 ### Hierarchy
 - **Display** (700, `2.2rem`, `1.2`): Homepage hero heading and page titles with `text-wrap: balance`.
-- **Headline** (700, `1.6rem`, `1.2`): Major article and section `h2` headings, underlined with a 1px mid-pine rule (`0.35rem` bottom padding).
+- **Headline** (700, `1.6rem`, `1.2`): Major article and section `h2` headings, underlined with a 1px `--border` rule (`0.35rem` bottom padding).
 - **Title** (600, `1.25rem`, `1.3`): Subsection `h3` headings and card titles (borderless inside cards and `.cv-item-title`).
-- **Body** (400, `1.125rem`, `1.6`): Long-form prose capped at `68ch` with `text-wrap: pretty` and `0.18em` link underline offset.
+- **Body** (400, `1.125rem`, `1.6`): Long-form prose filling the centered `720px` (`~66ch`) reading column with `text-wrap: pretty` and `0.18em` link underline offset.
 - **Label** (600, `0.75rem`, `1.4`, `0.02em`): Compact metadata pills, skill tags, and `tabular-nums` badges/metrics/table cells.
 
 ### Named Rules
-**The 68ch Monograph Measure Rule.** Constrain `.post-content p` and `.post-content li` to `68ch` for comfortable reading while exempting image-bearing paragraphs and `<figure>` blocks at `100%` container width.
+**The Unified Column Measure Rule.** Keep `.main` centered at `max-width: calc(var(--main-width) + var(--gap) * 2)` (`720px` content column) so headings, prose paragraphs, rules, figures, and `/cv/` entries share exact left and right edges without desktop voids.
 **The Tabular Numerals Rule.** Apply `font-variant-numeric: tabular-nums` on `.metric-value`, `.pub-year-pill`, `.cv-date-badge`, and `table td` so numeric benchmarks and CV dates align cleanly.
 
 ## Layout
@@ -209,7 +209,7 @@ Controls feel tactile, keyboard-obvious, and strictly utilitarian without decora
 ### Do:
 - **Do** use `--accent-pine` (`#203931` / `#6ee7b7`) and `--accent-ocean` (`#09434e` / `#7dd3fc`) for structural hairlines, prose links, selections, and interactive emphasis.
 - **Do** keep all cards flat (`1px solid var(--border)`, `box-shadow: none`) and use `var(--primary)` for text on `--tertiary` pills.
-- **Do** preserve `Georgia` serif display headings with `1px solid var(--accent-pine-mid)` bottom hairlines on section `h2`s while keeping card titles borderless.
+- **Do** preserve sans-serif display headings with clean `1px solid var(--border)` hairlines on section `h2`s and align all content inside PaperMod's centered `720px` column.
 - **Do** declare explicit dimensions (`width`/`height`) on media, `tabular-nums` on numeric badges/tables, and `beforeprint`/`@media print` expansion on `<details>`.
 
 ### Don't:

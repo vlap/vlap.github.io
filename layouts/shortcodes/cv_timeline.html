@@ -2,7 +2,7 @@
 {{- $entries := index hugo.Data.experience $section -}}
 <div class="cv-timeline">
   {{- range $entries }}
-  <div class="cv-entry">
+  <div class="cv-entry{{ if and (not .institution) (not .bullets) }} cv-entry-compact{{ end }}">
     <div class="cv-entry-header">
       <h3 class="cv-entry-title">{{ .title }}</h3>
       <span class="cv-date-badge">{{ .dates }}</span>

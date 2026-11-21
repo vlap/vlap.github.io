@@ -1,7 +1,7 @@
 ---
 title: "Software & Projects"
-date: 2026-05-04
 draft: false
+hideMeta: true
 math: true
 cover:
     image: "images/decor/photos/photo4.jpg"

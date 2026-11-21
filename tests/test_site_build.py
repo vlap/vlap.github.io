@@ -857,6 +857,20 @@ def test_cv_no_duplicate_post_entries_and_three_pdf_buttons(built_site: Path) ->
     assert pres_soup.select("details.cv-section-details") == []
     assert len(pres_soup.select(".cv-item")) == 21
 
+    # Verify compact timeline styling for institution/bullet-less entries (Career Break)
+    assert len(cv_soup.select(".cv-entry-compact")) == 1
+
+    # Verify static portfolio pages omit blog date/reading-time .post-meta
+    for rel in (
+        "about/index.html",
+        "software/index.html",
+        "publications/index.html",
+        "cv/index.html",
+        "contact/index.html",
+    ):
+        page_soup = BeautifulSoup((built_site / rel).read_text(encoding="utf-8"), "lxml")
+        assert page_soup.select_one(".post-meta") is None, f"Unexpected .post-meta on static page {rel}"
+
 
 def test_css_contrast_tokens_and_modern_polish(built_stylesheet: str) -> None:
     """Verify Idea 2A contrast tokens/overrides, Idea 2B overflow rules, and Idea 3B modern CSS polish."""
@@ -919,16 +933,38 @@ def test_css_contrast_tokens_and_modern_polish(built_stylesheet: str) -> None:
     post_tags_rules = _find_qualified_rules(rules, lambda p: ".post-tags a" in p)
     assert any("color:var(--primary)" in c.replace(" ", "") for _, c in post_tags_rules)
 
-    # Idea 2B overflow containment rules
+    # Centered column preservation + mobile overflow containment rules
+    assert "Georgia" not in built_stylesheet, "Display headings should keep system sans-serif stack"
+    assert "max-width:68ch" not in built_stylesheet.replace(" ", ""), "Remove lopsided 68ch cap inside 720px column"
+
+    main_rules = _find_qualified_rules(rules, lambda p: p == ".main")
+    assert main_rules, "Missing .main containment rule"
+    main_css = ";".join(c for _, c in main_rules).replace(" ", "")
+    assert "width:100%" in main_css
+    assert "min-width:0" in main_css
+    assert "max-width:100%" not in main_css, ".main must keep PaperMod centered max-width"
+
     overflow_container_rules = _find_qualified_rules(
         rules,
-        lambda p: ".main" in p and ".post-single" in p and ".post-content" in p,
+        lambda p: ".post-single" in p and ".post-content" in p and ".main" not in p,
     )
-    assert overflow_container_rules, "Missing .main, .post-single, .post-content overflow containment rule"
+    assert overflow_container_rules, "Missing .post-single, .post-content overflow containment rule"
     oc_css = ";".join(c for _, c in overflow_container_rules).replace(" ", "")
     assert "min-width:0" in oc_css
     assert "max-width:100%" in oc_css
     assert "overflow-wrap:break-word" in oc_css
+
+    timeline_rules = _find_qualified_rules(rules, lambda p: p == ".cv-timeline")
+    assert timeline_rules
+    assert "border-left:1pxsolidvar(--tertiary)" in ";".join(c for _, c in timeline_rules).replace(" ", "")
+
+    assert _find_qualified_rules(rules, lambda p: p == ".cv-entry-compact")
+    pill_reset_rules = _find_qualified_rules(
+        rules,
+        lambda p: ".post-content a.pub-year-pill" in p and ".post-content a.pub-badge-btn" in p,
+    )
+    assert pill_reset_rules
+    assert "box-shadow:none" in pill_reset_rules[0][1].replace(" ", "")
 
     table_rules = _find_qualified_rules(rules, lambda p: p == ".post-content table")
     assert table_rules
@@ -976,23 +1012,6 @@ def test_css_contrast_tokens_and_modern_polish(built_stylesheet: str) -> None:
 
     pretty_rules = _find_qualified_rules(rules, lambda p: ".post-content p" in p and ".pub-card-authors" in p)
     assert any("text-wrap:pretty" in c.replace(" ", "") for _, c in pretty_rules)
-
-    measure_rules = _find_qualified_rules(rules, lambda p: p == ".post-content p,.post-content li")
-    assert any("max-width:68ch" in c.replace(" ", "") for _, c in measure_rules)
-
-    def _norm_sel(sel: str) -> str:
-        return re.sub(r"\s*([>,+~])\s*", r"\1", sel)
-
-    figure_exempt_rules = _find_qualified_rules(
-        rules,
-        lambda p: (
-            ".post-content p:has(>img)" in _norm_sel(p)
-            and ".post-content p:has(>a>img)" in _norm_sel(p)
-            and ".post-content figure" in _norm_sel(p)
-        ),
-    )
-    assert figure_exempt_rules, "Missing full-width exemption for image-bearing paragraphs and <figure>"
-    assert any("max-width:100%" in c.replace(" ", "") for _, c in figure_exempt_rules)
 
     sw_grid_rules = _find_qualified_rules(rules, lambda p: p == ".software-container")
     assert sw_grid_rules and any(

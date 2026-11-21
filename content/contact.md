@@ -1,7 +1,7 @@
 ---
 title: "Contact"
-date: 2026-05-04
 draft: false
+hideMeta: true
 ---
 
 I am always open to discussing new projects, ML/HPC opportunities, or climate science consultancy. 

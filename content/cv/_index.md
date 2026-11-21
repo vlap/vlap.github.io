@@ -1,7 +1,7 @@
 ---
 title: "Curriculum Vitae"
-date: 2026-05-04
 draft: false
+hideMeta: true
 ---
 
 <div class="cv-download-bar">

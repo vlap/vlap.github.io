@@ -1,7 +1,7 @@
 ---
 title: "Publications"
-date: 2026-05-04
 draft: false
+hideMeta: true
 showToc: false
 ---
 

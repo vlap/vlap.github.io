@@ -143,14 +143,10 @@ a {
     text-underline-offset: 0.18em;
 }
 
-h1, h2, .post-title {
-    font-family: Georgia, "Times New Roman", Times, serif;
-}
-
 .post-content h2,
 .home-posts-header h2,
 .home-section-header h2 {
-    border-bottom: 1px solid var(--accent-pine-mid);
+    border-bottom: 1px solid var(--border);
     padding-bottom: 0.35rem;
 }
 
@@ -161,6 +157,33 @@ h1, h2, .post-title {
 
 .post-content a:not(.cv-download-btn):not(.cv-nav-link):not(.cv-link):not(.pub-badge-btn):not(.pub-year-pill):not(.post-tag):not(.anchor):hover {
     color: var(--accent-pine);
+}
+
+.post-content a.pub-year-pill,
+.post-content a.pub-badge-btn,
+.post-content .pub-card-title a,
+.post-content .software-card h3 a,
+.post-content a.software-github-link,
+.post-content a.cv-nav-link,
+.post-content a.cv-download-btn,
+.post-content a.cv-link,
+.view-all-link,
+.metric-item,
+.highlight-item {
+    box-shadow: none;
+    text-decoration: none;
+}
+
+.post-content .pub-card-title a,
+.post-content .software-card h3 a {
+    color: var(--primary);
+}
+
+.post-content .pub-card-title a:hover,
+.post-content .software-card h3 a:hover,
+.post-content a.cv-link:hover {
+    color: var(--accent-pine);
+    text-decoration: underline;
 }
 
 .metric-value,
@@ -234,6 +257,12 @@ table td {
     opacity: 0.85;
 }
 
+@media (min-width: 601px) {
+    .home-symbol-icon {
+        margin-right: -43px;
+    }
+}
+
 [data-theme="dark"] .home-symbol-icon {
     filter: invert(0.88);
 }
@@ -250,15 +279,10 @@ table td {
     color: var(--secondary);
     margin: -10px auto 22px auto;
     text-align: center;
-    max-width: 900px;
-    line-height: 1.4;
+    max-width: 100%;
+    text-wrap: balance;
+    line-height: 1.45;
     letter-spacing: 0.01em;
-}
-
-@media (min-width: 860px) {
-    .home-subtitle {
-        white-space: nowrap;
-    }
 }
 
 .home-info .entry-content {
@@ -394,7 +418,7 @@ table td {
 /* Software & Tools Improvements */
 .md-content h2 {
     margin-top: 2em;
-    border-bottom: 1px solid var(--accent-pine-mid);
+    border-bottom: 1px solid var(--border);
     padding-bottom: 0.35rem;
 }
 
@@ -405,13 +429,11 @@ table td {
 
 .md-content blockquote,
 .post-content blockquote {
-    margin: 1.5rem 0;
-    padding: 0.75rem 1.25rem;
+    margin: 1.25rem 0;
+    padding: 0.25rem 0 0.25rem 1rem;
     background: transparent;
-    border-top: 1px solid var(--accent-pine-mid);
-    border-bottom: 1px solid var(--accent-pine-mid);
-    border-left: 0;
-    border-right: 0;
+    border: 0;
+    border-left: 1px solid var(--accent-pine-mid);
     border-radius: 0;
     font-style: italic;
     color: var(--content);
@@ -1025,6 +1047,7 @@ table td {
 
 .cv-download-btn {
     display: inline-flex;
+    flex: 1 1 210px;
     align-items: center;
     gap: 10px;
     min-height: 44px;
@@ -1100,7 +1123,7 @@ table td {
 /* Vertical Timeline Structure */
 .cv-timeline {
     position: relative;
-    border-left: 2px solid var(--border);
+    border-left: 1px solid var(--tertiary);
     margin: 1.5rem 0 2.5rem 0.5rem;
     padding-left: 1.5rem;
 }
@@ -1113,13 +1136,32 @@ table td {
 .cv-entry::before {
     content: "";
     position: absolute;
-    left: calc(-1.5rem - 6px);
+    left: calc(-1.5rem - 5.5px);
     top: 6px;
     width: 10px;
     height: 10px;
     border-radius: 50%;
     background: var(--primary);
     border: 2px solid var(--theme);
+}
+
+.cv-entry-compact {
+    margin-bottom: 1.5rem;
+}
+
+.cv-entry-compact::before {
+    width: 8px;
+    height: 8px;
+    left: calc(-1.5rem - 4.5px);
+    top: 7px;
+    background: var(--theme);
+    border: 2px solid var(--secondary);
+}
+
+.cv-entry-compact .cv-entry-title {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--secondary);
 }
 
 .cv-entry-header {
@@ -1762,7 +1804,12 @@ details.toc a:hover {
    Mobile Overflow & KaTeX Equations Hygiene (Idea 2B)
    ========================================================================== */
 
-.main,
+.main {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
 .post-single,
 .post-content {
     min-width: 0;
@@ -1840,12 +1887,6 @@ h1, h2, h3, .post-title, .pub-card-title {
 
 .post-content p,
 .post-content li {
-    max-width: 68ch;
-}
-
-.post-content p:has(> img),
-.post-content p:has(> a > img),
-.post-content figure {
     max-width: 100%;
 }
 

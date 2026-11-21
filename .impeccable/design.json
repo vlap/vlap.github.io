@@ -126,10 +126,10 @@
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Hero <h1> and page titles in Georgia serif." },
-      "headline": { "displayName": "Headline", "purpose": "Section <h2> headings with 1px mid-pine bottom rule." },
+      "display": { "displayName": "Display", "purpose": "Hero <h1> and page titles in system UI sans-serif." },
+      "headline": { "displayName": "Headline", "purpose": "Section <h2> headings with 1px hairline bottom rule." },
       "title": { "displayName": "Title", "purpose": "Subsection <h3> headings and card headers." },
-      "body": { "displayName": "Body", "purpose": "Long-form technical reading prose capped at 68ch." },
+      "body": { "displayName": "Body", "purpose": "Long-form technical reading prose inside the centered 720px column." },
       "label": { "displayName": "Label", "purpose": "Metadata badges, pills, and tabular metrics." },
       "mono": { "displayName": "Monospace", "purpose": "Fortran/Python code listings, BibTeX, and licenses." }
     },
@@ -199,9 +199,9 @@
   ],
   "narrative": {
     "northStar": "The Applied Mathematician's Monograph & Lab Notebook",
-    "overview": "This design system unifies classical applied-mathematics publishing with modern engineering precision. Long-form technical articles, KaTeX derivations, Fortran kernels, and fluid-dynamics visualizations occupy calm, uncluttered columns anchored by crisp serif section headings and hairline pine dividers carried forward from the legacy \"Save The Earth\" site.\n\nColor and motion stay strictly subordinate to reading comprehension and operational speed. Neutrals carry the canvas and card geometry, while deep pine and ocean accents mark interactive links, selections, active states, and structural rules across both light and dark modes.",
+    "overview": "This design system unifies technical research depth with minimalist engineering restraint. Long-form technical articles, KaTeX derivations, Fortran kernels, and fluid-dynamics visualizations occupy one aligned 720px centered column anchored by crisp sans-serif headings and hairline dividers.\n\nColor and motion stay strictly subordinate to reading comprehension and operational speed. Neutrals carry the canvas and card geometry, while deep pine and ocean accents mark interactive links, selections, blockquote hairlines, active states, and structural highlights across both light and dark modes.",
     "keyCharacteristics": [
-      "Editorial Authority: Georgia serif headings paired with hairline mid-pine bottom rules and a strict 68ch prose reading measure.",
+      "Editorial Clarity: Uniform sans-serif headings paired with calm hairline section dividers (--border) and a centered 720px (~66ch) column.",
       "Flat Tactility: Crisp 1px borders without resting ambient shadows or colored glow halos.",
       "Heritage Accents: Deep pine and ocean ink tokens adapted explicitly for light and dark surfaces at >= 4.5:1 WCAG AA contrast.",
       "Operational Restraint: Progressive <details> disclosures, instant CSS Highlights filtering, and lightweight local video facades."
@@ -218,8 +218,8 @@
         "section": "colors"
       },
       {
-        "name": "The 68ch Monograph Measure Rule",
-        "body": "Constrain .post-content p and .post-content li to 68ch for comfortable reading while exempting image-bearing paragraphs and <figure> blocks at 100% container width.",
+        "name": "The Unified Column Measure Rule",
+        "body": "Keep .main centered at max-width: calc(var(--main-width) + var(--gap) * 2) (720px content column) so headings, prose paragraphs, rules, figures, and /cv/ entries share exact left and right edges without desktop voids.",
         "section": "typography"
       },
       {
@@ -236,7 +236,7 @@
     "dos": [
       "Do use --accent-pine (#203931 / #6ee7b7) and --accent-ocean (#09434e / #7dd3fc) for structural hairlines, prose links, selections, and interactive emphasis.",
       "Do keep all cards flat (1px solid var(--border), box-shadow: none) and use var(--primary) for text on --tertiary pills.",
-      "Do preserve Georgia serif display headings with 1px solid var(--accent-pine-mid) bottom hairlines on section h2s while keeping card titles borderless.",
+      "Do preserve sans-serif display headings with clean 1px solid var(--border) hairlines on section h2s and align all content inside PaperMod's centered 720px column.",
       "Do declare explicit dimensions (width/height) on media, tabular-nums on numeric badges/tables, and beforeprint/@media print expansion on <details>."
     ],
     "donts": [

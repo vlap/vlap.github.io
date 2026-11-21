@@ -1,6 +1,7 @@
 ---
 title: "About Me"
 layout: "page"
+hideMeta: true
 ---
 
 ## Senior Research Engineer | Climate & Geophysical Models · HPC · Predictions · AI Adoption
