@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-21T12:55:00Z",
+  "generatedAt": "2026-11-21T22:36:00Z",
   "title": "Design System: vlap.github.io",
   "extensions": {
     "colorMeta": {
@@ -18,9 +18,15 @@
       },
       "accent-pine-mid": {
         "role": "primary",
-        "displayName": "Mid Pine Hairline",
+        "displayName": "Mid Pine Hairline (Light)",
         "canonical": "#3E7060",
         "tonalRamp": ["#11221c", "#1e3a31", "#2c5448", "#3e7060", "#568e7c", "#7cb09f", "#aed3c6", "#e4f2ed"]
+      },
+      "accent-pine-mid-dark": {
+        "role": "primary",
+        "displayName": "Sage Pine Hairline (Dark)",
+        "canonical": "#5aa38b",
+        "tonalRamp": ["#11221c", "#1e3a31", "#2c5448", "#3e7060", "#5aa38b", "#7cb09f", "#aed3c6", "#e4f2ed"]
       },
       "accent-ocean": {
         "role": "secondary",
@@ -44,13 +50,7 @@
         "role": "neutral",
         "displayName": "Charcoal Base",
         "canonical": "#1d1e20",
-        "tonalRamp": ["#0e0f10", "#1d1e20", "#2e2e33", "#414244", "#66676a", "#9b9c9d", "#c4c4c5", "#dadadb"]
-      },
-      "surface-dark": {
-        "role": "neutral",
-        "displayName": "Elevated Charcoal",
-        "canonical": "#2e2e33",
-        "tonalRamp": ["#161619", "#222226", "#2e2e33", "#414244", "#5c5d61", "#85868a", "#b4b5b8", "#e2e2e4"]
+        "tonalRamp": ["#0e0f10", "#1d1e20", "#2b3033", "#414244", "#66676a", "#9b9c9d", "#c4c4c5", "#dadadb"]
       },
       "ink-primary-light": {
         "role": "neutral",
@@ -78,39 +78,63 @@
       },
       "ink-secondary-light": {
         "role": "neutral",
-        "displayName": "Muted Metadata Gray",
+        "displayName": "Metadata Gray (Light)",
         "canonical": "#6c6c6c",
         "tonalRamp": ["#1e1e1e", "#383838", "#525252", "#6c6c6c", "#8a8a8a", "#acacac", "#d2d2d2", "#f2f2f2"]
       },
       "ink-secondary-dark": {
         "role": "neutral",
-        "displayName": "Muted Metadata Gray (Dark)",
+        "displayName": "Metadata Gray (Dark)",
         "canonical": "#9b9c9d",
         "tonalRamp": ["#1a1a1c", "#2d2d30", "#48494c", "#6b6c6f", "#87888a", "#9b9c9d", "#c6c7c8", "#ececed"]
       },
-      "surface-tertiary-light": {
+      "surface-pill-light": {
         "role": "neutral",
-        "displayName": "Tag Chip Fill (Light)",
-        "canonical": "#d6d6d6",
-        "tonalRamp": ["#262626", "#444444", "#666666", "#8b8b8b", "#b2b2b2", "#d6d6d6", "#eaeaea", "#f8f8f8"]
+        "displayName": "Sage Tint Pill Fill (Light)",
+        "canonical": "#eef2f0",
+        "tonalRamp": ["#202624", "#3d4743", "#5c6964", "#7d8783", "#a7b1ad", "#cfd6d3", "#eef2f0", "#f8faf9"]
       },
-      "surface-tertiary-dark": {
+      "surface-pill-dark": {
         "role": "neutral",
-        "displayName": "Tag Chip Fill (Dark)",
-        "canonical": "#414244",
-        "tonalRamp": ["#141416", "#232426", "#313234", "#414244", "#5c5d60", "#828386", "#b2b3b5", "#e3e3e4"]
+        "displayName": "Slate Pill Fill (Dark)",
+        "canonical": "#2b3033",
+        "tonalRamp": ["#111315", "#1d1e20", "#2b3033", "#363c40", "#555d61", "#7b8387", "#aeb5b8", "#e2e6e8"]
       },
-      "border-hairline-light": {
+      "surface-pill-hover-light": {
         "role": "neutral",
-        "displayName": "Light Hairline Border",
-        "canonical": "#eeeeee",
-        "tonalRamp": ["#2a2a2a", "#4a4a4a", "#6e6e6e", "#959595", "#bababa", "#d8d8d8", "#eeeeee", "#fafafa"]
+        "displayName": "Sage Tint Pill Hover (Light)",
+        "canonical": "#dfe6e3",
+        "tonalRamp": ["#1e2422", "#39423f", "#56635e", "#76827d", "#9ea9a4", "#c5cfcb", "#dfe6e3", "#f4f7f6"]
       },
-      "border-hairline-dark": {
+      "surface-pill-hover-dark": {
         "role": "neutral",
-        "displayName": "Dark Hairline Border",
-        "canonical": "#333333",
-        "tonalRamp": ["#111111", "#202020", "#333333", "#4c4c4c", "#6c6c6c", "#929292", "#bfbfbf", "#ececec"]
+        "displayName": "Slate Pill Hover (Dark)",
+        "canonical": "#363c40",
+        "tonalRamp": ["#121416", "#222629", "#2b3033", "#363c40", "#525a5f", "#798287", "#aeb6ba", "#e3e7e9"]
+      },
+      "hairline-light": {
+        "role": "neutral",
+        "displayName": "Monograph Hairline (Light)",
+        "canonical": "#e2e6e4",
+        "tonalRamp": ["#232625", "#404543", "#606764", "#848c89", "#a9b0ad", "#cbd1ce", "#e2e6e4", "#f7f8f8"]
+      },
+      "hairline-dark": {
+        "role": "neutral",
+        "displayName": "Monograph Hairline (Dark)",
+        "canonical": "#303437",
+        "tonalRamp": ["#121415", "#1e2022", "#303437", "#484d52", "#697076", "#91979c", "#bfc4c7", "#eceeef"]
+      },
+      "border-control-light": {
+        "role": "neutral",
+        "displayName": "Control Border (Light)",
+        "canonical": "#7d8783",
+        "tonalRamp": ["#1c211f", "#363e3b", "#56615d", "#7d8783", "#9ca5a1", "#bcc3c0", "#dce0de", "#f4f6f5"]
+      },
+      "border-control-dark": {
+        "role": "neutral",
+        "displayName": "Control Border (Dark)",
+        "canonical": "#757d7a",
+        "tonalRamp": ["#161918", "#2d3230", "#4b524f", "#757d7a", "#949b98", "#b5bbb8", "#d7dbd9", "#f2f4f3"]
       },
       "code-surface-light": {
         "role": "neutral",
@@ -126,124 +150,145 @@
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Hero <h1> and page titles in system UI sans-serif." },
-      "headline": { "displayName": "Headline", "purpose": "Section <h2> headings with 1px hairline bottom rule." },
-      "title": { "displayName": "Title", "purpose": "Subsection <h3> headings and card headers." },
-      "body": { "displayName": "Body", "purpose": "Long-form technical reading prose inside the centered 720px column." },
-      "label": { "displayName": "Label", "purpose": "Metadata badges, pills, and tabular metrics." },
-      "mono": { "displayName": "Monospace", "purpose": "Fortran/Python code listings, BibTeX, and licenses." }
+      "display": { "displayName": "Display", "purpose": "Fluid <h1> page titles and Home masthead name." },
+      "headline": { "displayName": "Headline", "purpose": "Fluid section <h2> headings with 1px hairline bottom rule." },
+      "title": { "displayName": "Title", "purpose": "Subsection <h3> headings, software titles, and publication titles." },
+      "body": { "displayName": "Body", "purpose": "Long-form reading prose across the unified 45rem (720px) column." },
+      "label": { "displayName": "Label", "purpose": "Compact action pills, kind badges, ISO dates, and tabular metrics." },
+      "mono": { "displayName": "Monospace", "purpose": "Fortran/Python code blocks, BibTeX records, and tool tags." }
     },
     "shadows": [
-      { "name": "flat-none", "value": "none", "purpose": "Default flat elevation on all cards, inputs, covers, and controls." }
+      { "name": "flat-none", "value": "none", "purpose": "Default flat elevation on all rows, cards, inputs, covers, and controls." }
     ],
     "motion": [
       { "name": "ease-out-expo", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Smooth non-bounce hover scaling on simulation play facade." },
-      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Standard border, color, and chevron transitions." }
+      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Standard border, background, and disclosure chevron transitions." },
+      { "name": "scroll-progress", "value": "animation-timeline: scroll(root block)", "purpose": "Top reading progress indicator on single posts under prefers-reduced-motion: no-preference." }
     ],
     "breakpoints": [
+      { "name": "xs", "value": "320px" },
       { "name": "sm", "value": "600px" },
       { "name": "md", "value": "768px" },
-      { "name": "lg", "value": "860px" },
-      { "name": "nav", "value": "1024px" }
+      { "name": "lg", "value": "1024px" }
     ]
   },
   "components": [
     {
-      "name": "Action Download Button",
+      "name": "Action Pill",
       "kind": "button",
-      "refersTo": "button-primary",
-      "description": "Flat bordered CV PDF download button with audience sublabel and 44px touch floor.",
-      "html": "<a href=\"#\" class=\"ds-btn-action\"><svg aria-hidden=\"true\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg><span>Full Research CV (PDF)</span></a>",
-      "css": ".ds-btn-action { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 10px 16px; background: var(--entry, #ffffff); border: 1px solid var(--border, #eeeeee); border-radius: 8px; color: var(--primary, #1e1e1e); font-size: 0.88rem; font-weight: 600; text-decoration: none; box-shadow: none; transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease; } .ds-btn-action:hover { background: var(--tertiary, #d6d6d6); border-color: var(--accent-pine-mid, #3E7060); transform: translateY(-2px); } .ds-btn-action:focus-visible { outline: 2px solid var(--accent-pine, #203931); outline-offset: 2px; }"
+      "refersTo": "pill-action",
+      "description": "Compact 4px-radius monospace pill used for DOI, URL, Slides, PDF, Code, and BibTeX actions.",
+      "html": "<a href=\"#\" class=\"ds-action-pill\">DOI &#8599;</a>",
+      "css": ".ds-action-pill { display: inline-flex; align-items: center; gap: 0.35rem; min-block-size: 1.85rem; padding: 0.25rem 0.6rem; border-radius: 4px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.78rem; font-weight: 600; font-variant-numeric: tabular-nums; background: var(--surface-pill, #eef2f0); color: var(--primary, #1e1e1e); border: 1px solid var(--border-control, #7d8783); text-decoration: none; box-shadow: none; transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease; } .ds-action-pill:hover { background: var(--surface-pill-hover, #dfe6e3); border-color: var(--accent-pine, #203931); color: var(--accent-pine, #203931); } .ds-action-pill:focus-visible { outline: 2px solid var(--accent-pine, #203931); outline-offset: 2px; }"
     },
     {
-      "name": "Metadata Pill Chip",
-      "kind": "chip",
-      "refersTo": "chip-badge",
-      "description": "High-contrast pill chip using primary ink on tertiary surface fill.",
-      "html": "<span class=\"ds-chip-pill\">OpenIFS CY48R1.1</span>",
-      "css": ".ds-chip-pill { display: inline-block; font-size: 0.75rem; font-weight: 600; padding: 2px 10px; border-radius: 12px; background: var(--tertiary, #d6d6d6); color: var(--primary, #1e1e1e); border: 1px solid var(--border, #eeeeee); font-variant-numeric: tabular-nums; }"
+      "name": "Primary Action Pill",
+      "kind": "button",
+      "refersTo": "pill-action-primary",
+      "description": "High-emphasis pine pill for primary calls to action such as Talk page links and featured badges.",
+      "html": "<a href=\"#\" class=\"ds-action-pill-primary\">Talk page &rarr;</a>",
+      "css": ".ds-action-pill-primary { display: inline-flex; align-items: center; gap: 0.35rem; min-block-size: 1.85rem; padding: 0.25rem 0.6rem; border-radius: 4px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.78rem; font-weight: 600; background: var(--accent-pine, #203931); color: var(--theme, #ffffff); border: 1px solid var(--accent-pine, #203931); text-decoration: none; transition: opacity 0.15s ease; } .ds-action-pill-primary:hover { opacity: 0.92; } .ds-action-pill-primary:focus-visible { outline: 2px solid var(--accent-pine, #203931); outline-offset: 2px; }"
     },
     {
-      "name": "Flat Monograph Card",
+      "name": "CV PDF Download Button",
+      "kind": "button",
+      "refersTo": "button-cv-download",
+      "description": "Flat 4px-radius download tile with audience sublabel and explicit monospace format badge.",
+      "html": "<a href=\"#\" class=\"ds-cv-btn\"><span class=\"ds-cv-text\"><span class=\"ds-cv-title\">Industry CV (PDF)</span><span class=\"ds-cv-sub\">2-page HPC &amp; AI systems summary</span></span><span class=\"ds-cv-badge\">2-page &middot; PDF</span></a>",
+      "css": ".ds-cv-btn { display: inline-flex; align-items: center; gap: 0.75rem; min-height: 44px; padding: 0.75rem 0.9rem; background: var(--theme, #ffffff); border: 1px solid var(--accent-pine, #203931); border-radius: 4px; color: var(--primary, #1e1e1e); text-decoration: none; transition: background-color 0.15s ease; } .ds-cv-btn:hover { background: var(--surface-pill, #eef2f0); } .ds-cv-btn:focus-visible { outline: 2px solid var(--accent-pine, #203931); outline-offset: 2px; } .ds-cv-text { display: flex; flex-direction: column; gap: 2px; flex: 1 1 auto; } .ds-cv-title { font-size: 0.88rem; font-weight: 600; } .ds-cv-sub { font-size: 0.78rem; color: var(--content, #1f1f1f); } .ds-cv-badge { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.72rem; font-weight: 600; padding: 0.15rem 0.45rem; border-radius: 4px; background: var(--accent-pine, #203931); color: var(--theme, #ffffff); white-space: nowrap; }"
+    },
+    {
+      "name": "Ruled Monograph Row",
       "kind": "card",
-      "refersTo": "card-flat",
-      "description": "Flat 1px-bordered card container without ambient shadows or colored glows.",
-      "html": "<article class=\"ds-card-flat\"><h3>Climate Commons</h3><p>Schema-validated workflows for Earth system prediction.</p></article>",
-      "css": ".ds-card-flat { background: var(--entry, #ffffff); border: 1px solid var(--border, #eeeeee); border-radius: 8px; padding: 20px; color: var(--primary, #1e1e1e); box-shadow: none; transition: transform 0.2s ease, border-color 0.2s ease; } .ds-card-flat:hover { transform: translateY(-2px); border-color: var(--accent-pine-mid, #3E7060); } .ds-card-flat h3 { margin: 0 0 8px 0; font-size: 1.1rem; } .ds-card-flat p { margin: 0; font-size: 0.9rem; color: var(--secondary, #6c6c6c); }"
+      "refersTo": "row-monograph",
+      "description": "Hairline-separated two-column Log row pairing tabular ISO dates and kind badges with title and summary.",
+      "html": "<article class=\"ds-log-row\"><div class=\"ds-log-meta\"><time class=\"ds-log-date\">2026-06-15</time><span class=\"ds-kind-badge\">note</span></div><div class=\"ds-log-body\"><h3 class=\"ds-log-title\"><a href=\"#\">Multihead Coordinate Warps for Neural Fluid Solvers</a></h3><p class=\"ds-log-desc\">Benchmarking semi-Lagrangian coordinate warps on 2D Shallow Water Equations.</p></div></article>",
+      "css": ".ds-log-row { display: grid; grid-template-columns: 10.5rem minmax(0, 1fr); gap: 0.35rem 1.25rem; align-items: baseline; padding: 1rem 0; border-top: 1px solid var(--hairline, #e2e6e4); border-bottom: 1px solid var(--hairline, #e2e6e4); } .ds-log-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; } .ds-log-date { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.8125rem; font-variant-numeric: tabular-nums; color: var(--secondary, #6c6c6c); } .ds-kind-badge { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.74rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 4px; background: var(--surface-pill, #eef2f0); color: var(--primary, #1e1e1e); border: 1px solid var(--border-control, #7d8783); } .ds-log-title { margin: 0; font-size: 1.0625rem; font-weight: 650; } .ds-log-title a { color: var(--primary, #1e1e1e); text-decoration: none; } .ds-log-title a:hover { color: var(--accent-pine, #203931); text-decoration: underline; } .ds-log-desc { margin: 0.35rem 0 0; font-size: 0.94rem; line-height: 1.55; color: var(--content, #1f1f1f); }"
     },
     {
       "name": "Publication Filter Input",
       "kind": "input",
       "refersTo": "input-filter",
-      "description": "Flat search input with leading SVG icon and explicit :focus-visible outline.",
+      "description": "Flat 4px-radius search input with leading SVG icon and explicit :focus-visible outline.",
       "html": "<div class=\"ds-input-wrap\"><svg class=\"ds-input-icon\" aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" y1=\"21\" x2=\"16.65\" y2=\"16.65\"/></svg><input type=\"search\" class=\"ds-input-filter\" placeholder=\"Filter publications...\" aria-label=\"Filter publications\"></div>",
-      "css": ".ds-input-wrap { position: relative; display: flex; align-items: center; } .ds-input-icon { position: absolute; left: 14px; color: var(--secondary, #6c6c6c); pointer-events: none; } .ds-input-filter { width: 100%; padding: 10px 38px 10px 42px; border-radius: 8px; background: var(--entry, #ffffff); border: 1px solid var(--border, #eeeeee); color: var(--primary, #1e1e1e); font-size: 0.95rem; box-shadow: none; } .ds-input-filter:focus-visible { outline: 2px solid var(--primary, #1e1e1e); outline-offset: 2px; border-color: var(--primary, #1e1e1e); }"
+      "css": ".ds-input-wrap { position: relative; display: flex; align-items: center; } .ds-input-icon { position: absolute; left: 14px; color: var(--secondary, #6c6c6c); pointer-events: none; } .ds-input-filter { width: 100%; padding: 10px 38px 10px 42px; border-radius: 4px; background: var(--theme, #ffffff); border: 1px solid var(--border-control, #7d8783); color: var(--primary, #1e1e1e); font-size: 0.95rem; box-shadow: none; } .ds-input-filter::placeholder { color: var(--secondary, #6c6c6c); opacity: 1; } .ds-input-filter:focus-visible { outline: 2px solid var(--primary, #1e1e1e); outline-offset: 2px; border-color: var(--primary, #1e1e1e); }"
     },
     {
       "name": "Section Anchor Nav Pill",
       "kind": "nav",
-      "refersTo": "chip-badge",
-      "description": "Compact section jump link used in .cv-nav-bar and .pub-year-nav.",
+      "refersTo": "pill-action",
+      "description": "Compact monospace section jump link used in .cv-nav-bar, .log-kind-filter, and .pub-year-nav.",
       "html": "<a href=\"#research-experience\" class=\"ds-nav-pill\">Experience</a>",
-      "css": ".ds-nav-pill { display: inline-block; font-size: 0.82rem; font-weight: 500; padding: 4px 12px; border-radius: 14px; background: var(--tertiary, #d6d6d6); color: var(--primary, #1e1e1e); text-decoration: none; transition: background-color 0.15s ease; } .ds-nav-pill:hover { background: var(--border, #eeeeee); } .ds-nav-pill:focus-visible { outline: 2px solid var(--accent-pine, #203931); outline-offset: 2px; }"
+      "css": ".ds-nav-pill { display: inline-flex; align-items: center; min-block-size: 1.85rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.78rem; font-weight: 600; font-variant-numeric: tabular-nums; padding: 0.25rem 0.65rem; border-radius: 4px; background: var(--surface-pill, #eef2f0); color: var(--primary, #1e1e1e); border: 1px solid var(--border-control, #7d8783); text-decoration: none; transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease; } .ds-nav-pill:hover { background: var(--surface-pill-hover, #dfe6e3); border-color: var(--accent-pine, #203931); color: var(--accent-pine, #203931); } .ds-nav-pill:focus-visible { outline: 2px solid var(--accent-pine, #203931); outline-offset: 2px; }"
     },
     {
       "name": "Progressive CV Disclosure",
       "kind": "custom",
-      "refersTo": "button-primary",
-      "description": "Native <details> summary control for secondary CV sections, expanding automatically for print and anchors.",
+      "refersTo": "button-cv-download",
+      "description": "Native <details> summary control for secondary CV lists, expanding automatically for anchors and print.",
       "html": "<details class=\"ds-cv-details\"><summary class=\"ds-cv-summary\"><svg aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"9 18 15 12 9 6\"/></svg><span>Show all 28 trainings &amp; certifications</span></summary></details>",
-      "css": ".ds-cv-summary { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px; background: var(--entry, #ffffff); border: 1px solid var(--border, #eeeeee); border-radius: 8px; color: var(--primary, #1e1e1e); font-size: 0.92rem; font-weight: 600; cursor: pointer; list-style: none; } .ds-cv-summary:hover { background: var(--tertiary, #d6d6d6); border-color: var(--accent-pine-mid, #3E7060); } .ds-cv-summary:focus-visible { outline: 2px solid var(--accent-pine, #203931); outline-offset: 2px; }"
+      "css": ".ds-cv-summary { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 44px; padding: 0.55rem 1rem; background: var(--theme, #ffffff); border: 1px solid var(--border-control, #7d8783); border-radius: 4px; color: var(--primary, #1e1e1e); font-size: 0.92rem; font-weight: 600; cursor: pointer; list-style: none; } .ds-cv-summary:hover { background: var(--surface-pill, #eef2f0); border-color: var(--accent-pine, #203931); } .ds-cv-summary:focus-visible { outline: 2px solid var(--accent-pine, #203931); outline-offset: 2px; }"
+    },
+    {
+      "name": "M2 Tidal Field Band",
+      "kind": "custom",
+      "refersTo": "row-monograph",
+      "description": "Inline rotating-basin M2 amphidromic contour SVG band framing the Home editorial masthead.",
+      "html": "<div class=\"ds-tidal-band\" aria-hidden=\"true\"><svg viewBox=\"0 0 720 108\" width=\"720\" height=\"108\" class=\"ds-tidal-svg\"><ellipse cx=\"200\" cy=\"54\" rx=\"48\" ry=\"24\" fill=\"none\" stroke=\"currentColor\" opacity=\"0.28\"/><line x1=\"200\" y1=\"54\" x2=\"340\" y2=\"0\" stroke=\"currentColor\" stroke-dasharray=\"3 3\" opacity=\"0.5\"/><circle cx=\"200\" cy=\"54\" r=\"3\" fill=\"#ffffff\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg></div>",
+      "css": ".ds-tidal-band { border-top: 1px solid var(--hairline, #e2e6e4); border-bottom: 1px solid var(--hairline, #e2e6e4); padding: 0.25rem 0; color: var(--accent-pine-mid, #3E7060); } .ds-tidal-svg { display: block; width: 100%; height: auto; aspect-ratio: 720 / 108; }"
     }
   ],
   "narrative": {
-    "northStar": "The Applied Mathematician's Monograph & Lab Notebook",
-    "overview": "This design system unifies technical research depth with minimalist engineering restraint. Long-form technical articles, KaTeX derivations, Fortran kernels, and fluid-dynamics visualizations occupy one aligned 720px centered column anchored by crisp sans-serif headings and hairline dividers.\n\nColor and motion stay strictly subordinate to reading comprehension and operational speed. Neutrals carry the canvas and card geometry, while deep pine and ocean accents mark interactive links, selections, blockquote hairlines, active states, and structural highlights across both light and dark modes.",
+    "northStar": "The Computational Physicist's Monograph & Lab Notebook",
+    "overview": "This design system treats technical research, numerical PDEs, and high-performance computing engineering as a cohesive monograph rather than a generic blog. Every route shares a single aligned 45rem (720px) reading column anchored by a left-aligned editorial masthead on Home, a mathematical physical-field contour signature derived from a rotating-basin M2 tidal wave solution, hairline section rules, tabular numerals, and compact monospace action pills.\n\nNeutrals hold the full canvas and structural cadence across both light and dark modes, while deep pine and ocean heritage accents mark interactive links, selections, blockquote hairlines, primary calls to action, and analytical contour lines. We explicitly reject generic WordPress academic blog patterns such as Nick Higham's nhigham.com utility sidebar, recent-posts/archive/category widget columns, subscriber widgets, and stacked blog-card boxes.",
     "keyCharacteristics": [
-      "Editorial Clarity: Uniform sans-serif headings paired with calm hairline section dividers (--border) and a centered 720px (~66ch) column.",
-      "Flat Tactility: Crisp 1px borders without resting ambient shadows or colored glow halos.",
-      "Heritage Accents: Deep pine and ocean ink tokens adapted explicitly for light and dark surfaces at >= 4.5:1 WCAG AA contrast.",
-      "Operational Restraint: Progressive <details> disclosures, instant CSS Highlights filtering, and lightweight local video facades."
+      "Left-Aligned Monograph Authority: Home opens with a left-aligned portrait-and-identity masthead, the M2 rotating-basin amphidromic contour band, a ruled Current Focus line, and a three-column audience index rather than a centered social-profile card.",
+      "Hairline-Ruled Hierarchy: Log entries, CV presentations/trainings, and publication records use 1px structural hairlines on a unified canvas (#ffffff light / #1d1e20 dark) instead of elevated card boxes.",
+      "Tabular Precision & Compact Action Pills: Dates, publication metrics, CV badges, and filter controls align with tabular-nums monospace typography and 4px-radius action pills (PDF, Code, Slides, DOI, Copy BibTeX, View BibTeX) meeting WCAG 2.1 AA contrast (>= 4.5:1).",
+      "Zero-Overhead Performance: Native system sans-serif and monospace stacks eliminate webfont network latency and layout shift (CLS === 0), while progressive <details> disclosures, CSS.highlights filtering, and local video facades keep interaction instant."
     ],
     "rules": [
       {
         "name": "The Heritage Scarcity Rule",
-        "body": "Reserve deep pine and ocean exclusively for section rules, inline links, active selections, and interactive emphasis; never flood card backgrounds with saturated brand fills.",
+        "body": "Reserve deep pine and ocean exclusively for structural rules, inline prose links, selections, primary actions, and the M2 physical-field graphic; never flood general page cards with saturated brand fills.",
         "section": "colors"
       },
       {
         "name": "The Pill Contrast Rule",
-        "body": "Never render small pill, tag, or badge text in --secondary over --tertiary; always use --primary (or dedicated WCAG AA semantic tokens) to maintain >= 4.5:1 contrast.",
+        "body": "Always pair small pills, tags, and action badges with primary ink over tinted pill surfaces (or canvas ink over deep pine for primary pills) to sustain >= 4.5:1 WCAG AA contrast in both light and dark modes.",
+        "section": "colors"
+      },
+      {
+        "name": "The Control Border Rule",
+        "body": "Give interactive pills, inputs, and disclosure controls a visible border-control stroke (>= 3.0:1 against canvas) so buttons remain unmistakable without relying on drop shadows.",
         "section": "colors"
       },
       {
         "name": "The Unified Column Measure Rule",
-        "body": "Keep .main centered at max-width: calc(var(--main-width) + var(--gap) * 2) (720px content column) so headings, prose paragraphs, rules, figures, and /cv/ entries share exact left and right edges without desktop voids.",
+        "body": "Align .header-nav and .main to 45rem (720px) so mastheads, prose, tables, KaTeX blocks, ruled lists, and footer chrome share exact left and right edges on desktop.",
         "section": "typography"
       },
       {
         "name": "The Tabular Numerals Rule",
-        "body": "Apply font-variant-numeric: tabular-nums on .metric-value, .pub-year-pill, .cv-date-badge, and table td so numeric benchmarks and CV dates align cleanly.",
+        "body": "Apply font-variant-numeric: tabular-nums across ISO Log dates, publication years/metrics, CV date badges, simulation spec pills, and table cells so numeric columns align vertically.",
         "section": "typography"
       },
       {
         "name": "The Flat-By-Default Rule",
-        "body": "Cards, inputs, covers, and play buttons carry zero resting box-shadow and zero colored glow halos; depth is expressed solely through 1px borders and clean surface hierarchy.",
+        "body": "Cards, ruled rows, inputs, cover frames, and play controls carry zero resting box-shadow and zero hover translate lifts; spatial separation comes strictly from 1px hairlines and calibrated whitespace.",
         "section": "elevation"
       }
     ],
     "dos": [
-      "Do use --accent-pine (#203931 / #6ee7b7) and --accent-ocean (#09434e / #7dd3fc) for structural hairlines, prose links, selections, and interactive emphasis.",
-      "Do keep all cards flat (1px solid var(--border), box-shadow: none) and use var(--primary) for text on --tertiary pills.",
-      "Do preserve sans-serif display headings with clean 1px solid var(--border) hairlines on section h2s and align all content inside PaperMod's centered 720px column.",
-      "Do declare explicit dimensions (width/height) on media, tabular-nums on numeric badges/tables, and beforeprint/@media print expansion on <details>."
+      "Do align all site routes inside the unified 45rem (720px) monograph column with 1px solid var(--hairline) section and row dividers.",
+      "Do use --surface-pill, --border-control, and --primary (or --accent-pine / --theme for primary actions) so every badge, pill, and button maintains >= 4.5:1 contrast in both light and dark modes.",
+      "Do keep font-variant-numeric: tabular-nums on ISO dates, metrics, publication years, CV badges, and tables, and min-width: 0 on all grid/flex containers down to 320px.",
+      "Do preserve native <button>, <details>, beforeprint/@media print expansion, explicit media dimensions, and prefers-reduced-motion guards."
     ],
     "donts": [
-      "Don't add colored blurred shadows (dark-glow), bounce easing (1.56), thick colored border-left side-tabs on cards, or nested cards inside cards.",
-      "Don't use var(--secondary) text inside .post-tag, .software-tag, .sim-spec-pill, .cv-date-badge, .cv-skills-tag, or .pub-year-pill.",
-      "Don't replace native <button>/<details> controls with <div> click handlers or inject raw HTML via innerHTML.",
-      "Don't modify anything inside the read-only themes/PaperMod/ submodule."
+      "Don't imitate Nick Higham (nhigham.com) or generic WordPress academic sites: never add a right/left utility sidebar, recent-posts/archive/category widget column, subscriber widget, or stacked card-box blog feeds.",
+      "Don't restore a centered social-profile stack on Home, eyebrow kickers above <h1> headings, resting box-shadows, transform hover lifts, \"Georgia\" serifs, or bounce easing (1.56).",
+      "Don't set color: var(--secondary) on pill/tag surfaces, apply max-width: 68ch inside the 45rem column, inject HTML via innerHTML, or modify themes/PaperMod/."
     ]
   }
 }

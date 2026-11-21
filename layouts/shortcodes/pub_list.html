@@ -77,24 +77,24 @@
 
       <div class="pub-card-actions">
         {{- if .doi }}
-        <a href="https://doi.org/{{ .doi }}" target="_blank" rel="noopener" class="pub-badge-btn pub-doi-btn">
+        <a href="https://doi.org/{{ .doi }}" target="_blank" rel="noopener" class="action-pill pub-badge-btn pub-doi-btn">
           <span>DOI</span> ↗
         </a>
         {{- end }}
 
         {{- if and .url (not (findRE "^https?://(dx\\.)?doi\\.org" .url)) }}
-        <a href="{{ .url }}" target="_blank" rel="noopener" class="pub-badge-btn pub-link-btn">
+        <a href="{{ .url }}" target="_blank" rel="noopener" class="action-pill pub-badge-btn pub-link-btn">
           <span>URL</span> ↗
         </a>
         {{- end }}
 
-        <button type="button" class="pub-badge-btn pub-copy-btn" onclick="copyBibTeX(this)" title="Copy BibTeX entry to clipboard">
+        <button type="button" class="action-pill pub-badge-btn pub-copy-btn" onclick="copyBibTeX(this)" title="Copy BibTeX entry to clipboard">
           <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
           <span class="pub-copy-text">Copy BibTeX</span>
         </button>
 
         <details class="pub-bibtex-details">
-          <summary class="pub-bibtex-summary">View BibTeX</summary>
+          <summary class="action-pill pub-bibtex-summary">View BibTeX</summary>
           <div class="pub-bibtex-block">
             {{- $bibFields := slice -}}
             {{- if .title }}{{ $bibFields = $bibFields | append (printf "  title = {%s}" .title) }}{{ end -}}

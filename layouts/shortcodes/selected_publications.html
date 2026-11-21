@@ -36,17 +36,27 @@
       {{- end -}}
     </h3>
     {{- if $p.author -}}
-    <div class="pub-card-authors">{{ $p.author | replaceRE " and " ", " }}</div>
+    <div class="pub-card-authors">
+      {{- $authorClean := $p.author | replaceRE " and " ", " -}}
+      {{- $authorFormatted := $authorClean | replaceRE "(Vladimir\\s+Lapin|Lapin,\\s+Vladimir|Lapin,\\s+V(\\.\\s*N\\.)?|Lapin,\\s+V\\b|V\\.\\s*N\\.\\s*Lapin|V\\.\\s+Lapin)" "<strong class=\"pub-self-author\">$1</strong>" -}}
+      {{- $authorFormatted | safeHTML -}}
+    </div>
     {{- end -}}
     <div class="pub-card-venue">
       {{- if $p.journal }}<span class="pub-journal-name"><em>{{ $p.journal }}</em></span>{{ end -}}
       {{- if $p.booktitle }}<span class="pub-journal-name"><em>{{ $p.booktitle }}</em></span>{{ end -}}
       {{- if $p.month }}<span> &middot; {{ $p.month }}</span>{{ end -}}
-      {{- if $p.year }}<span> &middot; {{ $p.year }}</span>{{ end -}}
+      {{- if $p.year }}<span class="pub-card-year"> &middot; {{ $p.year }}</span>{{ end -}}
     </div>
-    {{- if $p.doi -}}
+    {{- $hasNonDoiUrl := and $p.url (not (findRE "^https?://(dx\\.)?doi\\.org" $p.url)) -}}
+    {{- if or $p.doi $hasNonDoiUrl -}}
     <div class="pub-card-actions">
-      <a href="https://doi.org/{{ $p.doi }}" target="_blank" rel="noopener" class="pub-badge-btn pub-doi-btn">DOI &#8599;</a>
+      {{- if $p.doi }}
+      <a href="https://doi.org/{{ $p.doi }}" target="_blank" rel="noopener" class="action-pill pub-badge-btn pub-doi-btn">DOI &#8599;</a>
+      {{- end }}
+      {{- if $hasNonDoiUrl }}
+      <a href="{{ $p.url }}" target="_blank" rel="noopener" class="action-pill pub-badge-btn pub-link-btn">URL &#8599;</a>
+      {{- end }}
     </div>
     {{- end -}}
   </article>

@@ -1,57 +1,61 @@
 ---
 name: vlap.github.io
-description: Editorial monograph and lab notebook design system for Dr. Vladimir Lapin's climate modeling, HPC, and applied mathematics website.
+description: Mathematical monograph and lab notebook design system for Dr. Vladimir Lapin's climate modeling, numerical PDEs, and HPC website.
 colors:
   accent-pine: "#203931"
   accent-pine-dark: "#6ee7b7"
   accent-pine-mid: "#3E7060"
+  accent-pine-mid-dark: "#5aa38b"
   accent-ocean: "#09434e"
   accent-ocean-dark: "#7dd3fc"
   canvas-light: "#ffffff"
   canvas-dark: "#1d1e20"
-  surface-dark: "#2e2e33"
   ink-primary-light: "#1e1e1e"
   ink-primary-dark: "#dadadb"
   ink-body-light: "#1f1f1f"
   ink-body-dark: "#c4c4c5"
   ink-secondary-light: "#6c6c6c"
   ink-secondary-dark: "#9b9c9d"
-  surface-tertiary-light: "#d6d6d6"
-  surface-tertiary-dark: "#414244"
-  border-hairline-light: "#eeeeee"
-  border-hairline-dark: "#333333"
+  surface-pill-light: "#eef2f0"
+  surface-pill-dark: "#2b3033"
+  surface-pill-hover-light: "#dfe6e3"
+  surface-pill-hover-dark: "#363c40"
+  hairline-light: "#e2e6e4"
+  hairline-dark: "#303437"
+  border-control-light: "#7d8783"
+  border-control-dark: "#757d7a"
   code-surface-light: "#f5f5f5"
   code-surface-dark: "#37383e"
 typography:
   display:
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
-    fontSize: "2.2rem"
+    fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+    fontSize: "clamp(1.85rem, 1.4rem + 1.5vw, 2.35rem)"
     fontWeight: 700
-    lineHeight: 1.2
-    letterSpacing: "0em"
+    lineHeight: 1.15
+    letterSpacing: "-0.025em"
   headline:
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
-    fontSize: "1.6rem"
+    fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+    fontSize: "clamp(1.3rem, 1.15rem + 0.5vw, 1.55rem)"
     fontWeight: 700
-    lineHeight: 1.2
-    letterSpacing: "0em"
+    lineHeight: 1.25
+    letterSpacing: "-0.015em"
   title:
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
-    fontSize: "1.25rem"
-    fontWeight: 600
-    lineHeight: 1.3
-    letterSpacing: "0em"
-  body:
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
+    fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
     fontSize: "1.125rem"
+    fontWeight: 650
+    lineHeight: 1.35
+    letterSpacing: "-0.01em"
+  body:
+    fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+    fontSize: "1.0625rem"
     fontWeight: 400
-    lineHeight: 1.6
+    lineHeight: 1.62
     letterSpacing: "0em"
   label:
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif'
-    fontSize: "0.75rem"
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+    fontSize: "0.78rem"
     fontWeight: 600
-    lineHeight: 1.4
+    lineHeight: 1.3
     letterSpacing: "0.02em"
   mono:
     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
@@ -63,8 +67,6 @@ rounded:
   none: "0px"
   xs: "4px"
   sm: "6px"
-  md: "8px"
-  pill: "12px"
   full: "9999px"
 spacing:
   xs: "4px"
@@ -73,28 +75,36 @@ spacing:
   lg: "24px"
   xl: "36px"
 components:
-  button-primary:
-    backgroundColor: "{colors.canvas-light}"
+  pill-action:
+    backgroundColor: "{colors.surface-pill-light}"
     textColor: "{colors.ink-primary-light}"
-    rounded: "{rounded.md}"
-    padding: "10px 16px"
-  button-primary-hover:
+    rounded: "{rounded.xs}"
+    padding: "0.25rem 0.6rem"
+  pill-action-hover:
+    backgroundColor: "{colors.surface-pill-hover-light}"
+    textColor: "{colors.accent-pine}"
+  pill-action-primary:
     backgroundColor: "{colors.accent-pine}"
     textColor: "{colors.canvas-light}"
-  chip-badge:
-    backgroundColor: "{colors.surface-tertiary-light}"
-    textColor: "{colors.ink-primary-light}"
-    rounded: "{rounded.pill}"
-    padding: "2px 10px"
-  card-flat:
+    rounded: "{rounded.xs}"
+    padding: "0.25rem 0.6rem"
+  button-cv-download:
     backgroundColor: "{colors.canvas-light}"
     textColor: "{colors.ink-primary-light}"
-    rounded: "{rounded.md}"
-    padding: "20px"
+    rounded: "{rounded.xs}"
+    padding: "0.75rem 0.9rem"
+  button-cv-download-hover:
+    backgroundColor: "{colors.surface-pill-light}"
+    textColor: "{colors.ink-primary-light}"
+  row-monograph:
+    backgroundColor: "{colors.canvas-light}"
+    textColor: "{colors.ink-primary-light}"
+    rounded: "{rounded.none}"
+    padding: "1rem 0"
   input-filter:
     backgroundColor: "{colors.canvas-light}"
     textColor: "{colors.ink-primary-light}"
-    rounded: "{rounded.md}"
+    rounded: "{rounded.xs}"
     padding: "10px 38px 10px 42px"
 ---
 
@@ -102,118 +112,116 @@ components:
 
 ## Overview
 
-**Creative North Star: "The Applied Mathematician's Monograph & Lab Notebook"**
+**Creative North Star: "The Computational Physicist's Monograph & Lab Notebook"**
 
-This design system unifies technical research depth with minimalist engineering restraint. Long-form technical articles, KaTeX derivations, Fortran kernels, and fluid-dynamics visualizations occupy one aligned `720px` centered column anchored by crisp sans-serif headings and hairline dividers.
+This design system treats technical research, numerical PDEs, and high-performance computing engineering as a cohesive monograph rather than a generic blog. Every route shares a single aligned `45rem` (`720px`) reading column anchored by a left-aligned editorial masthead on Home, a mathematical physical-field contour signature derived from a rotating-basin $M_2$ tidal wave solution, hairline section rules, tabular numerals, and compact monospace action pills.
 
-Color and motion stay strictly subordinate to reading comprehension and operational speed. Neutrals carry the canvas and card geometry, while deep pine and ocean accents mark interactive links, selections, blockquote hairlines, active states, and structural highlights across both light and dark modes.
+Neutrals hold the full canvas and structural cadence across both light and dark modes, while deep pine and ocean heritage accents mark interactive links, selections, blockquote hairlines, primary calls to action, and analytical contour lines. We explicitly reject generic WordPress academic blog patterns such as Nick Higham's `nhigham.com` utility sidebar, recent-posts/archive/category widget columns, subscriber widgets, and stacked blog-card boxes.
 
 **Key Characteristics:**
-- **Editorial Clarity:** Uniform sans-serif headings paired with calm hairline section dividers (`--border`) and a centered `720px` (`~66ch`) column.
-- **Flat Tactility:** Crisp 1px borders without resting ambient shadows or colored glow halos.
-- **Heritage Accents:** Deep pine and ocean ink tokens adapted explicitly for light and dark surfaces at >= 4.5:1 WCAG AA contrast.
-- **Operational Restraint:** Progressive `<details>` disclosures, instant CSS Highlights filtering, and lightweight local video facades.
+- **Left-Aligned Monograph Authority:** Home opens with a left-aligned portrait-and-identity masthead, the $M_2$ rotating-basin amphidromic contour band, a ruled Current Focus line, and a three-column audience index rather than a centered social-profile card.
+- **Hairline-Ruled Hierarchy:** Log entries, CV presentations/trainings, and publication records use `1px` structural hairlines on a unified canvas (`#ffffff` light / `#1d1e20` dark) instead of elevated card boxes.
+- **Tabular Precision & Compact Action Pills:** Dates, publication metrics, CV badges, and filter controls align with `tabular-nums` monospace typography and `4px`-radius action pills (`PDF`, `Code`, `Slides`, `DOI`, `Copy BibTeX`, `View BibTeX`) meeting WCAG 2.1 AA contrast (`>= 4.5:1`).
+- **Zero-Overhead Performance:** Native system sans-serif and monospace stacks eliminate webfont network latency and layout shift (`CLS === 0`), while progressive `<details>` disclosures, `CSS.highlights` filtering, and local video facades keep interaction instant.
 
 ## Colors
 
-The palette pairs neutral PaperMod paper and charcoal surfaces with a restrained deep-pine and ocean heritage accent pair derived from the legacy site.
+The palette pairs neutral paper and charcoal surfaces with a restrained deep-pine and ocean heritage accent system resolved automatically via `light-dark()` with explicit light/dark fallbacks.
 
 ### Primary
-- **Deep Pine** (`#203931` light / `#6ee7b7` dark): Used for `::selection` highlights, native `accent-color` controls, interactive hover fills on primary links/play icons, and focus indicators.
-- **Mid Pine** (`#3E7060`): Used as the 1px left blockquote rule, link underline decoration, and interactive card hover borders.
+- **Deep Pine** (`accent-pine` light / `accent-pine-dark` dark): Used for `::selection` fills, native `accent-color` controls, active navigation/filter indicators, primary action pill backgrounds, featured CV badges, and hover accents.
+- **Mid Pine** (`accent-pine-mid` light / `accent-pine-mid-dark` dark): Used for the `1px` left blockquote rule, prose underline decoration, hairline hover highlights, and $M_2$ cotidal phase rays (calibrated for `>= 4.5:1` / UI-control contrast on dark surfaces).
 
 ### Secondary
-- **Deep Ocean** (`#09434e` light / `#7dd3fc` dark): Used for inline prose hyperlinks and scholarly cross-references so links read distinctly from body copy without harsh neon saturation.
+- **Deep Ocean** (`accent-ocean` light / `accent-ocean-dark` dark): Used for inline prose hyperlinks, scholarly cross-references, and $M_2$ co-amplitude contours so links read distinctly from body copy without harsh neon saturation.
 
 ### Neutral
-- **Canvas** (`#ffffff` light / `#1d1e20` dark): Primary page background.
-- **Elevated Card Surface** (`#ffffff` light / `#2e2e33` dark): Card backgrounds for software, CV entries, publication cards, and simulation tiles.
-- **Primary Ink** (`#1e1e1e` light / `#dadadb` dark): Headings, card titles, pill/badge text, and primary controls (`>= 4.5:1` on all surfaces including tertiary pills).
-- **Body Ink** (`#1f1f1f` light / `#c4c4c5` dark): Long-form reading prose and technical lists.
-- **Secondary Ink** (`#6c6c6c` light / `#9b9c9d` dark): Metadata timestamps, institutions, and non-pill supporting captions.
-- **Tertiary Fill** (`#d6d6d6` light / `#414244` dark): Neutral pill, tag, and badge container fill.
-- **Hairline Border** (`#eeeeee` light / `#333333` dark): Default 1px structural border around cards, inputs, tables, and timelines.
-- **Code Surface** (`#f5f5f5` light / `#37383e` dark): Inline code chips, BibTeX `<pre>` blocks, and code containers.
+- **Canvas** (`canvas-light` / `canvas-dark`): Unified page background across single articles, list feeds, and grids.
+- **Primary Ink** (`ink-primary-light` / `ink-primary-dark`): Headings, titles, bold scan leads, and action-pill text (`>= 9.55:1` on pill surfaces).
+- **Body Ink** (`ink-body-light` / `ink-body-dark`): Long-form reading prose, summaries, and simulation descriptions.
+- **Secondary Ink** (`ink-secondary-light` / `ink-secondary-dark`): Non-pill metadata timestamps, dates, author lists, and filter placeholders (`>= 5.25:1`).
+- **Pill Surface & Hover** (`surface-pill-light` / `surface-pill-dark` and hover variants): Low-chroma tinted backgrounds for action pills, kind badges, tags, and compact navigation chips.
+- **Control Border** (`border-control-light` / `border-control-dark`): High-contrast `1px` border (`>= 3.0:1` UI contrast) around pills, buttons, and filter inputs.
+- **Structural Hairline** (`hairline-light` / `hairline-dark`): Subtle `1px` row dividers, section rules, header/footer boundaries, and code frame borders.
+- **Code Surface** (`code-surface-light` / `code-surface-dark`): Inline code spans, BibTeX `<pre>` blocks, and syntax-highlighted listings.
 
 ### Named Rules
-**The Heritage Scarcity Rule.** Reserve deep pine and ocean exclusively for section rules, inline links, active selections, and interactive emphasis; never flood card backgrounds with saturated brand fills.
-**The Pill Contrast Rule.** Never render small pill, tag, or badge text in `--secondary` over `--tertiary`; always use `--primary` (or dedicated WCAG AA semantic tokens) to maintain >= 4.5:1 contrast.
+**The Heritage Scarcity Rule.** Reserve deep pine and ocean exclusively for structural rules, inline prose links, selections, primary actions, and the $M_2$ physical-field graphic; never flood general page cards with saturated brand fills.
+**The Pill Contrast Rule.** Always pair small pills, tags, and action badges with primary ink over tinted pill surfaces (or canvas ink over deep pine for primary pills) to sustain `>= 4.5:1` WCAG AA contrast in both light and dark modes.
+**The Control Border Rule.** Give interactive pills, inputs, and disclosure controls a visible `border-control` stroke (`>= 3.0:1` against canvas) so buttons remain unmistakable without relying on drop shadows.
 
 ## Typography
 
-**Display Font:** System UI sans (`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif`) for `h1`, `h2`, `.post-title`, and section titles.
-**Body Font:** System UI sans (`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif`) for body prose, navigation, and dense card titles.
-**Label/Mono Font:** System monospace (`ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace`) for Fortran/Python code listings, BibTeX records, and license pills.
+**Display Font:** System UI sans (`system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`) for `h1`, page headers, and monograph titles.
+**Body Font:** System UI sans (identical stack) for long-form prose, project descriptions, and publication abstracts (`CLS === 0`).
+**Label/Mono Font:** System monospace (`ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace`) for dates, action pills, kind badges, CV tools/badges, BibTeX records, and code listings.
 
-**Character:** Uniform system sans-serif keeps articles, publication feeds, and `/cv/` timelines clean, minimal, and fast to scan without extra webfont overhead.
+**Character:** Fluid `clamp()` display/headline scaling pairs with crisp `650`/`700` sans weights and `tabular-nums` monospace metadata, letting readers scan dates, metrics, and equations cleanly without decorative serif or webfont overhead.
 
 ### Hierarchy
-- **Display** (700, `2.2rem`, `1.2`): Homepage hero heading and page titles with `text-wrap: balance`.
-- **Headline** (700, `1.6rem`, `1.2`): Major article and section `h2` headings, underlined with a 1px `--border` rule (`0.35rem` bottom padding).
-- **Title** (600, `1.25rem`, `1.3`): Subsection `h3` headings and card titles (borderless inside cards and `.cv-item-title`).
-- **Body** (400, `1.125rem`, `1.6`): Long-form prose filling the centered `720px` (`~66ch`) reading column with `text-wrap: pretty` and `0.18em` link underline offset.
-- **Label** (600, `0.75rem`, `1.4`, `0.02em`): Compact metadata pills, skill tags, and `tabular-nums` badges/metrics/table cells.
+- **Display** (700, `clamp(1.85rem, 1.4rem + 1.5vw, 2.35rem)`, `1.15`): Page titles and Home masthead name with `-0.025em` tracking and `text-wrap: balance`.
+- **Headline** (700, `clamp(1.3rem, 1.15rem + 0.5vw, 1.55rem)`, `1.25`): Section `h2` headings with a `1px` structural hairline bottom rule.
+- **Title** (650, `1.125rem`, `1.35`): Subsection `h3` headings, software card titles, simulation titles, and publication titles.
+- **Body** (400, `1.0625rem`, `1.62`): Long-form reading prose filling the `45rem` (`720px`, `~68–75ch`) measure with `text-wrap: pretty` and `0.18em` underline offset.
+- **Label / Mono** (600, `0.78rem`, `1.3`): Action pills, kind badges, ISO dates (`0.8125rem`), CV date badges, and `tabular-nums` metrics.
 
 ### Named Rules
-**The Unified Column Measure Rule.** Keep `.main` centered at `max-width: calc(var(--main-width) + var(--gap) * 2)` (`720px` content column) so headings, prose paragraphs, rules, figures, and `/cv/` entries share exact left and right edges without desktop voids.
-**The Tabular Numerals Rule.** Apply `font-variant-numeric: tabular-nums` on `.metric-value`, `.pub-year-pill`, `.cv-date-badge`, and `table td` so numeric benchmarks and CV dates align cleanly.
+**The Unified Column Measure Rule.** Align `.header-nav` and `.main` to `45rem` (`720px`) so mastheads, prose, tables, KaTeX blocks, ruled lists, and footer chrome share exact left and right edges on desktop.
+**The Tabular Numerals Rule.** Apply `font-variant-numeric: tabular-nums` across ISO Log dates, publication years/metrics, CV date badges, simulation spec pills, and table cells so numeric columns align vertically.
 
 ## Layout
 
-Content sits inside a centered single reading column (`720px` `--main-width`) framed by a `1024px` navigation bar (`24px` `--gap` desktop, `14px` mobile). Dense catalogs such as `/software/` use responsive CSS grids (`minmax(min(100%, 300px), 1fr)` for software cards and `minmax(min(100%, 350px), 1fr)` for 4:3 simulation tiles) with `min-width: 0; max-width: 100%` containment so wide tables and KaTeX equations scroll internally without horizontal viewport overflow. Long secondary CV lists (Trainings and Presentations) use progressive `<details class="cv-section-details">` disclosures on `/cv/` while remaining expanded on standalone routes and `@media print`.
+All routes inhabit a single centered `45rem` (`720px`) column with `24px` desktop (`14px` mobile) gutter padding and `min-width: 0` containment down to `320px`. On Home, the `.home-masthead` pairs a compact square portrait (`96px` desktop, `clamp(4.5rem, 18vw, 6rem)`) with the left-aligned `h1`/tagline, followed by the full-width `720x108` $M_2$ tidal field band, single-occurrence bio, ruled Current Focus, and 3-column `.home-audience-links` strip (collapsing to 1 column at `<= 600px`). Both Home and `/posts/` / `/kinds/*` render a 2-column `.log-rows` grid (`10.5rem minmax(0, 1fr)` on desktop, `1fr` below `600px`) with stretched-link title navigation. `/work/` uses responsive `minmax(min(100%, 300px), 1fr)` software grids and `minmax(min(100%, 350px), 1fr)` 4:3 simulation tiles. `/cv/` leads with a 2-column `.cv-download-bar` (stacking below `600px`), `.cv-tools-line`, left-ruled `.cv-timeline`, and progressive `<details>` sections (expanded on standalone routes and `@media print` / `beforeprint`). `/publications/` pairs `#pubFilterInput` and `.pub-year-nav` with `content-visibility: auto` year groups (reset for print) and full-width wrapping `<details class="pub-bibtex-details">` drawers.
 
 ## Elevation & Depth
 
-Surfaces are flat by default (`box-shadow: none`) and establish separation through 1px `--border` hairlines and subtle light/dark surface contrast (`--theme` vs `--entry`). Hover states shift border color to `--accent-pine-mid` and apply gentle 1–3px vertical lift without drop shadows or chromatic glow halos.
+Surfaces are flat by default (`box-shadow: none`) and establish hierarchy exclusively through `1px` hairline borders, subtle pill-surface tinting, and typography weight contrast. Hover and focus states shift borders to `--accent-pine` / `--accent-pine-mid` or darken `--surface-pill` to `--surface-pill-hover` without drop shadows, transform lifts, or colored glow halos.
 
 ### Named Rules
-**The Flat-By-Default Rule.** Cards, inputs, covers, and play buttons carry zero resting `box-shadow` and zero colored glow halos; depth is expressed solely through 1px borders and clean surface hierarchy.
+**The Flat-By-Default Rule.** Cards, ruled rows, inputs, cover frames, and play controls carry zero resting `box-shadow` and zero hover translate lifts; spatial separation comes strictly from `1px` hairlines and calibrated whitespace.
 
 ## Shapes
 
-The system favors clean rectangular geometry anchored by an `8px` (`--radius`) default corner radius on cards, download buttons, and disclosures, tightening to `4px`–`6px` on compact technical pills and BibTeX code blocks, `12px` on skill/year pills, `0px` on structural hairline blockquotes, and circular `50%` masks on the author portrait and play icon.
+Rectangular editorial geometry dominates: `0px` radius on ruled Log/CV/Publication rows, blockquotes, and the 3-column audience strip; `4px` (`xs`) radius on action pills, filter inputs, software/simulation cards, BibTeX `<pre>` blocks, and pagination boxes; `6px` (`sm`) radius on the Home portrait frame; and `50%` (`full`) circular geometry strictly on the simulation play badge and CV timeline nodes.
 
 ## Components
 
-Controls feel tactile, keyboard-obvious, and strictly utilitarian without decorative clutter.
+Controls are compact, keyboard-obvious, `>= 44px` accessible on touch/primary targets (`>= 2.25rem` on coarse pointers), and built on native HTML primitives (`<a>`, `<button>`, `<details>`/`<summary>`).
 
-### Buttons
-- **Shape:** Gently rounded (`8px`) for `.cv-download-btn`, `.view-all-link`, `.pub-empty-reset-btn`, and `.cv-details-summary`; `44px` minimum touch target height on primary/mobile controls.
-- **Primary:** `--entry` surface, `1px solid var(--border)` hairline, `--primary` label text, `10px 16px` padding.
-- **Hover / Focus:** Transitions border to `--accent-pine-mid` (or solid `--accent-pine` fill with `--theme` text on `.view-all-link` and `.sim-play-icon`); preserves visible `2px` `:focus-visible` outline with `2px` offset.
+### Action Pills & CV Download Buttons
+- **Shape:** `4px` radius (`min-block-size: 1.85rem` desktop, `2.25rem` coarse pointer).
+- **Default (`action-pill`):** `--surface-pill` fill, `--primary` monospace `600` text, `1px solid var(--border-control)`, `0.25rem 0.6rem` padding; used for `DOI ↗`, `URL ↗`, `Copy BibTeX`, `View BibTeX`, `Slides (PDF) ↗`, `Thesis PDF ↗`, `Site ↗`, and `Discuss on LinkedIn →`.
+- **Primary (`action-pill--primary`):** Solid `--accent-pine` fill with `--theme` text for primary actions such as `Talk page →` and featured `2-page · PDF` CV badges.
+- **CV Download Bar:** 2-column grid of bordered `4px` buttons (`vladimir-lapin-cv-research-full.pdf` then `vladimir-lapin-cv-industry.pdf`) featuring explicit monospace format badges (`Full · PDF` and primary `2-page · PDF`).
 
-### Chips
-- **Style:** `--tertiary` background, `--primary` text (`>= 4.5:1` contrast), `2px 10px` padding (`12px` pill radius for badges/years, `4px` for technical tags/BibTeX actions).
-- **State:** Hover deepens background to `--border` without dropping contrast; semantic `.badge-hpc`, `.badge-ai`, `.badge-lead` pair distinct hue-matched borders with accessible light/dark text.
+### Chips & Taxonomy Badges
+- **Style:** `4px` radius monospace chips (`--surface-pill` background, `--primary` ink, `1px solid var(--border-control)`) for `.kind-badge`, `.log-kind-pill`, `.post-tag`, `.terms-tags a`, `.software-tag`, `.sim-spec-pill`, `.cv-date-badge`, `.cv-skills-tag`, and `.pub-year-pill`.
+- **State:** Active `.log-kind-pill.active` uses solid `--accent-pine` with `--theme` text; semantic `.badge-hpc` / `.badge-ai` / `.badge-lead` keep hue-matched borders at `>= 4.5:1` contrast.
 
-### Cards / Containers
-- **Corner Style:** `8px` (`--radius`).
-- **Background:** `--entry` (`#ffffff` light / `#2e2e33` dark).
-- **Shadow Strategy:** `box-shadow: none` at rest and on hover (see Elevation & Depth).
-- **Border:** `1px solid var(--border)` at rest; `var(--accent-pine-mid)` on hover.
-- **Internal Padding:** `20px` (software cards), `14px 18px` (CV items), `1.1rem 1.25rem` (publication cards).
+### Ruled Monograph Rows & Grid Cards
+- **Log Rows (`.log-row`):** Hairline-separated two-column rows (`YYYY-MM-DD` + `.kind-badge` left; title, 2-line summary, tags, and action pills right) using stretched-link `::after` overlay on `.log-row-title-link.entry-link` with `z-index: 2` on independent nested links.
+- **Publication & CV Rows (`.pub-card`, `.cv-item`):** Full-width hairline rows (`1.1rem 0` / `1.05rem 0` padding) with top border shifting to `--accent-pine-mid` on hover; `.pub-card-actions` aligns at `flex-start` so open `<details class="pub-bibtex-details">` wraps cleanly onto its own `100%` row without shifting adjacent buttons.
+- **Software & Simulation Cards:** `4px` bordered flat cards on `--theme` canvas with `min-width: 0` containment, bordered GitHub icon pill / `Site ↗` pill in `.software-card-header`, and flat `border-top: 1px solid var(--border)` `.sim-physics` notes.
 
 ### Inputs / Fields
-- **Style:** `--entry` surface, `1px solid var(--border)`, `8px` radius, `10px 38px 10px 42px` padding on `#pubFilterInput`.
-- **Focus:** `2px solid var(--primary)` outline with `2px` offset on `:focus-visible`.
+- **Filter Input (`#pubFilterInput`):** `--theme` background, `1px solid var(--border-control)`, `4px` radius, `10px 38px 10px 42px` padding, accessible `--secondary` placeholder (`>= 5.25:1`), `32x32px` `#pubFilterClear`, `/` and `Escape` keyboard shortcuts (`isComposing`-guarded), and `::highlight(pub-search-match)` matches.
 
 ### Navigation
-- Horizontal header bar (`#menu`) with active bottom indicator, `44x44px` `#theme-toggle` button, and pill-style `.cv-nav-bar` / `.pub-year-nav` jump links (`4px 12px`, `14px` radius).
+- **Primary Header & Footer:** Single-row `45rem` nav bar (`Work`, `Log`, `CV` + `44x44px` `#theme-toggle`), hairline footer with 6 labeled icon links, `.log-kind-filter` / `.cv-nav-bar` / `.pub-year-nav` pill strips, and `.paginav` prev/next boxes stacking vertically below `600px`.
 
-### Simulation Facade & Disclosure
-- Self-hosted 4:3 `.sim-video` containers render crisp `480x360` WebP posters inside a native `<button class="sim-facade">` that swaps cleanly via `replaceChildren(video)` into a muted/controls `<video>` element (`cubic-bezier(0.22, 1, 0.36, 1)` hover scale on the play badge, disabled under `prefers-reduced-motion: reduce`).
-- `.cv-section-details` uses native `<details>`/`<summary>` with an inline SVG chevron and automatic expansion on `@media print` and anchor navigation.
+### Signature Components
+- **Editorial Masthead & $M_2$ Tidal Field Band:** Left-aligned `96px` portrait (`fetchpriority="high"`), display name, tagline, and an inline `720x108` SVG (`tidal_field.html`, `aria-hidden="true"`) rendering 8 co-amplitude contours, 16 cotidal rays, and 2 amphidromic points from a rotating-basin Kelvin-wave $M_2$ solution themed via `--accent-ocean` and `--accent-pine-mid`.
+- **Simulation Facade & Progressive Disclosure:** 4:3 `<button type="button" class="sim-facade">` (`480x360` WebP poster, `cubic-bezier(0.22, 1, 0.36, 1)` play-badge scale disabled under `prefers-reduced-motion: reduce`, `replaceChildren(video)` swap) and native `<details class="cv-section-details">` expanding automatically on anchor click, `beforeprint`, and `@media print`.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** use `--accent-pine` (`#203931` / `#6ee7b7`) and `--accent-ocean` (`#09434e` / `#7dd3fc`) for structural hairlines, prose links, selections, and interactive emphasis.
-- **Do** keep all cards flat (`1px solid var(--border)`, `box-shadow: none`) and use `var(--primary)` for text on `--tertiary` pills.
-- **Do** preserve sans-serif display headings with clean `1px solid var(--border)` hairlines on section `h2`s and align all content inside PaperMod's centered `720px` column.
-- **Do** declare explicit dimensions (`width`/`height`) on media, `tabular-nums` on numeric badges/tables, and `beforeprint`/`@media print` expansion on `<details>`.
+- **Do** align all site routes inside the unified `45rem` (`720px`) monograph column with `1px solid var(--hairline)` section and row dividers.
+- **Do** use `--surface-pill`, `--border-control`, and `--primary` (or `--accent-pine` / `--theme` for primary actions) so every badge, pill, and button maintains `>= 4.5:1` contrast in both light and dark modes.
+- **Do** keep `font-variant-numeric: tabular-nums` on ISO dates, metrics, publication years, CV badges, and tables, and `min-width: 0` on all grid/flex containers down to `320px`.
+- **Do** preserve native `<button>`, `<details>`, `beforeprint`/`@media print` expansion, explicit media dimensions, and `prefers-reduced-motion` guards.
 
 ### Don't:
-- **Don't** add colored blurred shadows (`dark-glow`), bounce easing (`1.56`), thick colored `border-left` side-tabs on cards, or nested cards inside cards.
-- **Don't** use `var(--secondary)` text inside `.post-tag`, `.software-tag`, `.sim-spec-pill`, `.cv-date-badge`, `.cv-skills-tag`, or `.pub-year-pill`.
-- **Don't** replace native `<button>`/`<details>` controls with `<div>` click handlers or inject raw HTML via `innerHTML`.
-- **Don't** modify anything inside the read-only `themes/PaperMod/` submodule.
+- **Don't** imitate Nick Higham (`nhigham.com`) or generic WordPress academic sites: never add a right/left utility sidebar, recent-posts/archive/category widget column, subscriber widget, or stacked card-box blog feeds.
+- **Don't** restore a centered social-profile stack on Home, eyebrow kickers above `<h1>` headings, resting `box-shadow`s, `transform` hover lifts, `"Georgia"` serifs, or bounce easing (`1.56`).
+- **Don't** set `color: var(--secondary)` on pill/tag surfaces, apply `max-width: 68ch` inside the `45rem` column, inject HTML via `innerHTML`, or modify `themes/PaperMod/`.

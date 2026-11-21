@@ -19,7 +19,7 @@
       {{- else if in .text "visco-plastic fluids" -}}
         {{- $thesisHref = "/downloads/msc-thesis-vlapin.pdf" -}}
       {{- end -}}
-      <li><strong>{{ .lead }}</strong> {{ .text }}{{- if $thesisHref }} <a href="{{ $thesisHref }}" class="cv-link" target="_blank" rel="noopener">(Thesis PDF)</a>{{- end }}</li>
+      <li><strong>{{ .lead }}</strong> {{ .text }}{{- if $thesisHref }} <a href="{{ $thesisHref }}" class="cv-link action-pill cv-inline-pill" target="_blank" rel="noopener">Thesis PDF &#8599;</a>{{- end }}</li>
       {{- end }}
     </ul>
     {{- end }}

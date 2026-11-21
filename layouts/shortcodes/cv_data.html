@@ -40,14 +40,24 @@
       {{ end }}
       <span class="cv-date-badge">{{ .year }}{{ if .month }}-{{ printf "%02d" .month }}{{ end }}</span>
     </div>
+    {{- if or .event .institution .location }}
     <div class="cv-item-meta">
-      {{ if .event }}<span>{{ .event }}</span>{{ end }}
-      {{ if and .event .institution }} | {{ end }}
-      {{ if .institution }}<span>{{ .institution }}</span>{{ end }}
-      {{ if .location }} | <span>{{ .location }}</span>{{ end }}
-      {{ if .url }} | <a href="{{ .url }}" target="_blank" rel="noopener" class="cv-link">Link &rarr;</a>{{ end }}
-      {{ if $talkPage }} | <a href="{{ $talkPage.RelPermalink }}" class="cv-link">Talk page &rarr;</a>{{ end }}
+      {{- $hasMeta := false -}}
+      {{- with .event -}}<span>{{ . }}</span>{{- $hasMeta = true -}}{{- end -}}
+      {{- with .institution -}}{{- if $hasMeta }} &middot; {{ end -}}<span>{{ . }}</span>{{- $hasMeta = true -}}{{- end -}}
+      {{- with .location -}}{{- if $hasMeta }} &middot; {{ end -}}<span>{{ . }}</span>{{- end -}}
     </div>
+    {{- end }}
+    {{- if or .url $talkPage }}
+    <div class="cv-item-actions action-pill-row">
+      {{- if .url }}
+      <a href="{{ .url }}" target="_blank" rel="noopener" class="cv-link action-pill">{{ if strings.HasSuffix .url ".pdf" }}Slides (PDF){{ else }}Link{{ end }} &#8599;</a>
+      {{- end }}
+      {{- if $talkPage }}
+      <a href="{{ $talkPage.RelPermalink }}" class="cv-link action-pill action-pill--primary">Talk page &rarr;</a>
+      {{- end }}
+    </div>
+    {{- end }}
     {{ if .skills }}
     <div class="cv-skills">
       {{ range .skills }}

@@ -3,15 +3,6 @@
 <article class="post-single">
   <header class="post-header">
     {{ partial "breadcrumbs.html" . }}
-    {{- if and (eq .Section "posts") (not (.Param "hideMeta")) }}
-    {{- with (.GetTerms "kinds") }}
-    <div class="post-kinds">
-      {{- range . }}
-      <a href="{{ .RelPermalink }}" class="kind-badge">{{ .LinkTitle | lower }}</a>
-      {{- end }}
-    </div>
-    {{- end }}
-    {{- end }}
     <h1 class="post-title entry-hint-parent">
       {{ .Title }}
       {{- if .Draft }}
@@ -28,12 +19,40 @@
       {{ .Description }}
     </div>
     {{- end }}
-    {{- if not (.Param "hideMeta") }}
-    <div class="post-meta">
-      {{- partial "post_meta.html" . -}}
-      {{- partial "translation_list.html" . -}}
-      {{- partial "edit_post.html" . -}}
-      {{- partial "post_canonical.html" . -}}
+    {{- $hasKinds := and (eq .Section "posts") (not (.Param "hideMeta")) (.GetTerms "kinds") -}}
+    {{- $hasMeta := not (.Param "hideMeta") -}}
+    {{- if or $hasKinds $hasMeta }}
+    <div class="post-header-meta">
+      {{- if $hasKinds }}
+      {{- with (.GetTerms "kinds") }}
+      <div class="post-kinds">
+        {{- range . }}
+        <a href="{{ .RelPermalink }}" class="kind-badge">{{ .LinkTitle | lower }}</a>
+        {{- end }}
+      </div>
+      {{- end }}
+      {{- end }}
+      {{- if $hasMeta }}
+      <div class="post-meta">
+        {{- partial "post_meta.html" . -}}
+        {{- partial "translation_list.html" . -}}
+        {{- partial "edit_post.html" . -}}
+        {{- partial "post_canonical.html" . -}}
+      </div>
+      {{- end }}
+    </div>
+    {{- end }}
+    {{- if or .Params.slides .Params.pdf .Params.code }}
+    <div class="action-pill-row post-header-actions">
+      {{- with .Params.slides }}
+      <a href="{{ . | safeURL }}" class="action-pill" target="_blank" rel="noopener noreferrer">Slides &#8599;</a>
+      {{- end }}
+      {{- with .Params.pdf }}
+      <a href="{{ . | safeURL }}" class="action-pill" target="_blank" rel="noopener noreferrer">PDF &#8599;</a>
+      {{- end }}
+      {{- with .Params.code }}
+      <a href="{{ . | safeURL }}" class="action-pill" target="_blank" rel="noopener noreferrer">Code &#8599;</a>
+      {{- end }}
     </div>
     {{- end }}
   </header>
@@ -52,9 +71,9 @@
   {{- end }}
 
   {{- with .Params.linkedin }}
-  <p class="post-linkedin-link">
-    <a href="{{ . | safeURL }}" target="_blank" rel="noopener noreferrer">Discuss on LinkedIn &rarr;</a>
-  </p>
+  <div class="post-linkedin-link action-pill-row">
+    <a href="{{ . | safeURL }}" class="action-pill" target="_blank" rel="noopener noreferrer">Discuss on LinkedIn &rarr;</a>
+  </div>
   {{- end }}
 
   {{- partial "extend_post_content.html" . }}
