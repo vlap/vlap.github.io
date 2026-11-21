@@ -179,7 +179,7 @@ def test_r1_head_and_footer_sync_meta_color_scheme(built_site: Path) -> None:
 
 
 def test_r1_simulation_gallery_uses_replace_children(built_site: Path) -> None:
-    """Verify playSimVideo uses replaceChildren(iframe) without innerHTML."""
+    """Verify playSimVideo uses replaceChildren(video) without innerHTML."""
     sw_text = (built_site / "software/index.html").read_text(encoding="utf-8")
     match = re.search(r"function playSimVideo\([^)]*\)\{[^}]+\}", sw_text)
     assert match is not None, "Missing playSimVideo function in built software page"
@@ -188,7 +188,27 @@ def test_r1_simulation_gallery_uses_replace_children(built_site: Path) -> None:
     assert ".innerHTML" not in fn_body
     src_text = (REPO_ROOT / "layouts" / "shortcodes" / "simulation_gallery.html").read_text(encoding="utf-8")
     assert "innerHTML" not in src_text
-    assert "container.replaceChildren(iframe)" in src_text
+    assert "container.replaceChildren(video)" in src_text
+
+
+def test_simulation_assets_exist_in_static_and_built_site(built_site: Path) -> None:
+    """Verify every poster and video file in data/simulations.yaml exists in static/ and public/."""
+    sims = yaml.safe_load((REPO_ROOT / "data" / "simulations.yaml").read_text(encoding="utf-8"))
+    assert isinstance(sims, list) and len(sims) == 3
+    max_video_bytes = int(1.5 * 1024 * 1024)
+    for sim in sims:
+        for key in ("poster", "video_webm", "video_mp4"):
+            rel_url = sim.get(key)
+            assert rel_url and rel_url.startswith("/"), f"Missing root-relative {key} in {sim}"
+            rel_path = rel_url.lstrip("/")
+            static_file = REPO_ROOT / "static" / rel_path
+            built_file = built_site / rel_path
+            assert static_file.is_file(), f"Missing static simulation asset: {static_file}"
+            assert built_file.is_file(), f"Missing built simulation asset: {built_file}"
+            if key.startswith("video_"):
+                assert static_file.stat().st_size < max_video_bytes, (
+                    f"Video {rel_url} exceeds 1.5 MB: {static_file.stat().st_size} bytes"
+                )
 
 
 def test_r1_css_color_scheme_and_light_dark_badges(built_stylesheet: str) -> None:
@@ -372,18 +392,29 @@ def test_internal_links_resolve_in_built_site(
     """Verify root-relative internal links and assets resolve to files in built_site."""
     missing: list[str] = []
     for rel, soup in non_redirect_html_pages:
-        for el in soup.find_all(["a", "link", "script", "img"]):
-            attr = "href" if el.name in {"a", "link"} else "src"
-            url = el.get(attr)
-            if not url or not url.startswith("/") or url.startswith("//"):
-                continue
-            path_part = unquote(url.split("#", 1)[0].split("?", 1)[0])
-            if not path_part or path_part == "/":
-                continue
-            candidate = built_site / path_part.lstrip("/")
-            if candidate.is_file() or (candidate / "index.html").is_file():
-                continue
-            missing.append(f"{rel} -> {url}")
+        for el in soup.find_all(["a", "link", "script", "img", "video", "source"]):
+            urls: list[str] = []
+            if el.name in {"a", "link"} and el.get("href"):
+                urls.append(el["href"])
+            if el.get("src"):
+                urls.append(el["src"])
+            if el.get("poster"):
+                urls.append(el["poster"])
+            if el.get("srcset"):
+                for part in el["srcset"].split(","):
+                    candidate_url = part.strip().split(" ", 1)[0]
+                    if candidate_url:
+                        urls.append(candidate_url)
+            for url in urls:
+                if not url or not url.startswith("/") or url.startswith("//"):
+                    continue
+                path_part = unquote(url.split("#", 1)[0].split("?", 1)[0])
+                if not path_part or path_part == "/":
+                    continue
+                candidate = built_site / path_part.lstrip("/")
+                if candidate.is_file() or (candidate / "index.html").is_file():
+                    continue
+                missing.append(f"{rel} -> {url}")
 
     assert not missing, "Broken internal links:\n" + "\n".join(missing[:20])
 
@@ -805,6 +836,26 @@ def test_cv_no_duplicate_post_entries_and_three_pdf_buttons(built_site: Path) ->
 
     assert (built_site / "cv" / "presentations" / "index.html").is_file()
     assert (built_site / "cv" / "trainings" / "index.html").is_file()
+
+    # Verify legacy PhD/MSc thesis PDFs are copied, built, and linked from Education
+    for pdf_name in ("phd-thesis-vlapin.pdf", "msc-thesis-vlapin.pdf"):
+        assert (built_site / "downloads" / pdf_name).is_file(), f"Missing built thesis PDF: {pdf_name}"
+        assert cv_soup.find("a", href=f"/downloads/{pdf_name}") is not None, (
+            f"Missing /downloads/{pdf_name} link on /cv/"
+        )
+
+    # Verify /cv/ collapses Trainings & Presentations inside details.cv-section-details while keeping standalone pages open
+    cv_details = cv_soup.select("details.cv-section-details")
+    assert len(cv_details) == 2, f"Expected 2 details.cv-section-details on /cv/, got {len(cv_details)}"
+    assert all(not d.has_attr("open") for d in cv_details), "CV details disclosures should start collapsed"
+
+    trainings_soup = BeautifulSoup((built_site / "cv" / "trainings" / "index.html").read_text(encoding="utf-8"), "lxml")
+    assert trainings_soup.select("details.cv-section-details") == []
+    assert len(trainings_soup.select(".cv-item")) == 28
+
+    pres_soup = BeautifulSoup((built_site / "cv" / "presentations" / "index.html").read_text(encoding="utf-8"), "lxml")
+    assert pres_soup.select("details.cv-section-details") == []
+    assert len(pres_soup.select(".cv-item")) == 21
 
 
 def test_css_contrast_tokens_and_modern_polish(built_stylesheet: str) -> None:

@@ -5,6 +5,8 @@ layout: "page"
 
 ## Senior Research Engineer | Climate & Geophysical Models · HPC · Predictions · AI Adoption
 
+> *"Frankly speaking, as an applied mathematician, I would give a go at modelling of any physical process with a rich mathematical structure."*
+
 I am a Senior Research Engineer at the **Barcelona Supercomputing Center (BSC)**, where I work on Earth system models (EC-Earth4, OpenIFS, NEMO), co-lead Auto-EC-Earth4 ensemble workflows on **MareNostrum 5**, and lead AI adoption across the research group.
 
 For years, advancing the fidelity of climate models has been hindered by escalating physical and software complexity—multi-million line legacy Fortran codes, fragile multi-component coupling layers, and intractable debugging across supercomputing tiers. The promise of modern AI is making high-fidelity Earth system prediction affordable to science again: coupling fast neural emulators with physical dynamical cores, and replacing brittle manual scripts with schema-validated, deterministic workflows like Climate Commons ([`cvc-commons`](https://github.com/vlap/cvc-commons)).

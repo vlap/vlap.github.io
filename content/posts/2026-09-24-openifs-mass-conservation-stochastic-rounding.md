@@ -43,11 +43,7 @@ $$\Delta M(t) = E_{\text{emis}}(t) + S_{\text{chem/sfc}}(t) + \Delta M_{\text{tr
 
 ## 2. What the 90-Day Diagnostics Reveal
 
-Here is the 4-panel diagnostic tracking all 90 days across 5 different model configurations:
-
-![Atmospheric Tracer Mass Budget Tracking](/images/posts/co2_90day_mass_budget_tracking.png)
-
-Take a close look at **Panel (c)**:
+Look closely at **Panel (c)** in the 4-panel diagnostic above, which tracks all 90 days across 5 model configurations:
 * The solid line is the total mass discrepancy relative to the DP reference run ($\Delta M_{\text{SP}} - \Delta M_{\text{DP}}$).
 * The dashed line is the surface sink discrepancy ($\Delta S_{\text{chem,SP}} - \Delta S_{\text{chem,DP}}$).
 

@@ -16,3 +16,9 @@ __pycache__/
 *$py.class
 .pytest_cache/
 .venv/
+
+# Impeccable local/ephemeral state (keep PRODUCT.md, DESIGN.md, config.json, design.json, surfaces/ tracked)
+.impeccable/config.local.json
+.impeccable/questions/
+.impeccable/mocks/
+.impeccable/review/

@@ -1,7 +1,17 @@
-{{ $file := .Get "file" }}
-{{ $heading := .Get "heading" | default "h3" }}
-{{ $data := index hugo.Data $file }}
-
+{{- $file := .Get "file" -}}
+{{- $heading := .Get "heading" | default "h3" -}}
+{{- $collapsible := .Get "collapsible" | default false -}}
+{{- $summary := .Get "summary" -}}
+{{- $summaryLabel := .Get "summary_label" | default "entries" -}}
+{{- $sectionId := .Get "section_id" -}}
+{{- $data := index hugo.Data $file -}}
+{{- if $collapsible }}
+<details class="cv-section-details"{{ if $sectionId }} data-cv-section="{{ $sectionId }}"{{ end }}>
+  <summary class="cv-details-summary">
+    <svg class="cv-details-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    <span>{{ $summary | default (printf "Show all %d %s" (len $data) $summaryLabel) | safeHTML }}</span>
+  </summary>
+{{- end }}
 <div class="cv-section">
   {{ range $data }}
   <div class="cv-item">
@@ -30,3 +40,6 @@
   </div>
   {{ end }}
 </div>
+{{- if $collapsible }}
+</details>
+{{- end -}}

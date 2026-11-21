@@ -13,7 +13,13 @@
     {{- if .bullets }}
     <ul class="cv-bullets">
       {{- range .bullets }}
-      <li><strong>{{ .lead }}</strong> {{ .text }}</li>
+      {{- $thesisHref := "" -}}
+      {{- if in .text "Resonant over-reflection" -}}
+        {{- $thesisHref = "/downloads/phd-thesis-vlapin.pdf" -}}
+      {{- else if in .text "visco-plastic fluids" -}}
+        {{- $thesisHref = "/downloads/msc-thesis-vlapin.pdf" -}}
+      {{- end -}}
+      <li><strong>{{ .lead }}</strong> {{ .text }}{{- if $thesisHref }} <a href="{{ $thesisHref }}" class="cv-link" target="_blank" rel="noopener">(Thesis PDF)</a>{{- end }}</li>
       {{- end }}
     </ul>
     {{- end }}

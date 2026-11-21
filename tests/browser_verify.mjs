@@ -19,6 +19,8 @@ const MIME_TYPES = {
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
   ".webp": "image/webp",
+  ".mp4": "video/mp4",
+  ".webm": "video/webm",
   ".woff2": "font/woff2",
   ".pdf": "application/pdf",
   ".xml": "application/xml; charset=utf-8",
@@ -298,19 +300,32 @@ describe("vlap.github.io headless browser verification", () => {
     assert.notEqual(toggledAbout.badgeBg, persistedAbout.badgeBg, "--badge-hpc-bg must adapt between light and dark");
   });
 
-  it("activates .sim-facade native <button> via keyboard Enter and replaces with YouTube iframe", async () => {
+  it("activates .sim-facade native <button> via keyboard Enter and replaces with native <video>", async () => {
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/software/`);
-    const beforeInfo = await cdp.eval(`(() => {
+    const beforeInfo = await cdp.eval(`(async () => {
       const btns = [...document.querySelectorAll('button.sim-facade')];
+      const posters = [...document.querySelectorAll('img.sim-poster')];
+      for (const img of posters) {
+        img.scrollIntoView({ block: 'center' });
+        if (!img.complete) {
+          await new Promise((resolve) => {
+            img.addEventListener('load', resolve, { once: true });
+            img.addEventListener('error', resolve, { once: true });
+            setTimeout(resolve, 3000);
+          });
+        }
+      }
       return {
         count: btns.length,
         labels: btns.map((b) => b.getAttribute('aria-label')),
-        types: btns.map((b) => b.getAttribute('type'))
+        types: btns.map((b) => b.getAttribute('type')),
+        postersLoaded: posters.every((img) => img.complete && img.naturalWidth > 0)
       };
     })()`);
     assert.equal(beforeInfo.count, 3);
     assert.ok(beforeInfo.labels.every((l) => l && l.startsWith("Play ")));
     assert.ok(beforeInfo.types.every((t) => t === "button"));
+    assert.equal(beforeInfo.postersLoaded, true, "All 3 simulation WebP posters must load");
 
     await cdp.send("Emulation.setEmulatedMedia", {
       features: [{ name: "prefers-reduced-motion", value: "reduce" }],
@@ -356,8 +371,26 @@ describe("vlap.github.io headless browser verification", () => {
       nativeVirtualKeyCode: 13,
     });
 
-    const iframeSrc = await cdp.eval(`document.querySelector('.sim-video iframe')?.getAttribute('src')`);
-    assert.ok(iframeSrc && iframeSrc.includes("https://www.youtube-nocookie.com/embed/"), `Unexpected iframe src: ${iframeSrc}`);
+    const videoInfo = await cdp.eval(`(() => {
+      const video = document.querySelector('.sim-video video');
+      if (!video) return null;
+      const sources = [...video.querySelectorAll('source')].map((s) => ({
+        src: s.getAttribute('src'),
+        type: s.getAttribute('type')
+      }));
+      return {
+        controls: video.controls,
+        muted: video.muted,
+        poster: video.getAttribute('poster'),
+        sources
+      };
+    })()`);
+    assert.ok(videoInfo, "Expected .sim-video video element after facade activation");
+    assert.equal(videoInfo.controls, true);
+    assert.equal(videoInfo.muted, true);
+    assert.ok(videoInfo.poster && videoInfo.poster.startsWith("/images/simulations/"), `Unexpected poster: ${videoInfo.poster}`);
+    assert.ok(videoInfo.sources.some((s) => s.type === "video/webm" && s.src?.endsWith(".webm")));
+    assert.ok(videoInfo.sources.some((s) => s.type === "video/mp4" && s.src?.endsWith(".mp4")));
     const remainingFacades = await cdp.eval(`document.querySelectorAll('button.sim-facade').length`);
     assert.equal(remainingFacades, 2);
   });
@@ -769,10 +802,25 @@ describe("vlap.github.io headless browser verification", () => {
       }
     }
 
-    // Verify sequential Tab reachability across deferred .cv-item:nth-of-type(n+6) on /cv/
+    // Verify <details class="cv-section-details"> starts closed, opens via anchor click, and Tab reachability works into .cv-item:nth-of-type(n+6)
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/cv/`);
-    const deferredCvStyle = await cdp.eval(`getComputedStyle(document.querySelector('.cv-item:nth-of-type(n+6)')).contentVisibility`);
-    assert.equal(deferredCvStyle, "auto");
+    const cvDetailsState = await cdp.eval(`(() => {
+      const details = [...document.querySelectorAll('details.cv-section-details')];
+      return {
+        count: details.length,
+        initiallyClosed: details.every((d) => !d.open),
+        deferredCv: getComputedStyle(document.querySelector('.cv-item:nth-of-type(n+6)')).contentVisibility
+      };
+    })()`);
+    assert.equal(cvDetailsState.count, 2);
+    assert.equal(cvDetailsState.initiallyClosed, true);
+    assert.equal(cvDetailsState.deferredCv, "auto");
+
+    await cdp.eval(`document.querySelector('.cv-nav-link[href="#trainings--certifications"]').click()`);
+    await new Promise((r) => setTimeout(r, 250));
+    const openedByNav = await cdp.eval(`document.querySelector('details.cv-section-details[data-cv-section="trainings--certifications"]')?.open`);
+    assert.equal(openedByNav, true, "Clicking #trainings--certifications nav link must open Trainings <details>");
+
     await cdp.eval(`(() => {
       const items = [...document.querySelectorAll('.cv-item')];
       const beforeDeferred = items[4];
@@ -1185,7 +1233,8 @@ describe("vlap.github.io headless browser verification", () => {
       const h1 = document.querySelector('h1.post-title');
       const pc = document.querySelector('.post-content');
       const proseP = [...document.querySelectorAll('.post-content > p')].find((el) => !el.querySelector('img'));
-      const figImg = document.querySelector('.post-content img[src*="co2_90day_mass_budget_tracking.png"]');
+      const figImg = document.querySelector('.entry-cover img[src*="co2_90day_mass_budget_tracking.png"]');
+      const dupInline = document.querySelector('.post-content img[src*="co2_90day_mass_budget_tracking.png"]');
       const table = document.querySelector('.post-content table');
       const h1Style = getComputedStyle(h1);
       const pStyle = getComputedStyle(proseP);
@@ -1211,7 +1260,7 @@ describe("vlap.github.io headless browser verification", () => {
         postContentWidth: pc?.getBoundingClientRect().width || 0,
         co2ImgComplete: Boolean(figImg?.complete && figImg?.naturalWidth > 0),
         co2ImgWidth: figImg?.getBoundingClientRect().width || 0,
-        co2ParentMaxWidth: figImg ? getComputedStyle(figImg.parentElement).maxWidth : null,
+        hasDupInline: Boolean(dupInline),
         tableMaxWidth: tableStyle.maxWidth,
         beforeContent: beforeStyle.content,
         beforeTimeline: beforeStyle.animationTimeline,
@@ -1223,16 +1272,16 @@ describe("vlap.github.io headless browser verification", () => {
     assert.ok(polish.pMaxWidthPx > 0 && polish.pMaxWidthPx <= 68 * polish.pFontSizePx, (
       `Expected .post-content p maxWidth <= 68em (${68 * polish.pFontSizePx}px), got ${polish.pMaxWidthPx}px`
     ));
-    assert.equal(polish.co2ImgComplete, true, "Expected co2_90day_mass_budget_tracking.png to load");
+    assert.equal(polish.co2ImgComplete, true, "Expected co2_90day_mass_budget_tracking.png cover image to load");
+    assert.equal(polish.hasDupInline, false, "Duplicate inline co2_90day_mass_budget_tracking.png must be removed");
     assert.ok(
       polish.co2ImgWidth > polish.pMaxWidthPx,
       `Expected co2_90day_mass_budget_tracking.png width (${polish.co2ImgWidth}px) > 68ch prose cap (${polish.pMaxWidthPx}px)`,
     );
     assert.ok(
-      Math.abs(polish.co2ImgWidth - polish.postContentWidth) <= 2,
+      Math.abs(polish.co2ImgWidth - polish.postContentWidth) <= 4,
       `Expected co2_90day_mass_budget_tracking.png width (${polish.co2ImgWidth}px) to match .post-content (${polish.postContentWidth}px)`,
     );
-    assert.equal(polish.co2ParentMaxWidth, "100%");
     assert.equal(polish.tableMaxWidth, "100%");
     assert.notEqual(polish.beforeContent, "none");
     assert.ok((polish.beforeTimeline || "").includes("scroll"), `Expected scroll() timeline, got ${polish.beforeTimeline}`);

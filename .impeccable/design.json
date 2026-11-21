@@ -1,0 +1,249 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-21T12:55:00Z",
+  "title": "Design System: vlap.github.io",
+  "extensions": {
+    "colorMeta": {
+      "accent-pine": {
+        "role": "primary",
+        "displayName": "Deep Pine (Light)",
+        "canonical": "#203931",
+        "tonalRamp": ["#0a1511", "#132620", "#203931", "#2e5246", "#3e7060", "#619986", "#98c9b8", "#dcf2ea"]
+      },
+      "accent-pine-dark": {
+        "role": "primary",
+        "displayName": "Bright Pine Mint (Dark)",
+        "canonical": "#6ee7b7",
+        "tonalRamp": ["#06281c", "#0f4733", "#186b4e", "#289770", "#42c395", "#6ee7b7", "#a7f3d0", "#ecfdf5"]
+      },
+      "accent-pine-mid": {
+        "role": "primary",
+        "displayName": "Mid Pine Hairline",
+        "canonical": "#3E7060",
+        "tonalRamp": ["#11221c", "#1e3a31", "#2c5448", "#3e7060", "#568e7c", "#7cb09f", "#aed3c6", "#e4f2ed"]
+      },
+      "accent-ocean": {
+        "role": "secondary",
+        "displayName": "Deep Ocean Link (Light)",
+        "canonical": "#09434e",
+        "tonalRamp": ["#03191e", "#062c34", "#09434e", "#10606f", "#1e8092", "#47a3b3", "#8fd0db", "#dff4f7"]
+      },
+      "accent-ocean-dark": {
+        "role": "secondary",
+        "displayName": "Ocean Sky Link (Dark)",
+        "canonical": "#7dd3fc",
+        "tonalRamp": ["#082332", "#0f3c55", "#195a7e", "#277eb0", "#49a8dc", "#7dd3fc", "#bae6fd", "#f0f9ff"]
+      },
+      "canvas-light": {
+        "role": "neutral",
+        "displayName": "Paper White",
+        "canonical": "#ffffff",
+        "tonalRamp": ["#1e1e1e", "#3a3a3a", "#5c5c5c", "#828282", "#a8a8a8", "#cccccc", "#ededed", "#ffffff"]
+      },
+      "canvas-dark": {
+        "role": "neutral",
+        "displayName": "Charcoal Base",
+        "canonical": "#1d1e20",
+        "tonalRamp": ["#0e0f10", "#1d1e20", "#2e2e33", "#414244", "#66676a", "#9b9c9d", "#c4c4c5", "#dadadb"]
+      },
+      "surface-dark": {
+        "role": "neutral",
+        "displayName": "Elevated Charcoal",
+        "canonical": "#2e2e33",
+        "tonalRamp": ["#161619", "#222226", "#2e2e33", "#414244", "#5c5d61", "#85868a", "#b4b5b8", "#e2e2e4"]
+      },
+      "ink-primary-light": {
+        "role": "neutral",
+        "displayName": "Graphite Ink",
+        "canonical": "#1e1e1e",
+        "tonalRamp": ["#0f0f0f", "#1e1e1e", "#383838", "#575757", "#7c7c7c", "#a3a3a3", "#d0d0d0", "#f5f5f5"]
+      },
+      "ink-primary-dark": {
+        "role": "neutral",
+        "displayName": "Off-White Ink",
+        "canonical": "#dadadb",
+        "tonalRamp": ["#1d1e20", "#333438", "#505156", "#737479", "#9b9c9d", "#babbbd", "#dadadb", "#f4f4f5"]
+      },
+      "ink-body-light": {
+        "role": "neutral",
+        "displayName": "Monograph Body Ink",
+        "canonical": "#1f1f1f",
+        "tonalRamp": ["#101010", "#1f1f1f", "#3a3a3a", "#585858", "#7d7d7d", "#a5a5a5", "#d2d2d2", "#f6f6f6"]
+      },
+      "ink-body-dark": {
+        "role": "neutral",
+        "displayName": "Soft Reading Ink (Dark)",
+        "canonical": "#c4c4c5",
+        "tonalRamp": ["#18181a", "#2b2b2e", "#454549", "#66666b", "#8d8d91", "#ababad", "#c4c4c5", "#ececed"]
+      },
+      "ink-secondary-light": {
+        "role": "neutral",
+        "displayName": "Muted Metadata Gray",
+        "canonical": "#6c6c6c",
+        "tonalRamp": ["#1e1e1e", "#383838", "#525252", "#6c6c6c", "#8a8a8a", "#acacac", "#d2d2d2", "#f2f2f2"]
+      },
+      "ink-secondary-dark": {
+        "role": "neutral",
+        "displayName": "Muted Metadata Gray (Dark)",
+        "canonical": "#9b9c9d",
+        "tonalRamp": ["#1a1a1c", "#2d2d30", "#48494c", "#6b6c6f", "#87888a", "#9b9c9d", "#c6c7c8", "#ececed"]
+      },
+      "surface-tertiary-light": {
+        "role": "neutral",
+        "displayName": "Tag Chip Fill (Light)",
+        "canonical": "#d6d6d6",
+        "tonalRamp": ["#262626", "#444444", "#666666", "#8b8b8b", "#b2b2b2", "#d6d6d6", "#eaeaea", "#f8f8f8"]
+      },
+      "surface-tertiary-dark": {
+        "role": "neutral",
+        "displayName": "Tag Chip Fill (Dark)",
+        "canonical": "#414244",
+        "tonalRamp": ["#141416", "#232426", "#313234", "#414244", "#5c5d60", "#828386", "#b2b3b5", "#e3e3e4"]
+      },
+      "border-hairline-light": {
+        "role": "neutral",
+        "displayName": "Light Hairline Border",
+        "canonical": "#eeeeee",
+        "tonalRamp": ["#2a2a2a", "#4a4a4a", "#6e6e6e", "#959595", "#bababa", "#d8d8d8", "#eeeeee", "#fafafa"]
+      },
+      "border-hairline-dark": {
+        "role": "neutral",
+        "displayName": "Dark Hairline Border",
+        "canonical": "#333333",
+        "tonalRamp": ["#111111", "#202020", "#333333", "#4c4c4c", "#6c6c6c", "#929292", "#bfbfbf", "#ececec"]
+      },
+      "code-surface-light": {
+        "role": "neutral",
+        "displayName": "Code Paper Fill",
+        "canonical": "#f5f5f5",
+        "tonalRamp": ["#242424", "#424242", "#656565", "#8c8c8c", "#b4b4b4", "#d6d6d6", "#ededed", "#f5f5f5"]
+      },
+      "code-surface-dark": {
+        "role": "neutral",
+        "displayName": "Code Block Charcoal",
+        "canonical": "#37383e",
+        "tonalRamp": ["#121316", "#1f2025", "#2b2c32", "#37383e", "#505259", "#75777f", "#a9abb2", "#e2e3e6"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero <h1> and page titles in Georgia serif." },
+      "headline": { "displayName": "Headline", "purpose": "Section <h2> headings with 1px mid-pine bottom rule." },
+      "title": { "displayName": "Title", "purpose": "Subsection <h3> headings and card headers." },
+      "body": { "displayName": "Body", "purpose": "Long-form technical reading prose capped at 68ch." },
+      "label": { "displayName": "Label", "purpose": "Metadata badges, pills, and tabular metrics." },
+      "mono": { "displayName": "Monospace", "purpose": "Fortran/Python code listings, BibTeX, and licenses." }
+    },
+    "shadows": [
+      { "name": "flat-none", "value": "none", "purpose": "Default flat elevation on all cards, inputs, covers, and controls." }
+    ],
+    "motion": [
+      { "name": "ease-out-expo", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Smooth non-bounce hover scaling on simulation play facade." },
+      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Standard border, color, and chevron transitions." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "600px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "860px" },
+      { "name": "nav", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Action Download Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Flat bordered CV PDF download button with audience sublabel and 44px touch floor.",
+      "html": "<a href=\"#\" class=\"ds-btn-action\"><svg aria-hidden=\"true\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg><span>Full Research CV (PDF)</span></a>",
+      "css": ".ds-btn-action { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 10px 16px; background: var(--entry, #ffffff); border: 1px solid var(--border, #eeeeee); border-radius: 8px; color: var(--primary, #1e1e1e); font-size: 0.88rem; font-weight: 600; text-decoration: none; box-shadow: none; transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease; } .ds-btn-action:hover { background: var(--tertiary, #d6d6d6); border-color: var(--accent-pine-mid, #3E7060); transform: translateY(-2px); } .ds-btn-action:focus-visible { outline: 2px solid var(--accent-pine, #203931); outline-offset: 2px; }"
+    },
+    {
+      "name": "Metadata Pill Chip",
+      "kind": "chip",
+      "refersTo": "chip-badge",
+      "description": "High-contrast pill chip using primary ink on tertiary surface fill.",
+      "html": "<span class=\"ds-chip-pill\">OpenIFS CY48R1.1</span>",
+      "css": ".ds-chip-pill { display: inline-block; font-size: 0.75rem; font-weight: 600; padding: 2px 10px; border-radius: 12px; background: var(--tertiary, #d6d6d6); color: var(--primary, #1e1e1e); border: 1px solid var(--border, #eeeeee); font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Flat Monograph Card",
+      "kind": "card",
+      "refersTo": "card-flat",
+      "description": "Flat 1px-bordered card container without ambient shadows or colored glows.",
+      "html": "<article class=\"ds-card-flat\"><h3>Climate Commons</h3><p>Schema-validated workflows for Earth system prediction.</p></article>",
+      "css": ".ds-card-flat { background: var(--entry, #ffffff); border: 1px solid var(--border, #eeeeee); border-radius: 8px; padding: 20px; color: var(--primary, #1e1e1e); box-shadow: none; transition: transform 0.2s ease, border-color 0.2s ease; } .ds-card-flat:hover { transform: translateY(-2px); border-color: var(--accent-pine-mid, #3E7060); } .ds-card-flat h3 { margin: 0 0 8px 0; font-size: 1.1rem; } .ds-card-flat p { margin: 0; font-size: 0.9rem; color: var(--secondary, #6c6c6c); }"
+    },
+    {
+      "name": "Publication Filter Input",
+      "kind": "input",
+      "refersTo": "input-filter",
+      "description": "Flat search input with leading SVG icon and explicit :focus-visible outline.",
+      "html": "<div class=\"ds-input-wrap\"><svg class=\"ds-input-icon\" aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" y1=\"21\" x2=\"16.65\" y2=\"16.65\"/></svg><input type=\"search\" class=\"ds-input-filter\" placeholder=\"Filter publications...\" aria-label=\"Filter publications\"></div>",
+      "css": ".ds-input-wrap { position: relative; display: flex; align-items: center; } .ds-input-icon { position: absolute; left: 14px; color: var(--secondary, #6c6c6c); pointer-events: none; } .ds-input-filter { width: 100%; padding: 10px 38px 10px 42px; border-radius: 8px; background: var(--entry, #ffffff); border: 1px solid var(--border, #eeeeee); color: var(--primary, #1e1e1e); font-size: 0.95rem; box-shadow: none; } .ds-input-filter:focus-visible { outline: 2px solid var(--primary, #1e1e1e); outline-offset: 2px; border-color: var(--primary, #1e1e1e); }"
+    },
+    {
+      "name": "Section Anchor Nav Pill",
+      "kind": "nav",
+      "refersTo": "chip-badge",
+      "description": "Compact section jump link used in .cv-nav-bar and .pub-year-nav.",
+      "html": "<a href=\"#research-experience\" class=\"ds-nav-pill\">Experience</a>",
+      "css": ".ds-nav-pill { display: inline-block; font-size: 0.82rem; font-weight: 500; padding: 4px 12px; border-radius: 14px; background: var(--tertiary, #d6d6d6); color: var(--primary, #1e1e1e); text-decoration: none; transition: background-color 0.15s ease; } .ds-nav-pill:hover { background: var(--border, #eeeeee); } .ds-nav-pill:focus-visible { outline: 2px solid var(--accent-pine, #203931); outline-offset: 2px; }"
+    },
+    {
+      "name": "Progressive CV Disclosure",
+      "kind": "custom",
+      "refersTo": "button-primary",
+      "description": "Native <details> summary control for secondary CV sections, expanding automatically for print and anchors.",
+      "html": "<details class=\"ds-cv-details\"><summary class=\"ds-cv-summary\"><svg aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"9 18 15 12 9 6\"/></svg><span>Show all 28 trainings &amp; certifications</span></summary></details>",
+      "css": ".ds-cv-summary { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px; background: var(--entry, #ffffff); border: 1px solid var(--border, #eeeeee); border-radius: 8px; color: var(--primary, #1e1e1e); font-size: 0.92rem; font-weight: 600; cursor: pointer; list-style: none; } .ds-cv-summary:hover { background: var(--tertiary, #d6d6d6); border-color: var(--accent-pine-mid, #3E7060); } .ds-cv-summary:focus-visible { outline: 2px solid var(--accent-pine, #203931); outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Applied Mathematician's Monograph & Lab Notebook",
+    "overview": "This design system unifies classical applied-mathematics publishing with modern engineering precision. Long-form technical articles, KaTeX derivations, Fortran kernels, and fluid-dynamics visualizations occupy calm, uncluttered columns anchored by crisp serif section headings and hairline pine dividers carried forward from the legacy \"Save The Earth\" site.\n\nColor and motion stay strictly subordinate to reading comprehension and operational speed. Neutrals carry the canvas and card geometry, while deep pine and ocean accents mark interactive links, selections, active states, and structural rules across both light and dark modes.",
+    "keyCharacteristics": [
+      "Editorial Authority: Georgia serif headings paired with hairline mid-pine bottom rules and a strict 68ch prose reading measure.",
+      "Flat Tactility: Crisp 1px borders without resting ambient shadows or colored glow halos.",
+      "Heritage Accents: Deep pine and ocean ink tokens adapted explicitly for light and dark surfaces at >= 4.5:1 WCAG AA contrast.",
+      "Operational Restraint: Progressive <details> disclosures, instant CSS Highlights filtering, and lightweight local video facades."
+    ],
+    "rules": [
+      {
+        "name": "The Heritage Scarcity Rule",
+        "body": "Reserve deep pine and ocean exclusively for section rules, inline links, active selections, and interactive emphasis; never flood card backgrounds with saturated brand fills.",
+        "section": "colors"
+      },
+      {
+        "name": "The Pill Contrast Rule",
+        "body": "Never render small pill, tag, or badge text in --secondary over --tertiary; always use --primary (or dedicated WCAG AA semantic tokens) to maintain >= 4.5:1 contrast.",
+        "section": "colors"
+      },
+      {
+        "name": "The 68ch Monograph Measure Rule",
+        "body": "Constrain .post-content p and .post-content li to 68ch for comfortable reading while exempting image-bearing paragraphs and <figure> blocks at 100% container width.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Numerals Rule",
+        "body": "Apply font-variant-numeric: tabular-nums on .metric-value, .pub-year-pill, .cv-date-badge, and table td so numeric benchmarks and CV dates align cleanly.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Cards, inputs, covers, and play buttons carry zero resting box-shadow and zero colored glow halos; depth is expressed solely through 1px borders and clean surface hierarchy.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use --accent-pine (#203931 / #6ee7b7) and --accent-ocean (#09434e / #7dd3fc) for structural hairlines, prose links, selections, and interactive emphasis.",
+      "Do keep all cards flat (1px solid var(--border), box-shadow: none) and use var(--primary) for text on --tertiary pills.",
+      "Do preserve Georgia serif display headings with 1px solid var(--accent-pine-mid) bottom hairlines on section h2s while keeping card titles borderless.",
+      "Do declare explicit dimensions (width/height) on media, tabular-nums on numeric badges/tables, and beforeprint/@media print expansion on <details>."
+    ],
+    "donts": [
+      "Don't add colored blurred shadows (dark-glow), bounce easing (1.56), thick colored border-left side-tabs on cards, or nested cards inside cards.",
+      "Don't use var(--secondary) text inside .post-tag, .software-tag, .sim-spec-pill, .cv-date-badge, .cv-skills-tag, or .pub-year-pill.",
+      "Don't replace native <button>/<details> controls with <div> click handlers or inject raw HTML via innerHTML.",
+      "Don't modify anything inside the read-only themes/PaperMod/ submodule."
+    ]
+  }
+}

@@ -2,9 +2,9 @@
 <div class="simulation-gallery">
     {{- range $sims }}
     <div class="sim-item">
-        <div class="sim-video" data-id="{{ .id }}" data-title="{{ .title }}">
+        <div class="sim-video" data-id="{{ .id }}" data-title="{{ .title }}" data-poster="{{ .poster }}" data-webm="{{ .video_webm }}" data-mp4="{{ .video_mp4 }}">
             <button type="button" class="sim-facade" onclick="playSimVideo(this)" aria-label="Play {{ .title }}">
-                <img src="https://i.ytimg.com/vi/{{ .id }}/hqdefault.jpg" alt="{{ .title }}" width="480" height="360" loading="lazy" class="sim-poster">
+                <img src="{{ .poster }}" alt="{{ .title }}" width="480" height="360" loading="lazy" class="sim-poster">
                 <span class="sim-play-overlay">
                     <span class="sim-play-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
@@ -34,18 +34,31 @@
 <script>
 function playSimVideo(facade) {
     var container = facade.closest('.sim-video');
-    var id = container.getAttribute('data-id');
     var title = container.getAttribute('data-title');
-    var iframe = document.createElement('iframe');
-    iframe.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1';
-    iframe.title = title;
-    iframe.frameBorder = '0';
-    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-    iframe.allowFullscreen = true;
-    container.replaceChildren(iframe);
+    var poster = container.getAttribute('data-poster');
+    var webm = container.getAttribute('data-webm');
+    var mp4 = container.getAttribute('data-mp4');
+    var video = document.createElement('video');
+    video.controls = true;
+    video.autoplay = true;
+    video.muted = true;
+    video.playsInline = true;
+    video.width = 480;
+    video.height = 360;
+    video.poster = poster;
+    video.setAttribute('aria-label', title);
+    var sWebm = document.createElement('source');
+    sWebm.src = webm;
+    sWebm.type = 'video/webm';
+    var sMp4 = document.createElement('source');
+    sMp4.src = mp4;
+    sMp4.type = 'video/mp4';
+    video.appendChild(sWebm);
+    video.appendChild(sMp4);
+    container.replaceChildren(video);
 }
 </script>
 
 <div class="gallery-footer">
-    <p>View complete simulation playlists on <a href="https://www.youtube.com/playlist?list=PLbABsNMD2jhy5zsINz9VIuOzVsrM0_vwu" target="_blank" rel="noopener">YouTube &rarr;</a></p>
+    <p>View additional simulation archives on <a href="https://www.youtube.com/playlist?list=PLbABsNMD2jhy5zsINz9VIuOzVsrM0_vwu" target="_blank" rel="noopener">YouTube &rarr;</a></p>
 </div>
