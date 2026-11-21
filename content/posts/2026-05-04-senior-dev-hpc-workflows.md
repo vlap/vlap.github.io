@@ -24,7 +24,7 @@ Here are four hard-won engineering patterns from the trenches of Tier-0 ensemble
 
 ---
 
-### 1. From Brittle Shell Loops to Directed Acyclic Graphs (DAGs)
+## 1. From Brittle Shell Loops to Directed Acyclic Graphs (DAGs)
 
 In early-stage modeling projects, people frequently automate ensemble sweeps using nested bash loops that fire `sbatch` scripts. While intuitive for 2 or 3 test runs, this pattern breaks disastrously at scale:
 - If member `04` encounters an MPI rank hang at time step 4200 due to a single-node memory ECC glitch, the loop either halts completely or blindly launches downstream post-processing jobs against corrupted half-written files.
@@ -57,7 +57,7 @@ In our production workflows at BSC, we orchestrate these campaigns as **Directed
 
 ---
 
-### 2. Lustre Storage Contention: Striping vs. Metadata Floods
+## 2. Lustre Storage Contention: Striping vs. Metadata Floods
 
 MareNostrum 5’s GPFS and Lustre parallel filesystems are engineered for extreme aggregate bandwidth (multi-terabyte/s streaming). However, parallel filesystems have an Achilles' heel: **Metadata Operations (MDS contention)**.
 
@@ -76,7 +76,7 @@ The Metadata Target (MDT) locks up. Jobs spend 30–45% of their allocation time
 
 ---
 
-### 3. NUMA-Aware Rank Placement on Sapphire Rapids
+## 3. NUMA-Aware Rank Placement on Sapphire Rapids
 
 MareNostrum 5 General Purpose Partition (GPP) nodes feature dual-socket Intel Xeon Platinum 8480+ processors (112 physical cores per node, split across multiple Sub-NUMA Clustering (SNC) domains).
 
@@ -100,7 +100,7 @@ Binding threads closely to local NUMA cores and distributing MPI tasks cyclicall
 
 ---
 
-### 4. High-Throughput Edge Transfers without Crashing Gateways
+## 4. High-Throughput Edge Transfers without Crashing Gateways
 
 At the conclusion of a 60-year ensemble campaign, we typically have 40–80 TB of raw NetCDF output that must be transferred from fast Tier-0 scratch to long-term storage or institutional data repositories (e.g., EUDAT or BSC archive).
 
@@ -125,6 +125,6 @@ Using a simple `scp` or naive `rsync -av` over cluster login nodes is forbidden 
 
 ---
 
-### Summary: Architecture over Ad-hoc Scripting
+## Summary: Architecture over Ad-hoc Scripting
 
 Managing Earth system model ensembles is fundamentally a distributed systems engineering challenge. Moving from ad-hoc shell scripts to declarative workflow DAGs, tuning parallel filesystem striping, and respecting hardware NUMA topologies transforms a temperamental research run into a deterministic scientific pipeline.

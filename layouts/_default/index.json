@@ -8,4 +8,23 @@
     {{- $.Scratch.Add "index" (dict "title" .Title "content" $searchable "permalink" .Permalink "summary" $summary) -}}
     {{- end }}
 {{- end -}}
+{{- $pubBase := "publications/" | absURL -}}
+{{- range hugo.Data.publications -}}
+    {{- $venue := or .journal .booktitle .school .note "Publication" -}}
+    {{- $yearStr := cond (ne (or .year "") "") (printf "%v" .year) "" -}}
+    {{- $summary := cond (ne $yearStr "") (printf "%s (%s)" $venue $yearStr) $venue -}}
+    {{- $authors := (or .author "") | replaceRE " and " ", " -}}
+    {{- $parts := slice .title $authors $venue (or .publisher "") $yearStr (or .doi "") -}}
+    {{- $searchable := delimit $parts " " | replaceRE "\\s+" " " | strings.TrimSpace -}}
+    {{- $permalink := printf "%s?q=%s" $pubBase (.title | urlquery) -}}
+    {{- $.Scratch.Add "index" (dict "title" .title "content" $searchable "permalink" $permalink "summary" $summary) -}}
+{{- end -}}
+{{- $swPermalink := "software/" | absURL -}}
+{{- range hugo.Data.curated_software -}}
+    {{- $summary := (or .description "") | plainify | htmlUnescape | truncate 160 -}}
+    {{- $tags := delimit (or .tags slice) " " -}}
+    {{- $parts := slice .name (or .description "") (or .ecosystem "") (or .license "") $tags -}}
+    {{- $searchable := delimit $parts " " | replaceRE "\\s+" " " | strings.TrimSpace -}}
+    {{- $.Scratch.Add "index" (dict "title" .name "content" $searchable "permalink" $swPermalink "summary" $summary) -}}
+{{- end -}}
 {{- $.Scratch.Get "index" | jsonify -}}

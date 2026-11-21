@@ -3,7 +3,7 @@ title: "About Me"
 layout: "page"
 ---
 
-### Senior Research Engineer | Climate & Geophysical Models · HPC · Predictions · AI Adoption
+## Senior Research Engineer | Climate & Geophysical Models · HPC · Predictions · AI Adoption
 
 I am a Senior Research Engineer at the **Barcelona Supercomputing Center (BSC)**, where I work on Earth system models (EC-Earth4, OpenIFS, NEMO), co-lead Auto-EC-Earth4 ensemble workflows on **MareNostrum 5**, and lead AI adoption across the research group.
 
@@ -21,7 +21,7 @@ For years, advancing the fidelity of climate models has been hindered by escalat
 
 ---
 
-### What I Focus On
+## What I Focus On
 
 - **HPC Systems & Ensemble Workflows:** Co-leading Auto-EC-Earth4 ensemble workflows on MareNostrum 5. I focus on optimizing multi-component coupling (OASIS3-MCT), eliminating parallel filesystem bottlenecks (Lustre OST striping and metadata contention), and orchestrating CMIP7 and WMO decadal production cycles under strict capacity constraints.
 - **AI Adoption & Model Emulation:** Leading group-wide AI adoption to transform scientific workflow development, evaluate neural emulators for coupled Earth system components, and implement automated validation harnesses.
@@ -31,7 +31,7 @@ For years, advancing the fidelity of climate models has been hindered by escalat
 
 ---
 
-### Tech Stack & Tools
+## Tech Stack & Tools
 
 - **Languages:** Python (Xarray, Dask, PyTorch, NumPy, Pandas), Modern & Legacy Fortran (MPI, OpenMP), C++, Bash.
 - **HPC & Platforms:** MareNostrum 5, Slurm, Autosubmit, LMOD modules, `uv`, CDO, NCO, NetCDF-C, Git/CI/CD.

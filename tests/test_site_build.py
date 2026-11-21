@@ -712,3 +712,297 @@ def test_readme_synced_with_agents_md() -> None:
         "(requests, pyyaml)",
     ):
         assert obsolete not in readme, f"README.md still contains obsolete content: {obsolete}"
+
+
+def _hex_to_rgb(hex_str: str) -> tuple[float, float, float]:
+    h = hex_str.lstrip("#")
+    return tuple(int(h[i : i + 2], 16) for i in (0, 2, 4))  # type: ignore[return-value]
+
+
+def _wcag_contrast(fg: tuple[float, float, float], bg: tuple[float, float, float]) -> float:
+    def _lum(rgb: tuple[float, float, float]) -> float:
+        ch = []
+        for v in rgb:
+            s = v / 255.0
+            ch.append(s / 12.92 if s <= 0.04045 else ((s + 0.055) / 1.055) ** 2.4)
+        return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2]
+
+    l1, l2 = _lum(fg), _lum(bg)
+    return (max(l1, l2) + 0.05) / (min(l1, l2) + 0.05)
+
+
+def test_heading_hierarchy_no_skipped_levels(
+    non_redirect_html_pages: list[tuple[Path, BeautifulSoup]],
+) -> None:
+    """Verify every non-redirect HTML page has a single h1 and zero skipped heading levels."""
+    checked_routes: set[str] = set()
+    for rel, soup in non_redirect_html_pages:
+        checked_routes.add(rel.as_posix())
+        levels = [int(h.name[1]) for h in soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6"])]
+        assert levels, f"No headings found on {rel}"
+        assert levels[0] == 1, f"First heading on {rel} must be h1, got h{levels[0]} ({levels})"
+        assert levels.count(1) == 1, f"Expected exactly 1 h1 on {rel}, got {levels.count(1)} ({levels})"
+        for prev, curr in zip(levels, levels[1:]):
+            assert curr <= prev + 1, f"Skipped heading level h{prev} -> h{curr} on {rel}: {levels}"
+
+    for expected in (
+        "index.html",
+        "about/index.html",
+        "software/index.html",
+        "publications/index.html",
+        "cv/index.html",
+        "cv/presentations/index.html",
+        "cv/trainings/index.html",
+        "contact/index.html",
+        "posts/2026-05-04-senior-dev-hpc-workflows/index.html",
+        "posts/2026-09-24-openifs-mass-conservation-stochastic-rounding/index.html",
+    ):
+        assert expected in checked_routes, f"Expected route missing from heading audit: {expected}"
+
+
+def test_home_profile_symbol_svg_and_no_emoji_bar(built_site: Path) -> None:
+    """Verify home <h1> uses decorative profile-symbol.svg instead of raw emoji bars."""
+    home_soup = BeautifulSoup((built_site / "index.html").read_text(encoding="utf-8"), "lxml")
+    h1 = home_soup.select_one(".home-info h1")
+    assert h1 is not None
+    img = h1.select_one("img.home-symbol-icon")
+    assert img is not None, "Missing img.home-symbol-icon inside home <h1>"
+    assert img.get("src") == "/images/decor/profile-symbol.svg"
+    assert img.get("alt") == ""
+    assert img.get("aria-hidden") == "true"
+    assert img.get("width") == "28"
+    assert img.get("height") == "28"
+    assert (built_site / "images" / "decor" / "profile-symbol.svg").is_file()
+
+    assert h1.select_one(".symbol-bar") is None
+    h1_text = h1.get_text()
+    for glyph in ("🌐", "♾", "🤖"):
+        assert glyph not in h1_text, f"Raw emoji {glyph!r} found in home <h1>"
+
+    profile_partial = (REPO_ROOT / "layouts" / "_partials" / "index_profile.html").read_text(encoding="utf-8")
+    assert "/images/decor/profile-symbol.svg" in profile_partial
+    assert "🌍" not in profile_partial
+
+
+def test_cv_no_duplicate_post_entries_and_three_pdf_buttons(built_site: Path) -> None:
+    """Verify /cv/ suppresses trailing post-entry cards and renders 3 PDF buttons with audience sublabels."""
+    cv_soup = BeautifulSoup((built_site / "cv" / "index.html").read_text(encoding="utf-8"), "lxml")
+    assert cv_soup.select("article.post-entry") == [], "Duplicate trailing post-entry cards found on /cv/"
+
+    buttons = cv_soup.select(".cv-download-bar a.cv-download-btn")
+    assert len(buttons) == 3, f"Expected 3 CV download buttons, got {len(buttons)}"
+    sublabels: list[str] = []
+    for btn in buttons:
+        href = btn.get("href") or ""
+        assert href.startswith("/downloads/") and href.endswith(".pdf"), f"Unexpected CV href: {href}"
+        assert (built_site / href.lstrip("/")).is_file(), f"Missing PDF asset: {href}"
+        title = btn.select_one(".cv-download-title")
+        sub = btn.select_one(".cv-download-sublabel")
+        assert title is not None and title.get_text(strip=True)
+        assert sub is not None and sub.get_text(strip=True)
+        sublabels.append(sub.get_text(strip=True))
+    assert len(set(sublabels)) == 3, f"CV button sublabels must be distinct: {sublabels}"
+
+    assert (built_site / "cv" / "presentations" / "index.html").is_file()
+    assert (built_site / "cv" / "trainings" / "index.html").is_file()
+
+
+def test_css_contrast_tokens_and_modern_polish(built_stylesheet: str) -> None:
+    """Verify Idea 2A contrast tokens/overrides, Idea 2B overflow rules, and Idea 3B modern CSS polish."""
+    rules = _parse_css_rules(built_stylesheet)
+    assert not any(r.type == "error" for r in rules), "Built CSS contains parse errors"
+
+    root_combined = ";".join(c for _, c in _find_qualified_rules(rules, lambda p: p == ":root"))
+    lead_match = re.search(r"--badge-lead-text-light:\s*(#[0-9a-fA-F]{6})", root_combined)
+    assert lead_match is not None, "Missing --badge-lead-text-light token"
+    lead_fg = _hex_to_rgb(lead_match.group(1))
+    # --badge-lead-bg-light: rgba(0, 153, 76, 0.1) composited over #ffffff -> (230, 245, 237)
+    lead_bg = (0.1 * 0 + 0.9 * 255, 0.1 * 153 + 0.9 * 255, 0.1 * 76 + 0.9 * 255)
+    assert _wcag_contrast(lead_fg, lead_bg) >= 4.5
+
+    for token in ("--pub-highlight-bg", "--pub-highlight-text"):
+        assert f"{token}:" in root_combined, f"Missing fallback {token} on :root"
+
+    supports_blocks = [
+        r for r in rules
+        if r.type == "at-rule" and r.lower_at_keyword == "supports"
+        and "light-dark" in _serialize_prelude(r)
+        and not _serialize_prelude(r).lstrip().startswith("not")
+    ]
+    assert supports_blocks
+    supports_text = _serialize_content(supports_blocks[0])
+    assert "--pub-highlight-bg" in supports_text and "--pub-highlight-text" in supports_text
+
+    hl_rules = _find_qualified_rules(rules, lambda p: "::highlight(pub-search-match)" in p)
+    assert hl_rules, "Missing ::highlight(pub-search-match) rule"
+    hl_css = hl_rules[0][1].replace(" ", "")
+    assert "background-color:var(--pub-highlight-bg)" in hl_css
+    assert "color:var(--pub-highlight-text)" in hl_css
+    assert "text-decoration:underline" in hl_css
+
+    chroma_rules = _find_qualified_rules(rules, lambda p: ".chroma .c" in p and ".chroma .c1" in p)
+    assert chroma_rules, "Missing .chroma comment contrast override"
+    chroma_color_match = re.search(r"color:\s*(#[0-9a-fA-F]{6})", chroma_rules[-1][1])
+    assert chroma_color_match is not None
+    chroma_fg = _hex_to_rgb(chroma_color_match.group(1))
+    assert _wcag_contrast(chroma_fg, (28, 29, 33)) >= 4.5
+    assert _wcag_contrast(chroma_fg, (46, 46, 51)) >= 4.5
+
+    for sel in (
+        ".post-tag",
+        ".software-tag",
+        ".sim-spec-pill",
+        ".sim-physics",
+        ".cv-nav-link",
+        ".cv-date-badge",
+        ".cv-skills-tag",
+        ".pub-year-pill",
+        ".pub-bibtex-summary",
+        ".pub-copy-btn",
+    ):
+        matched = _find_qualified_rules(rules, lambda p, s=sel: p == s)
+        assert matched, f"Missing rule for {sel}"
+        combined_sel_css = ";".join(c for _, c in matched).replace(" ", "")
+        assert "color:var(--secondary)" not in combined_sel_css, f"{sel} still uses low-contrast --secondary"
+
+    post_tags_rules = _find_qualified_rules(rules, lambda p: ".post-tags a" in p)
+    assert any("color:var(--primary)" in c.replace(" ", "") for _, c in post_tags_rules)
+
+    # Idea 2B overflow containment rules
+    overflow_container_rules = _find_qualified_rules(
+        rules,
+        lambda p: ".main" in p and ".post-single" in p and ".post-content" in p,
+    )
+    assert overflow_container_rules, "Missing .main, .post-single, .post-content overflow containment rule"
+    oc_css = ";".join(c for _, c in overflow_container_rules).replace(" ", "")
+    assert "min-width:0" in oc_css
+    assert "max-width:100%" in oc_css
+    assert "overflow-wrap:break-word" in oc_css
+
+    table_rules = _find_qualified_rules(rules, lambda p: p == ".post-content table")
+    assert table_rules
+    table_css = ";".join(c for _, c in table_rules).replace(" ", "")
+    assert "position:relative" in table_css
+    assert "display:block" in table_css
+    assert "max-width:100%" in table_css
+    assert "overflow-x:auto" in table_css
+
+    katex_rules = _find_qualified_rules(rules, lambda p: p == ".katex-display")
+    assert katex_rules
+    katex_css = ";".join(c for _, c in katex_rules).replace(" ", "")
+    assert "position:relative" in katex_css
+    assert "overflow-x:auto" in katex_css
+
+    # Idea 3B: @view-transition + scroll progress gated in prefers-reduced-motion: no-preference
+    no_pref_blocks = [
+        r for r in rules
+        if r.type == "at-rule"
+        and r.lower_at_keyword == "media"
+        and "prefers-reduced-motion" in _serialize_prelude(r)
+        and "no-preference" in _serialize_prelude(r)
+    ]
+    assert no_pref_blocks, "Missing @media (prefers-reduced-motion: no-preference) block"
+    no_pref_nested = tinycss2.parse_rule_list(no_pref_blocks[0].content, skip_comments=True, skip_whitespace=True)
+
+    vt_blocks = [r for r in no_pref_nested if r.type == "at-rule" and r.lower_at_keyword == "view-transition"]
+    assert vt_blocks and "navigation:auto" in _serialize_content(vt_blocks[0]).replace(" ", "")
+
+    scroll_supports = [
+        r for r in no_pref_nested
+        if r.type == "at-rule" and r.lower_at_keyword == "supports"
+        and "animation-timeline" in _serialize_prelude(r)
+    ]
+    assert scroll_supports, "Missing @supports (animation-timeline: scroll()) inside no-preference"
+    scroll_nested = tinycss2.parse_rule_list(scroll_supports[0].content, skip_comments=True, skip_whitespace=True)
+    progress_rules = _find_qualified_rules(scroll_nested, lambda p: ".post-single::before" in p)
+    assert progress_rules
+    progress_css = progress_rules[0][1].replace(" ", "")
+    assert "animation:" in progress_css and "animation-timeline:scroll(rootblock)" in progress_css
+    assert progress_css.index("animation:") < progress_css.index("animation-timeline:")
+
+    balance_rules = _find_qualified_rules(rules, lambda p: "h1" in p and ".post-title" in p and ".pub-card-title" in p)
+    assert any("text-wrap:balance" in c.replace(" ", "") for _, c in balance_rules)
+
+    pretty_rules = _find_qualified_rules(rules, lambda p: ".post-content p" in p and ".pub-card-authors" in p)
+    assert any("text-wrap:pretty" in c.replace(" ", "") for _, c in pretty_rules)
+
+    measure_rules = _find_qualified_rules(rules, lambda p: p == ".post-content p,.post-content li")
+    assert any("max-width:68ch" in c.replace(" ", "") for _, c in measure_rules)
+
+    def _norm_sel(sel: str) -> str:
+        return re.sub(r"\s*([>,+~])\s*", r"\1", sel)
+
+    figure_exempt_rules = _find_qualified_rules(
+        rules,
+        lambda p: (
+            ".post-content p:has(>img)" in _norm_sel(p)
+            and ".post-content p:has(>a>img)" in _norm_sel(p)
+            and ".post-content figure" in _norm_sel(p)
+        ),
+    )
+    assert figure_exempt_rules, "Missing full-width exemption for image-bearing paragraphs and <figure>"
+    assert any("max-width:100%" in c.replace(" ", "") for _, c in figure_exempt_rules)
+
+    sw_grid_rules = _find_qualified_rules(rules, lambda p: p == ".software-container")
+    assert sw_grid_rules and any(
+        "minmax(min(100%,300px),1fr)" in c.replace(" ", "") for _, c in sw_grid_rules
+    ), f"Expected .software-container min(100%, 300px) grid track, got {sw_grid_rules}"
+
+    sim_grid_rules = _find_qualified_rules(rules, lambda p: p == ".simulation-gallery")
+    assert sim_grid_rules and any(
+        "minmax(min(100%,350px),1fr)" in c.replace(" ", "") for _, c in sim_grid_rules
+    ), f"Expected .simulation-gallery min(100%, 350px) grid track, got {sim_grid_rules}"
+
+    empty_msg_rules = _find_qualified_rules(rules, lambda p: p == ".pub-empty-message")
+    assert empty_msg_rules and any(
+        "margin-inline:auto" in c.replace(" ", "") for _, c in empty_msg_rules
+    ), f"Expected margin-inline: auto on .pub-empty-message, got {empty_msg_rules}"
+
+
+def test_pub_list_highlights_url_sync_and_shortcuts_markup(built_site: Path) -> None:
+    """Verify /publications/ script includes CSS.highlights, TreeWalker, ?q= sync, and / + Escape shortcuts."""
+    pub_html = (built_site / "publications" / "index.html").read_text(encoding="utf-8")
+    for token in (
+        "CSS.highlights",
+        "Highlight",
+        "createTreeWalker",
+        "NodeFilter.SHOW_TEXT",
+        "pub-search-match",
+        "replaceState",
+        "URLSearchParams",
+        "Escape",
+    ):
+        assert token in pub_html, f"Missing {token!r} in built publications page"
+
+    pub_src = (REPO_ROOT / "layouts" / "shortcodes" / "pub_list.html").read_text(encoding="utf-8")
+    assert "innerHTML" not in pub_src
+    assert re.search(r"e\.key\s*===\s*['\"]Escape['\"].*?e\.isComposing", pub_src, re.DOTALL), (
+        "Escape keydown handler in pub_list.html must guard e.isComposing"
+    )
+
+
+def test_index_json_enriched_with_publications_and_software(built_site: Path) -> None:
+    """Verify index.json includes all publications (/publications/?q=) and software (/software/) without /404/."""
+    entries = json.loads((built_site / "index.json").read_text(encoding="utf-8"))
+    pubs = yaml.safe_load((REPO_ROOT / "data" / "publications.yaml").read_text(encoding="utf-8"))
+    software = yaml.safe_load((REPO_ROOT / "data" / "curated_software.yaml").read_text(encoding="utf-8"))
+
+    assert len(entries) >= 10 + len(pubs) + len(software)
+    assert not any("/404" in e.get("permalink", "") for e in entries)
+
+    by_title = {e.get("title"): e for e in entries}
+    for pub in pubs:
+        title = pub["title"]
+        assert title in by_title, f"Publication missing from index.json: {title}"
+        entry = by_title[title]
+        assert "/publications/?q=" in entry["permalink"], f"Bad pub permalink: {entry['permalink']}"
+        if pub.get("journal"):
+            assert pub["journal"] in entry["content"]
+
+    for sw in software:
+        name = sw["name"]
+        assert name in by_title, f"Software missing from index.json: {name}"
+        entry = by_title[name]
+        assert entry["permalink"].endswith("/software/"), f"Bad software permalink: {entry['permalink']}"
+        for tag in sw.get("tags", []):
+            assert tag in entry["content"]

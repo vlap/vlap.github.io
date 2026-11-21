@@ -6,12 +6,12 @@ draft: false
 
 I am always open to discussing new projects, ML/HPC opportunities, or climate science consultancy. 
 
-### Professional Contact
+## Professional Contact
 - **Email:** [vladimir.lapin@bsc.es](mailto:vladimir.lapin@bsc.es)
 - **LinkedIn:** [vladimir-lapin](https://linkedin.com/in/vladimir-lapin)
 - **GitHub:** [vlap](https://github.com/vlap)
 
-### Office Location
+## Office Location
 **Barcelona Supercomputing Center (BSC)**  
 Plaça Eusebi Güell, 1-3  
 08034 Barcelona, Spain

@@ -11,7 +11,7 @@
     <header class="entry-header">
         <h1>
             {{ or $profile.name site.Params.homeInfoParams.Title "Dr. Vladimir Lapin" }}
-            <span class="symbol-bar"><span title="Climate Science" class="grayscale">🌐</span><span title="Applied Mathematics">∫</span><span title="HPC Engineering">⚙</span><span title="Agentic AI">⬡</span><span title="Infinity / Continuity">∞</span></span>
+            <img src="/images/decor/profile-symbol.svg" alt="" aria-hidden="true" class="home-symbol-icon" width="28" height="28">
         </h1>
         <p class="home-subtitle">{{ or $profile.tagline "Senior Research Engineer · Climate &amp; Geophysical Models · HPC · Predictions · AI Adoption" }}</p>
     </header>
@@ -47,20 +47,21 @@
         </a>
     </div>
 
+    <h2 class="visually-hidden">Research Highlights</h2>
     <div class="research-highlights">
         <a href="{{ "/software/" | absURL }}" class="highlight-item">
-            <span class="highlight-icon grayscale">⬡</span>
-            <h4>Climate Commons (<code>cvc-commons</code>)</h4>
+            <span class="highlight-icon grayscale" aria-hidden="true">⬡</span>
+            <h3>Climate Commons (<code>cvc-commons</code>)</h3>
             <p>Modernizing Earth system prediction workflows with schemas and CI.</p>
         </a>
         <a href="{{ "/posts/2026-05-04-senior-dev-hpc-workflows/" | absURL }}" class="highlight-item">
-            <span class="highlight-icon grayscale">⚙</span>
-            <h4>HPC &amp; Earth System Models</h4>
+            <span class="highlight-icon grayscale" aria-hidden="true">⚙</span>
+            <h3>HPC &amp; Earth System Models</h3>
             <p>Coupling EC-Earth4, OpenIFS, and scaling on MareNostrum 5.</p>
         </a>
         <a href="{{ "/posts/2026-09-24-openifs-mass-conservation-stochastic-rounding/" | absURL }}" class="highlight-item">
-            <span class="highlight-icon grayscale">∫</span>
-            <h4>Atmospheric &amp; Ocean Numerics</h4>
+            <span class="highlight-icon grayscale" aria-hidden="true">∫</span>
+            <h3>Atmospheric &amp; Ocean Numerics</h3>
             <p>Tracer mass conservation, stochastic rounding, and tidal solvers.</p>
         </a>
     </div>

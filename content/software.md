@@ -11,6 +11,8 @@ cover:
 
 I develop, optimize, and maintain scientific software spanning Earth System Models (EC-Earth4, OpenIFS, NEMO/PISCES), HPC orchestration on MareNostrum 5, and reproducible computational workflows. My work focuses on numerical precision, declarative metadata schemas, and deterministic CI verification for climate science.
 
+## Selected Software & Tools
+
 {{< software_cards >}}
 
 ---

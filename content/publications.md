@@ -7,11 +7,11 @@ showToc: false
 
 I have authored {{< count type="publications" >}} peer-reviewed journal articles, conference proceedings, and technical reports.
 
-### Journal Articles & Proceedings
+## Journal Articles & Proceedings
 {{< pub_list >}}
 
 ---
-### Theses
+## Theses
 - **Resonant over-reflection of waves by jets in a rotating ocean**  
   Ph.D. Thesis, University of Limerick, Ireland, 2011. [Handle](http://hdl.handle.net/10344/1965)
 - **On stability of the plane flows of visco-plastic fluids**  

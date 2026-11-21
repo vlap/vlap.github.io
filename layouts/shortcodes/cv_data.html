@@ -1,11 +1,16 @@
 {{ $file := .Get "file" }}
+{{ $heading := .Get "heading" | default "h3" }}
 {{ $data := index hugo.Data $file }}
 
 <div class="cv-section">
   {{ range $data }}
   <div class="cv-item">
     <div class="cv-entry-header">
-      <h4 class="cv-item-title">{{ .title }}</h4>
+      {{ if eq $heading "h2" }}
+      <h2 class="cv-item-title">{{ .title }}</h2>
+      {{ else }}
+      <h3 class="cv-item-title">{{ .title }}</h3>
+      {{ end }}
       <span class="cv-date-badge">{{ .year }}{{ if .month }}-{{ printf "%02d" .month }}{{ end }}</span>
     </div>
     <div class="cv-item-meta">

@@ -679,15 +679,33 @@ describe("vlap.github.io headless browser verification", () => {
   });
 
   it("maintains zero CLS, zero horizontal overflow (desktop & mobile), mobile #theme-toggle >= 44px, and Tab reachability on /cv/", async () => {
+    const routes = [
+      "/",
+      "/about/",
+      "/software/",
+      "/publications/",
+      "/cv/",
+      "/contact/",
+      "/search/",
+      "/posts/2026-05-04-senior-dev-hpc-workflows/",
+      "/posts/2026-06-15-neural-surrogates-shallow-water-equations/",
+      "/posts/2026-07-20-scaling-python-hpc-uv-lustre/",
+      "/posts/2026-09-22-pragmatic-scientist-audit-climate-workflows/",
+      "/posts/2026-09-24-openifs-mass-conservation-stochastic-rounding/",
+    ];
     for (const viewport of [
       { width: 1280, height: 800, mobile: false },
+      { width: 320, height: 568, mobile: false },
+      { width: 375, height: 812, mobile: false },
+      { width: 390, height: 844, mobile: false },
       { width: 375, height: 812, mobile: true },
+      { width: 390, height: 844, mobile: true },
     ]) {
       await cdp.send("Emulation.setDeviceMetricsOverride", {
         ...viewport,
         deviceScaleFactor: 1,
       });
-      for (const route of ["/", "/software/", "/publications/", "/cv/"]) {
+      for (const route of routes) {
         await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}${route}`);
         const metrics = await cdp.eval(`(async () => {
           let cls = 0;
@@ -705,12 +723,41 @@ describe("vlap.github.io headless browser verification", () => {
             innerWidth: window.innerWidth
           };
         })()`);
-        assert.equal(metrics.cls, 0, `Expected CLS === 0 on ${route} (${viewport.width}px), got ${metrics.cls}`);
+        assert.equal(metrics.cls, 0, `Expected CLS === 0 on ${route} (${viewport.width}px mobile=${viewport.mobile}), got ${metrics.cls}`);
         assert.ok(
           metrics.scrollWidth <= metrics.innerWidth,
-          `Horizontal overflow on ${route} (${viewport.width}px): ${metrics.scrollWidth} > ${metrics.innerWidth}`,
+          `Horizontal overflow on ${route} (${viewport.width}px mobile=${viewport.mobile}): ${metrics.scrollWidth} > ${metrics.innerWidth}`,
         );
-        if (viewport.mobile && route === "/") {
+        if (!viewport.mobile && viewport.width <= 390 && route === "/software/") {
+          const gridOverflow = await cdp.eval(`(() => {
+            const pc = document.querySelector('.post-content');
+            const sw = document.querySelector('.software-container');
+            const sim = document.querySelector('.simulation-gallery');
+            return {
+              pcClientW: pc?.clientWidth || 0,
+              pcScrollW: pc?.scrollWidth || 0,
+              swClientW: sw?.clientWidth || 0,
+              swScrollW: sw?.scrollWidth || 0,
+              simClientW: sim?.clientWidth || 0,
+              simScrollW: sim?.scrollWidth || 0
+            };
+          })()`);
+          assert.ok(
+            gridOverflow.pcScrollW <= gridOverflow.pcClientW
+            && gridOverflow.swScrollW <= gridOverflow.swClientW
+            && gridOverflow.simScrollW <= gridOverflow.simClientW,
+            `/software/ grid overflows container at ${viewport.width}px: ${JSON.stringify(gridOverflow)}`,
+          );
+        }
+        if (viewport.width === 375 && route === "/posts/2026-09-24-openifs-mass-conservation-stochastic-rounding/") {
+          const tableScroll = await cdp.eval(`(() => {
+            const t = document.querySelector('.post-content table');
+            return t ? { overflowX: getComputedStyle(t).overflowX, scrollWidth: t.scrollWidth, clientWidth: t.clientWidth } : null;
+          })()`);
+          assert.ok(tableScroll && tableScroll.overflowX === "auto", `Expected table overflow-x:auto, got ${JSON.stringify(tableScroll)}`);
+          assert.ok(tableScroll.scrollWidth > tableScroll.clientWidth, `Expected wide table to scroll internally: ${JSON.stringify(tableScroll)}`);
+        }
+        if (viewport.width === 375 && route === "/") {
           const toggleBox = await cdp.eval(`(() => {
             const r = document.getElementById('theme-toggle')?.getBoundingClientRect();
             return r ? { width: r.width, height: r.height } : null;
@@ -836,5 +883,417 @@ describe("vlap.github.io headless browser verification", () => {
     assert.ok(codeCopyInfo.copyBtnCount >= 1, "Expected ShowCodeCopyButtons script to inject button.copy-code");
     assert.equal(codeCopyInfo.copiedMatches, true);
     assert.equal(codeCopyInfo.btnTextAfterClick, "copied!");
+  });
+
+  it("achieves WCAG 2.1 AA (>= 4.5:1) computed contrast in light and dark modes across all Idea 2A selectors", async () => {
+    await cdp.send("Emulation.setDeviceMetricsOverride", {
+      width: 1280,
+      height: 800,
+      deviceScaleFactor: 1,
+      mobile: false,
+    });
+    const checksByRoute = [
+      ["/", [".post-tag"]],
+      ["/about/", [".badge-lead"]],
+      ["/software/", [".software-tag", ".sim-spec-pill", ".sim-physics"]],
+      ["/publications/", [".pub-year-pill", ".pub-copy-btn", ".pub-bibtex-summary"]],
+      ["/cv/", [".cv-nav-link", ".cv-date-badge", ".cv-skills-tag"]],
+      ["/posts/2026-09-24-openifs-mass-conservation-stochastic-rounding/", [".chroma .c", ".post-tags a", ".paginav .title"]],
+    ];
+
+    for (const [route, selectors] of checksByRoute) {
+      await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}${route}`);
+      const origTheme = await cdp.eval(`document.documentElement.dataset.theme`);
+      try {
+        for (const theme of ["light", "dark"]) {
+          await cdp.eval(`document.documentElement.dataset.theme = ${JSON.stringify(theme)}`);
+          await new Promise((r) => setTimeout(r, 350));
+          const results = await cdp.eval(`((sels) => {
+            const parseRgba = (str) => {
+              const m = str.match(/rgba?\\(([^)]+)\\)/);
+              if (!m) return [0, 0, 0, 0];
+              const parts = m[1].split(',').map((s) => Number(s.trim()));
+              return [parts[0], parts[1], parts[2], parts[3] ?? 1];
+            };
+            const over = (fg, bg) => {
+              const a = fg[3];
+              return [
+                a * fg[0] + (1 - a) * bg[0],
+                a * fg[1] + (1 - a) * bg[1],
+                a * fg[2] + (1 - a) * bg[2],
+                1,
+              ];
+            };
+            const lum = ([r, g, b]) => {
+              const ch = [r, g, b].map((v) => {
+                const s = v / 255;
+                return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+              });
+              return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
+            };
+            const effectiveBg = (el) => {
+              const layers = [];
+              let cur = el;
+              while (cur) {
+                layers.push(parseRgba(getComputedStyle(cur).backgroundColor));
+                cur = cur.parentElement;
+              }
+              let bg = [255, 255, 255, 1];
+              for (let i = layers.length - 1; i >= 0; i--) {
+                bg = over(layers[i], bg);
+              }
+              return bg;
+            };
+            return sels.map((sel) => {
+              const el = document.querySelector(sel);
+              if (!el) return { sel, missing: true };
+              const bg = effectiveBg(el);
+              const fg = over(parseRgba(getComputedStyle(el).color), bg);
+              const l1 = lum(fg);
+              const l2 = lum(bg);
+              const ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+              return { sel, missing: false, ratio, fg: fg.slice(0, 3), bg: bg.slice(0, 3) };
+            });
+          })(${JSON.stringify(selectors)})`);
+
+          for (const res of results) {
+            assert.equal(res.missing, false, `Missing selector ${res.sel} on ${route}`);
+            assert.ok(
+              res.ratio >= 4.5,
+              `Contrast failure on ${route} (${theme}) for ${res.sel}: ${res.ratio.toFixed(2)}:1 < 4.5:1 (fg=${res.fg}, bg=${res.bg})`,
+            );
+          }
+        }
+      } finally {
+        await cdp.eval(`document.documentElement.dataset.theme = ${JSON.stringify(origTheme)}`);
+      }
+    }
+  });
+
+  it("renders profile-symbol.svg in home <h1>, removes duplicate /cv/ post-entry cards, and displays 3 CV PDF sublabels", async () => {
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/`);
+    const homeCheck = await cdp.eval(`(() => {
+      const h1 = document.querySelector('.home-info h1');
+      const img = h1?.querySelector('img.home-symbol-icon');
+      return {
+        hasImg: Boolean(img),
+        src: img?.getAttribute('src'),
+        alt: img?.getAttribute('alt'),
+        ariaHidden: img?.getAttribute('aria-hidden'),
+        complete: img?.complete,
+        naturalWidth: img?.naturalWidth,
+        hasEmojiBar: Boolean(h1?.querySelector('.symbol-bar')),
+        h1Text: h1?.textContent || '',
+      };
+    })()`);
+    assert.equal(homeCheck.hasImg, true);
+    assert.equal(homeCheck.src, "/images/decor/profile-symbol.svg");
+    assert.equal(homeCheck.alt, "");
+    assert.equal(homeCheck.ariaHidden, "true");
+    assert.equal(homeCheck.complete, true);
+    assert.ok(homeCheck.naturalWidth > 0, "Expected profile-symbol.svg to decode with naturalWidth > 0");
+    assert.equal(homeCheck.hasEmojiBar, false);
+    assert.equal(/[🌐♾🤖]/.test(homeCheck.h1Text), false);
+
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/cv/`);
+    const cvCheck = await cdp.eval(`(() => {
+      const btns = [...document.querySelectorAll('.cv-download-btn')];
+      return {
+        postEntries: document.querySelectorAll('article.post-entry').length,
+        btnCount: btns.length,
+        sublabels: btns.map((b) => b.querySelector('.cv-download-sublabel')?.textContent.trim() || ''),
+      };
+    })()`);
+    assert.equal(cvCheck.postEntries, 0);
+    assert.equal(cvCheck.btnCount, 3);
+    assert.ok(cvCheck.sublabels.every((s) => s.length > 0));
+    assert.equal(new Set(cvCheck.sublabels).size, 3);
+  });
+
+  it("highlights live publication matches via CSS.highlights, syncs ?q= URL state, and handles / and Escape shortcuts", async () => {
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/publications/`);
+    const apiSupported = await cdp.eval(`typeof Highlight !== 'undefined' && 'highlights' in CSS`);
+    assert.equal(apiSupported, true);
+
+    await cdp.eval(`document.activeElement?.blur()`);
+    await cdp.send("Input.dispatchKeyEvent", {
+      type: "keyDown",
+      key: "/",
+      code: "Slash",
+      text: "/",
+      unmodifiedText: "/",
+      windowsVirtualKeyCode: 191,
+      nativeVirtualKeyCode: 191,
+    });
+    await cdp.send("Input.dispatchKeyEvent", {
+      type: "keyUp",
+      key: "/",
+      code: "Slash",
+      windowsVirtualKeyCode: 191,
+      nativeVirtualKeyCode: 191,
+    });
+
+    const afterSlash = await cdp.eval(`({
+      activeId: document.activeElement?.id,
+      value: document.getElementById('pubFilterInput')?.value
+    })`);
+    assert.equal(afterSlash.activeId, "pubFilterInput");
+    assert.equal(afterSlash.value, "");
+
+    await cdp.send("Input.insertText", { text: "EC-Earth" });
+    await new Promise((r) => setTimeout(r, 80));
+    const afterFilter = await cdp.eval(`({
+      highlightSize: CSS.highlights.get('pub-search-match')?.size || 0,
+      qParam: new URLSearchParams(window.location.search).get('q'),
+      markCount: document.querySelectorAll('.pub-card mark').length
+    })`);
+    assert.ok(afterFilter.highlightSize > 0, "Expected CSS.highlights range matches for EC-Earth");
+    assert.equal(afterFilter.qParam, "EC-Earth");
+    assert.equal(afterFilter.markCount, 0, "CSS.highlights must not mutate DOM with <mark> elements");
+
+    const composingEscapeValue = await cdp.eval(`(() => {
+      const inp = document.getElementById('pubFilterInput');
+      inp.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true, isComposing: true }));
+      return inp.value;
+    })()`);
+    assert.equal(composingEscapeValue, "EC-Earth", "Escape during IME composition must not clear filter");
+
+    await cdp.send("Input.dispatchKeyEvent", {
+      type: "keyDown",
+      key: "Escape",
+      code: "Escape",
+      windowsVirtualKeyCode: 27,
+      nativeVirtualKeyCode: 27,
+    });
+    await cdp.send("Input.dispatchKeyEvent", {
+      type: "keyUp",
+      key: "Escape",
+      code: "Escape",
+      windowsVirtualKeyCode: 27,
+      nativeVirtualKeyCode: 27,
+    });
+    await new Promise((r) => setTimeout(r, 50));
+
+    const afterEscape = await cdp.eval(`({
+      value: document.getElementById('pubFilterInput')?.value,
+      hasHighlight: CSS.highlights.has('pub-search-match'),
+      hasQ: new URLSearchParams(window.location.search).has('q'),
+      totalCards: document.querySelectorAll('.pub-card').length,
+      visibleCards: [...document.querySelectorAll('.pub-card')].filter((c) => c.style.display !== 'none').length
+    })`);
+    assert.equal(afterEscape.value, "");
+    assert.equal(afterEscape.hasHighlight, false);
+    assert.equal(afterEscape.hasQ, false);
+    assert.equal(afterEscape.visibleCards, afterEscape.totalCards);
+
+    // Ensure '/' inside another editable control does not steal focus
+    await cdp.eval(`(() => {
+      const ta = document.createElement('textarea');
+      ta.id = 'tmpEditableTest';
+      document.body.appendChild(ta);
+      ta.focus();
+    })()`);
+    await cdp.send("Input.dispatchKeyEvent", {
+      type: "keyDown",
+      key: "/",
+      code: "Slash",
+      text: "/",
+      unmodifiedText: "/",
+      windowsVirtualKeyCode: 191,
+      nativeVirtualKeyCode: 191,
+    });
+    await cdp.send("Input.dispatchKeyEvent", {
+      type: "keyUp",
+      key: "/",
+      code: "Slash",
+      windowsVirtualKeyCode: 191,
+      nativeVirtualKeyCode: 191,
+    });
+    const editableStay = await cdp.eval(`(() => {
+      const id = document.activeElement?.id;
+      document.getElementById('tmpEditableTest')?.remove();
+      return id;
+    })()`);
+    assert.equal(editableStay, "tmpEditableTest");
+
+    // Direct navigation with ?q= query initializes filter and highlights
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/publications/?q=irregular%20boundaries`);
+    const initFromUrl = await cdp.eval(`({
+      value: document.getElementById('pubFilterInput')?.value,
+      status: document.getElementById('pubFilterStatus')?.textContent.trim(),
+      highlightSize: CSS.highlights.get('pub-search-match')?.size || 0
+    })`);
+    assert.equal(initFromUrl.value, "irregular boundaries");
+    assert.ok(initFromUrl.status.startsWith("Showing 1 of "), initFromUrl.status);
+    assert.ok(initFromUrl.highlightSize > 0);
+
+    // Verify UTF-16 .toLowerCase() expansion (e.g. U+0130) does not shift ranges or throw IndexSizeError
+    const unicodeHighlight = await cdp.eval(`(() => {
+      const el = document.createElement('div');
+      el.appendChild(document.createTextNode('\\u0130 '));
+      const strong = document.createElement('strong');
+      strong.textContent = 'Foo';
+      el.appendChild(strong);
+      const ranges = [];
+      addFieldMatchRanges(el, 'foo', ranges);
+      return ranges.map((r) => r.toString());
+    })()`);
+    assert.deepEqual(unicodeHighlight, ["Foo"]);
+  });
+
+  it("finds enriched publication and software entries via Fuse on /search/", async () => {
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/search/`);
+    for (let i = 0; i < 40; i++) {
+      const ready = await cdp.eval(`!document.getElementById('searchInput')?.disabled`);
+      if (ready) break;
+      await new Promise((r) => setTimeout(r, 50));
+    }
+
+    await cdp.eval(`document.getElementById('searchInput').focus()`);
+    await cdp.send("Input.insertText", { text: "Tsujino" });
+    await new Promise((r) => setTimeout(r, 350));
+    const pubSearchHrefs = await cdp.eval(`[...document.querySelectorAll('#searchResults li a')].map((a) => a.getAttribute('href'))`);
+    assert.ok(
+      pubSearchHrefs.some((h) => h && h.includes("/publications/?q=")),
+      `Expected /publications/?q= result for Tsujino, got ${JSON.stringify(pubSearchHrefs)}`,
+    );
+
+    await cdp.eval(`(() => {
+      const inp = document.getElementById('searchInput');
+      inp.value = '';
+      inp.dispatchEvent(new Event('input', { bubbles: true }));
+      inp.focus();
+    })()`);
+    await cdp.send("Input.insertText", { text: "pisces-inidata" });
+    await new Promise((r) => setTimeout(r, 350));
+    const swSearchHrefs = await cdp.eval(`[...document.querySelectorAll('#searchResults li a')].map((a) => a.getAttribute('href'))`);
+    assert.ok(
+      swSearchHrefs.some((h) => h && h.endsWith("/software/")),
+      `Expected /software/ result for pisces-inidata, got ${JSON.stringify(swSearchHrefs)}`,
+    );
+  });
+
+  it("applies modern CSS polish (68ch measure, text-wrap, scroll reading progress, and @view-transition) while respecting reduced motion", async () => {
+    await cdp.send("Emulation.setDeviceMetricsOverride", {
+      width: 1280,
+      height: 800,
+      deviceScaleFactor: 1,
+      mobile: false,
+    });
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/posts/2026-09-24-openifs-mass-conservation-stochastic-rounding/`);
+    const polish = await cdp.eval(`(() => {
+      const h1 = document.querySelector('h1.post-title');
+      const pc = document.querySelector('.post-content');
+      const proseP = [...document.querySelectorAll('.post-content > p')].find((el) => !el.querySelector('img'));
+      const figImg = document.querySelector('.post-content img[src*="co2_90day_mass_budget_tracking.png"]');
+      const table = document.querySelector('.post-content table');
+      const h1Style = getComputedStyle(h1);
+      const pStyle = getComputedStyle(proseP);
+      const tableStyle = getComputedStyle(table);
+      const beforeStyle = getComputedStyle(document.querySelector('.post-single'), '::before');
+      let hasViewTransition = false;
+      for (const sheet of document.styleSheets) {
+        try {
+          const walk = (rules) => {
+            for (const r of rules) {
+              if (r.cssText && r.cssText.includes('@view-transition')) hasViewTransition = true;
+              if (r.cssRules) walk(r.cssRules);
+            }
+          };
+          walk(sheet.cssRules);
+        } catch {}
+      }
+      return {
+        h1Wrap: h1Style.textWrap,
+        pWrap: pStyle.textWrap,
+        pMaxWidthPx: parseFloat(pStyle.maxWidth),
+        pFontSizePx: parseFloat(pStyle.fontSize),
+        postContentWidth: pc?.getBoundingClientRect().width || 0,
+        co2ImgComplete: Boolean(figImg?.complete && figImg?.naturalWidth > 0),
+        co2ImgWidth: figImg?.getBoundingClientRect().width || 0,
+        co2ParentMaxWidth: figImg ? getComputedStyle(figImg.parentElement).maxWidth : null,
+        tableMaxWidth: tableStyle.maxWidth,
+        beforeContent: beforeStyle.content,
+        beforeTimeline: beforeStyle.animationTimeline,
+        hasViewTransition,
+      };
+    })()`);
+    assert.equal(polish.h1Wrap, "balance");
+    assert.equal(polish.pWrap, "pretty");
+    assert.ok(polish.pMaxWidthPx > 0 && polish.pMaxWidthPx <= 68 * polish.pFontSizePx, (
+      `Expected .post-content p maxWidth <= 68em (${68 * polish.pFontSizePx}px), got ${polish.pMaxWidthPx}px`
+    ));
+    assert.equal(polish.co2ImgComplete, true, "Expected co2_90day_mass_budget_tracking.png to load");
+    assert.ok(
+      polish.co2ImgWidth > polish.pMaxWidthPx,
+      `Expected co2_90day_mass_budget_tracking.png width (${polish.co2ImgWidth}px) > 68ch prose cap (${polish.pMaxWidthPx}px)`,
+    );
+    assert.ok(
+      Math.abs(polish.co2ImgWidth - polish.postContentWidth) <= 2,
+      `Expected co2_90day_mass_budget_tracking.png width (${polish.co2ImgWidth}px) to match .post-content (${polish.postContentWidth}px)`,
+    );
+    assert.equal(polish.co2ParentMaxWidth, "100%");
+    assert.equal(polish.tableMaxWidth, "100%");
+    assert.notEqual(polish.beforeContent, "none");
+    assert.ok((polish.beforeTimeline || "").includes("scroll"), `Expected scroll() timeline, got ${polish.beforeTimeline}`);
+    assert.equal(polish.hasViewTransition, true);
+
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/posts/2026-06-15-neural-surrogates-shallow-water-equations/`);
+    const sweFigures = await cdp.eval(`(async () => {
+      const pc = document.querySelector('.post-content');
+      const proseP = [...document.querySelectorAll('.post-content > p')].find((el) => !el.querySelector('img'));
+      const flowersImg = document.querySelector('.post-content img[src*="flowers_warpfield.png"]');
+      const svgImg = document.querySelector('.post-content img[src*="neural_surrogate_swe_rollout.svg"]');
+      for (const img of [flowersImg, svgImg]) {
+        if (!img) continue;
+        img.scrollIntoView({ block: 'center' });
+        if (!img.complete) {
+          await new Promise((resolve) => {
+            img.addEventListener('load', resolve, { once: true });
+            img.addEventListener('error', resolve, { once: true });
+            setTimeout(resolve, 3000);
+          });
+        }
+      }
+      await new Promise((r) => setTimeout(r, 50));
+      return {
+        postContentWidth: pc?.getBoundingClientRect().width || 0,
+        pMaxWidthPx: proseP ? parseFloat(getComputedStyle(proseP).maxWidth) : 0,
+        flowersComplete: Boolean(flowersImg?.complete && flowersImg?.naturalWidth > 0),
+        flowersWidth: flowersImg?.getBoundingClientRect().width || 0,
+        flowersParentMaxWidth: flowersImg ? getComputedStyle(flowersImg.parentElement).maxWidth : null,
+        svgComplete: Boolean(svgImg?.complete && svgImg?.naturalWidth > 0),
+        svgWidth: svgImg?.getBoundingClientRect().width || 0,
+        svgParentMaxWidth: svgImg ? getComputedStyle(svgImg.parentElement).maxWidth : null,
+      };
+    })()`);
+    assert.equal(sweFigures.flowersComplete, true, "Expected flowers_warpfield.png to load");
+    assert.ok(
+      sweFigures.flowersWidth > sweFigures.pMaxWidthPx,
+      `Expected flowers_warpfield.png width (${sweFigures.flowersWidth}px) > 68ch (${sweFigures.pMaxWidthPx}px)`,
+    );
+    assert.ok(
+      Math.abs(sweFigures.flowersWidth - sweFigures.postContentWidth) <= 2,
+      `Expected flowers_warpfield.png width (${sweFigures.flowersWidth}px) to match .post-content (${sweFigures.postContentWidth}px)`,
+    );
+    assert.equal(sweFigures.flowersParentMaxWidth, "100%");
+    assert.equal(sweFigures.svgComplete, true, "Expected neural_surrogate_swe_rollout.svg to load");
+    assert.ok(
+      Math.abs(sweFigures.svgWidth - sweFigures.postContentWidth) <= 2,
+      `Expected neural_surrogate_swe_rollout.svg width (${sweFigures.svgWidth}px) to match .post-content (${sweFigures.postContentWidth}px)`,
+    );
+    assert.equal(sweFigures.svgParentMaxWidth, "100%");
+
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/posts/2026-09-24-openifs-mass-conservation-stochastic-rounding/`);
+
+    await cdp.send("Emulation.setEmulatedMedia", {
+      features: [{ name: "prefers-reduced-motion", value: "reduce" }],
+    });
+    try {
+      const reducedBefore = await cdp.eval(`getComputedStyle(document.querySelector('.post-single'), '::before').content`);
+      assert.equal(reducedBefore, "none", "Scroll progress bar must disable under prefers-reduced-motion: reduce");
+    } finally {
+      await cdp.send("Emulation.setEmulatedMedia", { features: [] });
+    }
   });
 });

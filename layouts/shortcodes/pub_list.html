@@ -11,8 +11,9 @@
 {{- $years := $scratch.Get "years" }}
 <div class="pub-filter-container">
   <div class="pub-filter-input-wrapper">
+    <label for="pubFilterInput" class="visually-hidden">Filter publications</label>
     <svg class="pub-filter-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-    <input type="text" id="pubFilterInput" placeholder="Filter publications by keyword, topic, venue, or co-author..." oninput="filterPublications(this.value)" autocomplete="off" spellcheck="false" aria-label="Filter publications" />
+    <input type="text" id="pubFilterInput" placeholder="Filter publications by keyword, topic, venue, or co-author..." oninput="filterPublications(this.value)" autocomplete="off" spellcheck="false" aria-label="Filter publications" aria-keyshortcuts="/" />
     <button type="button" id="pubFilterClear" onclick="clearPubFilter()" style="display: none;" title="Clear filter" aria-label="Clear filter">&times;</button>
   </div>
   <div class="pub-filter-status" id="pubFilterStatus" role="status" aria-live="polite">
@@ -169,7 +170,144 @@ function copyBibTeX(btn) {
   });
 }
 
-function filterPublications(query) {
+var pubFieldNodeCache = new WeakMap();
+
+function getFieldTextNodes(el) {
+  if (pubFieldNodeCache.has(el)) {
+    return pubFieldNodeCache.get(el);
+  }
+  var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  var nodes = [];
+  var node = walker.nextNode();
+  while (node) {
+    if (node.nodeValue) {
+      nodes.push(node);
+    }
+    node = walker.nextNode();
+  }
+  pubFieldNodeCache.set(el, nodes);
+  return nodes;
+}
+
+function addFieldMatchRanges(el, queryLower, ranges) {
+  if (!el || !queryLower) return;
+  var nodes = getFieldTextNodes(el);
+  if (!nodes.length) return;
+
+  var fullText = '';
+  var segments = [];
+  for (var i = 0; i < nodes.length; i++) {
+    var val = nodes[i].nodeValue;
+    var start = fullText.length;
+    fullText += val;
+    segments.push({ node: nodes[i], start: start, end: fullText.length });
+  }
+
+  var hay = fullText.toLowerCase();
+  var offsetMap = null;
+  if (hay.length !== fullText.length) {
+    hay = '';
+    offsetMap = [];
+    for (var k = 0; k < nodes.length; k++) {
+      var text = nodes[k].nodeValue;
+      for (var j = 0; j < text.length; ) {
+        var cp = text.codePointAt(j);
+        var chLen = cp > 0xFFFF ? 2 : 1;
+        var lc = text.slice(j, j + chLen).toLowerCase();
+        for (var m = 0; m < lc.length; m++) {
+          offsetMap.push({ node: nodes[k], start: j, end: j + chLen });
+        }
+        hay += lc;
+        j += chLen;
+      }
+    }
+  }
+
+  var qLen = queryLower.length;
+  var pos = hay.indexOf(queryLower);
+  while (pos !== -1) {
+    var matchEnd = pos + qLen;
+    if (offsetMap) {
+      var startPos = offsetMap[pos];
+      var endPos = offsetMap[matchEnd - 1];
+      if (startPos && endPos) {
+        var sOff = Math.max(0, Math.min(startPos.start, startPos.node.nodeValue.length));
+        var eOff = Math.max(0, Math.min(endPos.end, endPos.node.nodeValue.length));
+        if (startPos.node !== endPos.node || sOff <= eOff) {
+          var mappedRange = new Range();
+          mappedRange.setStart(startPos.node, sOff);
+          mappedRange.setEnd(endPos.node, eOff);
+          ranges.push(mappedRange);
+        }
+      }
+    } else {
+      var startSeg = null;
+      var endSeg = null;
+      for (var s = 0; s < segments.length; s++) {
+        var seg = segments[s];
+        if (!startSeg && pos >= seg.start && pos < seg.end) {
+          startSeg = seg;
+        }
+        if (matchEnd > seg.start && matchEnd <= seg.end) {
+          endSeg = seg;
+          break;
+        }
+      }
+      if (startSeg && endSeg) {
+        var startOffset = Math.max(0, Math.min(pos - startSeg.start, startSeg.node.nodeValue.length));
+        var endOffset = Math.max(0, Math.min(matchEnd - endSeg.start, endSeg.node.nodeValue.length));
+        if (startSeg.node !== endSeg.node || startOffset <= endOffset) {
+          var range = new Range();
+          range.setStart(startSeg.node, startOffset);
+          range.setEnd(endSeg.node, endOffset);
+          ranges.push(range);
+        }
+      }
+    }
+    pos = hay.indexOf(queryLower, matchEnd);
+  }
+}
+
+function updatePubHighlights(queryLower) {
+  if (typeof CSS === 'undefined' || !('highlights' in CSS) || typeof Highlight === 'undefined') {
+    return;
+  }
+  CSS.highlights.delete('pub-search-match');
+  if (!queryLower) {
+    return;
+  }
+  var ranges = [];
+  var cards = document.querySelectorAll('.pub-card');
+  cards.forEach(function(card) {
+    if (card.style.display === 'none') return;
+    addFieldMatchRanges(card.querySelector('.pub-card-title'), queryLower, ranges);
+    addFieldMatchRanges(card.querySelector('.pub-card-authors'), queryLower, ranges);
+    addFieldMatchRanges(card.querySelector('.pub-card-venue'), queryLower, ranges);
+  });
+  if (ranges.length > 0) {
+    CSS.highlights.set('pub-search-match', new Highlight(...ranges));
+  }
+}
+
+function syncPubFilterUrl(query) {
+  if (typeof window === 'undefined' || !window.history || typeof window.history.replaceState !== 'function') {
+    return;
+  }
+  var trimmed = (query || '').trim();
+  var url = new URL(window.location.href);
+  if (trimmed) {
+    url.searchParams.set('q', trimmed);
+  } else {
+    url.searchParams.delete('q');
+  }
+  var next = url.pathname + (url.searchParams.toString() ? '?' + url.searchParams.toString() : '') + url.hash;
+  var current = window.location.pathname + window.location.search + window.location.hash;
+  if (next !== current) {
+    window.history.replaceState(null, '', next);
+  }
+}
+
+function filterPublications(query, opts) {
   var q = (query || '').trim().toLowerCase();
   var clearBtn = document.getElementById('pubFilterClear');
   var status = document.getElementById('pubFilterStatus');
@@ -219,6 +357,11 @@ function filterPublications(query) {
       emptyQuery.textContent = (query || '').trim() || 'your filter';
     }
   }
+
+  updatePubHighlights(q);
+  if (!opts || opts.syncUrl !== false) {
+    syncPubFilterUrl(query);
+  }
 }
 
 function clearPubFilter() {
@@ -229,4 +372,41 @@ function clearPubFilter() {
     input.focus();
   }
 }
+
+(function initPubFilter() {
+  var input = document.getElementById('pubFilterInput');
+  if (!input) return;
+
+  var initialQuery = new URLSearchParams(window.location.search).get('q');
+  if (initialQuery) {
+    input.value = initialQuery;
+    filterPublications(initialQuery, { syncUrl: false });
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return;
+    var active = document.activeElement;
+    var target = e.target;
+    var el = (active && active !== document.body && active !== document.documentElement) ? active : target;
+    if (el && (el.isContentEditable || (el.closest && el.closest('[contenteditable="true"], [contenteditable=""]')))) {
+      return;
+    }
+    if (el && el.tagName) {
+      var tag = el.tagName.toUpperCase();
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
+        return;
+      }
+    }
+    e.preventDefault();
+    input.focus();
+  });
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      if (e.isComposing) return;
+      e.preventDefault();
+      clearPubFilter();
+    }
+  });
+})();
 </script>
