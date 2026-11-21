@@ -1,0 +1,57 @@
+{{- $pubs := hugo.Data.publications -}}
+{{- $count := int (or (.Get "count") 5) -}}
+{{- $monthMap := dict "january" 1 "jan" 1 "february" 2 "feb" 2 "march" 3 "mar" 3 "april" 4 "apr" 4 "may" 5 "june" 6 "jun" 6 "july" 7 "jul" 7 "august" 8 "aug" 8 "september" 9 "sep" 9 "sept" 9 "october" 10 "oct" 10 "november" 11 "nov" 11 "december" 12 "dec" 12 -}}
+{{- $entries := slice -}}
+{{- range $idx, $pub := $pubs -}}
+  {{- $y := 0 -}}
+  {{- if $pub.year -}}
+    {{- $y = int $pub.year -}}
+  {{- end -}}
+  {{- $m := 0 -}}
+  {{- if $pub.month -}}
+    {{- $mKey := lower (string $pub.month) -}}
+    {{- with index $monthMap $mKey -}}
+      {{- $m = . -}}
+    {{- else -}}
+      {{- if findRE "^[0-9]+$" $mKey -}}
+        {{- $m = int $mKey -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $sortKey := sub (mul (add (mul $y 100) $m) 1000) $idx -}}
+  {{- $entries = $entries | append (dict "sortKey" $sortKey "pub" $pub) -}}
+{{- end -}}
+{{- $sorted := sort $entries "sortKey" "desc" -}}
+<div class="selected-pub-list">
+  {{- range first $count $sorted -}}
+  {{- $p := .pub -}}
+  <article class="selected-pub-item pub-card">
+    <h3 class="pub-card-title">
+      {{- if $p.doi -}}
+      <a href="https://doi.org/{{ $p.doi }}" target="_blank" rel="noopener">{{ $p.title }}</a>
+      {{- else if $p.url -}}
+      <a href="{{ $p.url }}" target="_blank" rel="noopener">{{ $p.title }}</a>
+      {{- else -}}
+      {{ $p.title }}
+      {{- end -}}
+    </h3>
+    {{- if $p.author -}}
+    <div class="pub-card-authors">{{ $p.author | replaceRE " and " ", " }}</div>
+    {{- end -}}
+    <div class="pub-card-venue">
+      {{- if $p.journal }}<span class="pub-journal-name"><em>{{ $p.journal }}</em></span>{{ end -}}
+      {{- if $p.booktitle }}<span class="pub-journal-name"><em>{{ $p.booktitle }}</em></span>{{ end -}}
+      {{- if $p.month }}<span> &middot; {{ $p.month }}</span>{{ end -}}
+      {{- if $p.year }}<span> &middot; {{ $p.year }}</span>{{ end -}}
+    </div>
+    {{- if $p.doi -}}
+    <div class="pub-card-actions">
+      <a href="https://doi.org/{{ $p.doi }}" target="_blank" rel="noopener" class="pub-badge-btn pub-doi-btn">DOI &#8599;</a>
+    </div>
+    {{- end -}}
+  </article>
+  {{- end -}}
+</div>
+<p class="selected-pub-more">
+  <a href="{{ "/publications/" | relLangURL }}" class="view-all-link">All {{ len $pubs }} publications &rarr;</a>
+</p>

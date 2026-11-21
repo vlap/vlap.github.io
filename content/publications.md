@@ -5,7 +5,7 @@ hideMeta: true
 showToc: false
 ---
 
-I have authored {{< count type="publications" >}} peer-reviewed journal articles, conference proceedings, and technical reports.
+{{< pub_metrics >}}
 
 ## Journal Articles & Proceedings
 {{< pub_list >}}

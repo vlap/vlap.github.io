@@ -1,0 +1,7 @@
+{{- $stats := hugo.Data.stats -}}
+{{- $scholar := hugo.Data.scholar_stats -}}
+{{- if and $stats $scholar -}}
+<p class="pub-metrics-intro"><strong>{{ $stats.publications }}</strong> papers &middot; <strong>{{ $scholar.citations }}</strong> citations &middot; h-index <strong>{{ $scholar.h_index }}</strong> (OpenAlex).</p>
+{{- else if $stats -}}
+<p class="pub-metrics-intro"><strong>{{ $stats.publications }}</strong> papers.</p>
+{{- end -}}

@@ -30,6 +30,16 @@
 </header>
 {{- end }}
 
+{{- if or (eq .Section "posts") (eq .Data.Plural "kinds") }}
+{{- $currentRel := .RelPermalink }}
+<nav class="log-kind-filter" aria-label="Filter log by kind">
+  <a href="{{ "/posts/" | relLangURL }}" class="log-kind-pill{{ if eq $currentRel ("/posts/" | relLangURL) }} active{{ end }}">All</a>
+  {{- range site.Taxonomies.kinds.Alphabetical }}
+  <a href="{{ .Page.RelPermalink }}" class="log-kind-pill{{ if eq $currentRel .Page.RelPermalink }} active{{ end }}">{{ .Page.LinkTitle }} ({{ .Count }})</a>
+  {{- end }}
+</nav>
+{{- end }}
+
 {{- if .Content }}
 <div class="post-content">
   {{- if not (.Param "disableAnchoredHeadings") }}
@@ -65,7 +75,7 @@
 
 <article class="{{ $class }}">
   {{- $isHidden := (.Param "cover.hiddenInList") | default (.Param "cover.hidden") | default false }}
-  {{- partial "cover.html" (dict "cxt" . "IsSingle" false "isHidden" $isHidden) }}
+  {{- partial "cover.html" (dict "cxt" . "IsSingle" false "IsFirst" (eq $index 0) "isHidden" $isHidden) }}
   <header class="entry-header">
     <h2 class="entry-hint-parent">
       {{- .Title }}
@@ -87,6 +97,13 @@
   <footer class="entry-footer">
     {{- if not (.Param "hideMeta") }}
     <span class="post-meta">{{- partial "post_meta.html" . -}}</span>
+    {{- end }}
+    {{- with (.GetTerms "kinds") }}
+    <div class="entry-kinds">
+      {{- range . }}
+      <a href="{{ .RelPermalink }}" class="kind-badge">{{ .LinkTitle | lower }}</a>
+      {{- end }}
+    </div>
     {{- end }}
     {{- with .Params.tags }}
     <div class="entry-tags">

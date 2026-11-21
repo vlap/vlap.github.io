@@ -33,7 +33,6 @@ KATEX_EXPECTED = {
 }
 
 KATEX_PAGES = [
-    "software/index.html",
     "posts/2026-06-15-neural-surrogates-shallow-water-equations/index.html",
 ]
 
@@ -119,7 +118,7 @@ def _find_qualified_rules(rules: list, selector_predicate) -> list:
 
 def test_hugo_build_succeeds_cleanly(built_site: Path) -> None:
     """Verify core pages and CSS bundle exist after clean Hugo build."""
-    for rel in ["index.html", "software/index.html", "publications/index.html", "cv/index.html"]:
+    for rel in ["index.html", "work/index.html", "posts/index.html", "publications/index.html", "cv/index.html"]:
         assert (built_site / rel).is_file(), f"Missing built page: {rel}"
 
 
@@ -145,9 +144,10 @@ def test_r1_katex_sri_and_referrerpolicy(built_site: Path) -> None:
         assert auto_tag.get("crossorigin") == "anonymous"
         assert auto_tag.get("referrerpolicy") == "no-referrer"
 
-    home_soup = BeautifulSoup((built_site / "index.html").read_text(encoding="utf-8"), "lxml")
-    assert home_soup.find(attrs={"href": re.compile(r"katex@")}) is None
-    assert home_soup.find(attrs={"src": re.compile(r"katex@")}) is None
+    for no_math_rel in ("index.html", "work/index.html"):
+        no_math_soup = BeautifulSoup((built_site / no_math_rel).read_text(encoding="utf-8"), "lxml")
+        assert no_math_soup.find(attrs={"href": re.compile(r"katex@")}) is None, f"Unexpected KaTeX CSS on {no_math_rel}"
+        assert no_math_soup.find(attrs={"src": re.compile(r"katex@")}) is None, f"Unexpected KaTeX JS on {no_math_rel}"
 
 
 def test_r1_meta_referrer_and_color_scheme_all_pages(
@@ -178,9 +178,9 @@ def test_r1_head_and_footer_sync_meta_color_scheme(built_site: Path) -> None:
 
 def test_r1_simulation_gallery_uses_replace_children(built_site: Path) -> None:
     """Verify playSimVideo uses replaceChildren(video) without innerHTML."""
-    sw_text = (built_site / "software/index.html").read_text(encoding="utf-8")
-    match = re.search(r"function playSimVideo\([^)]*\)\{[^}]+\}", sw_text)
-    assert match is not None, "Missing playSimVideo function in built software page"
+    work_text = (built_site / "work/index.html").read_text(encoding="utf-8")
+    match = re.search(r"function playSimVideo\([^)]*\)\{[^}]+\}", work_text)
+    assert match is not None, "Missing playSimVideo function in built work page"
     fn_body = match.group(0)
     assert re.search(r"\.replaceChildren\(\w+\)", fn_body) is not None, fn_body
     assert ".innerHTML" not in fn_body
@@ -248,7 +248,7 @@ def test_r1_css_color_scheme_and_light_dark_badges(built_stylesheet: str) -> Non
 
 def test_r2_simulation_gallery_native_button_and_css(built_site: Path, built_stylesheet: str) -> None:
     """Verify .sim-facade is a native <button type=button> with valid phrasing children and CSS reset."""
-    soup = BeautifulSoup((built_site / "software/index.html").read_text(encoding="utf-8"), "lxml")
+    soup = BeautifulSoup((built_site / "work/index.html").read_text(encoding="utf-8"), "lxml")
     assert soup.select("div.sim-facade") == [], "Legacy div.sim-facade should be replaced by button"
     buttons = soup.select("button.sim-facade")
     assert len(buttons) == 3, f"Expected 3 button.sim-facade elements, got {len(buttons)}"
@@ -283,8 +283,8 @@ def test_r2_pub_filter_status_and_decorative_svgs(
     assert len(copy_svgs) >= 20
     assert all(svg.get("aria-hidden") == "true" for svg in copy_svgs)
 
-    sw_soup = BeautifulSoup((built_site / "software/index.html").read_text(encoding="utf-8"), "lxml")
-    gh_links = sw_soup.select("a.software-github-link")
+    work_soup = BeautifulSoup((built_site / "work/index.html").read_text(encoding="utf-8"), "lxml")
+    gh_links = work_soup.select("a.software-github-link")
     assert len(gh_links) >= 5
     for link in gh_links:
         assert link.get("aria-label"), "Icon-only GitHub link must have aria-label"
@@ -317,7 +317,7 @@ def test_r2_focus_visible_outline_preserved(built_stylesheet: str) -> None:
 
 
 def test_r3_images_dimensions_and_lcp_priority(built_site: Path) -> None:
-    """Verify avatar fetchpriority/dimensions and simulation poster dimensions."""
+    """Verify avatar fetchpriority/dimensions, simulation poster dimensions, and cover img dimensions."""
     home_soup = BeautifulSoup((built_site / "index.html").read_text(encoding="utf-8"), "lxml")
     avatar = home_soup.select_one(".home-info-image img")
     assert avatar is not None
@@ -325,13 +325,24 @@ def test_r3_images_dimensions_and_lcp_priority(built_site: Path) -> None:
     assert avatar.get("width") == "150"
     assert avatar.get("height") == "150"
 
-    sw_soup = BeautifulSoup((built_site / "software/index.html").read_text(encoding="utf-8"), "lxml")
-    posters = sw_soup.select("img.sim-poster")
+    work_soup = BeautifulSoup((built_site / "work/index.html").read_text(encoding="utf-8"), "lxml")
+    posters = work_soup.select("img.sim-poster")
     assert len(posters) == 3
     for img in posters:
         assert img.get("width") == "480"
         assert img.get("height") == "360"
         assert img.get("loading") == "lazy"
+
+    for rel in (
+        "posts/index.html",
+        "kinds/note/index.html",
+        "posts/2026-06-15-neural-surrogates-shallow-water-equations/index.html",
+    ):
+        soup = BeautifulSoup((built_site / rel).read_text(encoding="utf-8"), "lxml")
+        cover_img = soup.select_one("figure.entry-cover img")
+        assert cover_img is not None, f"Missing figure.entry-cover img on {rel}"
+        assert cover_img.get("width") and int(cover_img["width"]) > 0, f"Missing width on cover img in {rel}"
+        assert cover_img.get("height") and int(cover_img["height"]) > 0, f"Missing height on cover img in {rel}"
 
 
 def test_r3_content_visibility_and_print_reset(built_stylesheet: str) -> None:
@@ -417,14 +428,10 @@ def test_internal_links_resolve_in_built_site(
     assert not missing, "Broken internal links:\n" + "\n".join(missing[:20])
 
 
-def test_404_excluded_from_index_json_sitemap_and_rss(built_site: Path) -> None:
-    """Verify /404/ is excluded from index.json, sitemap.xml, and index.xml while 404 page still builds."""
-    index_entries = json.loads((built_site / "index.json").read_text(encoding="utf-8"))
-    assert len(index_entries) >= 10
-    assert not any(
-        "/404" in entry.get("permalink", "") or "404: Page Not Found" in entry.get("title", "")
-        for entry in index_entries
-    ), "404 page leaked into index.json"
+def test_404_excluded_from_sitemap_and_rss_and_no_index_json(built_site: Path) -> None:
+    """Verify /404/ is excluded from sitemap.xml and index.xml, /search/ and index.json are absent, and 404 builds."""
+    assert not (built_site / "index.json").exists(), "index.json should not be generated"
+    assert not (built_site / "search").exists(), "/search/ should not be generated"
 
     sitemap_root = ET.fromstring((built_site / "sitemap.xml").read_text(encoding="utf-8"))
     locs = [el.text or "" for el in sitemap_root.iter("{http://www.sitemaps.org/schemas/sitemap/0.9}loc")]
@@ -461,10 +468,10 @@ def test_presentations_yaml_no_urls_typo_and_renders_link(built_site: Path) -> N
     assert link is not None, "Missing rendered ClimathNet 2014 link on /cv/presentations/"
 
 
-def test_hugo_toml_clean_and_contact_nav(
+def test_hugo_toml_nav_social_and_post_chrome(
     non_redirect_html_pages: list[tuple[Path, BeautifulSoup]],
 ) -> None:
-    """Verify hugo.toml scoping, nav/buttons cleanup, and rendered post features."""
+    """Verify hugo.toml outputs, 3-item menu, 6 footer social links, and post chrome settings."""
     raw_toml = (REPO_ROOT / "hugo.toml").read_text(encoding="utf-8")
     assert len(re.findall(r"(?im)^\s*showCodeCopyButtons\s*=", raw_toml)) == 1
 
@@ -474,17 +481,15 @@ def test_hugo_toml_clean_and_contact_nav(
         "category": "categories",
         "kind": "kinds",
     }, f"Unexpected [taxonomies] in hugo.toml: {cfg.get('taxonomies')}"
+    assert cfg.get("outputs", {}).get("home") == ["HTML", "RSS"], (
+        f"Expected outputs.home == ['HTML', 'RSS'], got {cfg.get('outputs')}"
+    )
+
     params = cfg.get("params", {})
-    for key in (
-        "ShowReadingTime",
-        "ShowShareButtons",
-        "ShowPostNavLinks",
-        "ShowBreadCrumbs",
-        "ShowCodeCopyButtons",
-        "ShowScrollToTop",
-    ):
+    for key in ("ShowReadingTime", "ShowShareButtons", "ShowBreadCrumbs", "ShowToc"):
+        assert params.get(key) is False, f"params.{key} must be False directly under [params]"
+    for key in ("ShowPostNavLinks", "ShowCodeCopyButtons", "ShowScrollToTop"):
         assert params.get(key) is True, f"params.{key} must be True directly under [params]"
-    assert params.get("ShowToc") is False, "params.ShowToc must live directly under [params]"
     assert params.get("mainSections") == ["posts"], "params.mainSections must live directly under [params]"
 
     minify_cfg = params.get("minify", {})
@@ -493,14 +498,28 @@ def test_hugo_toml_clean_and_contact_nav(
     )
 
     buttons = params.get("profileMode", {}).get("buttons", [])
-    assert not any(btn.get("url") == "/tools/" for btn in buttons), "Dead /tools/ button still in hugo.toml"
-
-    menu_main = cfg.get("menu", {}).get("main", [])
-    assert any(m.get("url") == "/contact/" and m.get("name") == "Contact" for m in menu_main), (
-        "Missing /contact/ in menu.main"
+    assert not any(btn.get("url") in {"/tools/", "/software/"} for btn in buttons), (
+        f"Obsolete button URL in hugo.toml: {buttons}"
     )
+
+    menu_main = sorted(cfg.get("menu", {}).get("main", []), key=lambda m: m.get("weight", 0))
+    assert [(m.get("name"), m.get("url")) for m in menu_main] == [
+        ("Work", "/work/"),
+        ("Log", "/posts/"),
+        ("CV", "/cv/"),
+    ], f"Expected exact 3-item menu (Work, Log, CV), got {menu_main}"
     weights = [m.get("weight") for m in menu_main]
     assert len(weights) == len(set(weights)), f"Duplicate menu.main weights: {weights}"
+
+    social_icons = params.get("socialIcons", [])
+    assert [(s.get("name"), s.get("url")) for s in social_icons] == [
+        ("email", "mailto:vladimir.lapin@bsc.es"),
+        ("github", "https://github.com/vlap"),
+        ("linkedin", "https://linkedin.com/in/vladimir-lapin"),
+        ("googlescholar", "https://scholar.google.com/citations?user=ZVQF-ggAAAAJ&hl=en"),
+        ("orcid", "https://orcid.org/0000-0001-7302-8539"),
+        ("rss", "/index.xml"),
+    ], f"Unexpected socialIcons config: {social_icons}"
 
     post_pages = [
         (rel, soup)
@@ -511,13 +530,17 @@ def test_hugo_toml_clean_and_contact_nav(
 
     code_posts = 0
     for rel, soup in post_pages:
-        assert soup.select_one("nav.breadcrumbs") is not None, f"Missing breadcrumbs on {rel}"
-        assert soup.select_one("ul.share-buttons") is not None, f"Missing share-buttons on {rel}"
+        assert soup.select_one("nav.breadcrumbs") is None, f"Unexpected breadcrumbs on {rel}"
+        assert soup.select_one("ul.share-buttons") is None, f"Unexpected share-buttons on {rel}"
         assert soup.select_one("nav.paginav") is not None, f"Missing post nav links on {rel}"
         meta = soup.select_one(".post-meta")
-        assert meta is not None and re.search(r"\b\d+\s+min\b", meta.get_text()), (
-            f"Missing reading time in .post-meta on {rel}"
+        assert meta is not None and not re.search(r"\b\d+\s+min\b", meta.get_text()), (
+            f"Unexpected reading time in .post-meta on {rel}"
         )
+        if "2026-06-15" in rel.as_posix():
+            assert soup.select_one("details.toc") is not None, f"Expected per-post ToC on {rel}"
+        else:
+            assert soup.select_one("details.toc") is None, f"Unexpected ToC on {rel} when ShowToc=false"
         if soup.select("pre > code"):
             code_posts += 1
             scripts = "\n".join(s.get_text() for s in soup.find_all("script"))
@@ -526,7 +549,25 @@ def test_hugo_toml_clean_and_contact_nav(
 
     for rel, soup in non_redirect_html_pages:
         assert soup.find("a", href=re.compile(r"/tools/")) is None, f"Dead /tools/ link found on {rel}"
-        assert soup.select_one('#menu a[href$="/contact/"]') is not None, f"Missing /contact/ nav link on {rel}"
+        nav_items = [(a.get_text(strip=True), a.get("href")) for a in soup.select("#menu a")]
+        assert len(nav_items) == 3, f"Expected 3 nav items on {rel}, got {nav_items}"
+        assert [name for name, _ in nav_items] == ["Work", "Log", "CV"], (
+            f"Unexpected nav names on {rel}: {nav_items}"
+        )
+        assert nav_items[0][1].endswith("/work/")
+        assert nav_items[1][1].endswith("/posts/")
+        assert nav_items[2][1].endswith("/cv/")
+
+        footer_links = soup.select("footer.footer .social-icons a")
+        assert len(footer_links) == 6, f"Expected 6 footer social icons on {rel}, got {len(footer_links)}"
+        footer_hrefs = [a.get("href") or "" for a in footer_links]
+        assert footer_hrefs[0] == "mailto:vladimir.lapin@bsc.es"
+        assert "github.com/vlap" in footer_hrefs[1]
+        assert "linkedin.com/in/vladimir-lapin" in footer_hrefs[2]
+        assert "scholar.google.com" in footer_hrefs[3]
+        assert "orcid.org" in footer_hrefs[4]
+        assert footer_hrefs[5].endswith("/index.xml")
+        assert all(a.get("aria-label") for a in footer_links), f"Missing aria-label on footer social link in {rel}"
 
 
 def test_svg_favicons_declare_svg_mime_type(
@@ -613,19 +654,8 @@ def test_pub_list_bibtex_and_error_empty_state(built_site: Path) -> None:
 
 
 def test_css_focus_touch_target_and_sim_polish(built_stylesheet: str) -> None:
-    """Verify #searchInput:focus-visible, 44px #theme-toggle, non-bounce .sim-play-icon, and flat .sim-physics."""
+    """Verify 44px #theme-toggle, non-bounce .sim-play-icon, and flat .sim-physics."""
     rules = _parse_css_rules(built_stylesheet)
-
-    bad_search_focus = _find_qualified_rules(rules, lambda p: p == "#searchInput:focus")
-    for _, content in bad_search_focus:
-        assert "outline:none" not in content.replace(" ", "")
-        assert "outline:0" not in content.replace(" ", "")
-
-    search_fv = _find_qualified_rules(rules, lambda p: p == "#searchInput:focus-visible")
-    assert search_fv, "Missing #searchInput:focus-visible rule"
-    search_css = search_fv[0][1].replace(" ", "")
-    assert "outline:2pxsolidvar(--primary)" in search_css
-    assert "outline-offset:2px" in search_css
 
     toggle_rules = _find_qualified_rules(rules, lambda p: p == "#theme-toggle")
     assert toggle_rules, "Missing #theme-toggle rule"
@@ -781,13 +811,12 @@ def test_heading_hierarchy_no_skipped_levels(
 
     for expected in (
         "index.html",
-        "about/index.html",
-        "software/index.html",
+        "work/index.html",
+        "posts/index.html",
         "publications/index.html",
         "cv/index.html",
         "cv/presentations/index.html",
         "cv/trainings/index.html",
-        "contact/index.html",
         "kinds/index.html",
         "kinds/note/index.html",
         "kinds/talk/index.html",
@@ -822,24 +851,38 @@ def test_home_profile_symbol_svg_and_no_emoji_bar(built_site: Path) -> None:
     assert "🌍" not in profile_partial
 
 
-def test_cv_no_duplicate_post_entries_and_three_pdf_buttons(built_site: Path) -> None:
-    """Verify /cv/ suppresses trailing post-entry cards and renders 3 PDF buttons with audience sublabels."""
-    cv_soup = BeautifulSoup((built_site / "cv" / "index.html").read_text(encoding="utf-8"), "lxml")
+def test_cv_two_pdf_buttons_tools_and_talk_links(built_site: Path) -> None:
+    """Verify /cv/ suppresses trailing post-entry cards, renders 2 PDF buttons, tools line, and talk links."""
+    cv_raw = (built_site / "cv" / "index.html").read_text(encoding="utf-8")
+    cv_soup = BeautifulSoup(cv_raw, "lxml")
     assert cv_soup.select("article.post-entry") == [], "Duplicate trailing post-entry cards found on /cv/"
 
     buttons = cv_soup.select(".cv-download-bar a.cv-download-btn")
-    assert len(buttons) == 3, f"Expected 3 CV download buttons, got {len(buttons)}"
+    assert len(buttons) == 2, f"Expected 2 CV download buttons, got {len(buttons)}"
+    hrefs = [btn.get("href") or "" for btn in buttons]
+    assert hrefs == [
+        "/downloads/vladimir-lapin-cv-research-full.pdf",
+        "/downloads/vladimir-lapin-cv-industry.pdf",
+    ], f"Unexpected CV button hrefs: {hrefs}"
+    assert "applied-scientist" not in cv_raw, "Obsolete applied-scientist CV button found on /cv/"
     sublabels: list[str] = []
     for btn in buttons:
         href = btn.get("href") or ""
-        assert href.startswith("/downloads/") and href.endswith(".pdf"), f"Unexpected CV href: {href}"
         assert (built_site / href.lstrip("/")).is_file(), f"Missing PDF asset: {href}"
         title = btn.select_one(".cv-download-title")
         sub = btn.select_one(".cv-download-sublabel")
         assert title is not None and title.get_text(strip=True)
         assert sub is not None and sub.get_text(strip=True)
         sublabels.append(sub.get_text(strip=True))
-    assert len(set(sublabels)) == 3, f"CV button sublabels must be distinct: {sublabels}"
+    assert len(set(sublabels)) == 2, f"CV button sublabels must be distinct: {sublabels}"
+
+    cv_text = cv_soup.get_text(" ", strip=True)
+    assert "Specialized in atmospheric and oceanic fluid dynamics" not in cv_text, (
+        "Old CV intro paragraph should be removed"
+    )
+    assert "Tools:" in cv_text and "Models:" in cv_text and "EC-Earth4" in cv_text and "OpenIFS" in cv_text, (
+        "Missing Tools & Models line on /cv/"
+    )
 
     assert (built_site / "cv" / "presentations" / "index.html").is_file()
     assert (built_site / "cv" / "trainings" / "index.html").is_file()
@@ -864,16 +907,28 @@ def test_cv_no_duplicate_post_entries_and_three_pdf_buttons(built_site: Path) ->
     assert pres_soup.select("details.cv-section-details") == []
     assert len(pres_soup.select(".cv-item")) == 21
 
+    # Verify EGU2014 (2014) and AMS 19th (2013) link to their Log talk pages on both /cv/ and /cv/presentations/
+    for target_name, target_soup in (("cv", cv_soup), ("cv/presentations", pres_soup)):
+        for event_name, expected_slug in (
+            ("EGU2014", "/posts/2014-04-28-egu2014-global-modelling-surface-internal-tides/"),
+            ("19th Conference on Atmospheric and Oceanic Fluid Dynamics of the AMS", "/posts/2013-06-21-ams19-global-modelling-surface-internal-tides/"),
+        ):
+            matching_items = [
+                item for item in target_soup.select(".cv-item")
+                if event_name in item.get_text(" ", strip=True)
+            ]
+            assert len(matching_items) == 1, f"Expected 1 {event_name} item on {target_name}, got {len(matching_items)}"
+            talk_link = matching_items[0].find("a", href=re.compile(re.escape(expected_slug)))
+            assert talk_link is not None, f"Missing Log talk link {expected_slug} on {event_name} in {target_name}"
+
     # Verify compact timeline styling for institution/bullet-less entries (Career Break)
     assert len(cv_soup.select(".cv-entry-compact")) == 1
 
     # Verify static portfolio pages omit blog date/reading-time .post-meta
     for rel in (
-        "about/index.html",
-        "software/index.html",
+        "work/index.html",
         "publications/index.html",
         "cv/index.html",
-        "contact/index.html",
     ):
         page_soup = BeautifulSoup((built_site / rel).read_text(encoding="utf-8"), "lxml")
         assert page_soup.select_one(".post-meta") is None, f"Unexpected .post-meta on static page {rel}"
@@ -1058,33 +1113,6 @@ def test_pub_list_highlights_url_sync_and_shortcuts_markup(built_site: Path) -> 
     )
 
 
-def test_index_json_enriched_with_publications_and_software(built_site: Path) -> None:
-    """Verify index.json includes all publications (/publications/?q=) and software (/software/) without /404/."""
-    entries = json.loads((built_site / "index.json").read_text(encoding="utf-8"))
-    pubs = yaml.safe_load((REPO_ROOT / "data" / "publications.yaml").read_text(encoding="utf-8"))
-    software = yaml.safe_load((REPO_ROOT / "data" / "curated_software.yaml").read_text(encoding="utf-8"))
-
-    assert len(entries) >= 9 + len(pubs) + len(software)
-    assert not any("/404" in e.get("permalink", "") for e in entries)
-
-    by_title = {e.get("title"): e for e in entries}
-    for pub in pubs:
-        title = pub["title"]
-        assert title in by_title, f"Publication missing from index.json: {title}"
-        entry = by_title[title]
-        assert "/publications/?q=" in entry["permalink"], f"Bad pub permalink: {entry['permalink']}"
-        if pub.get("journal"):
-            assert pub["journal"] in entry["content"]
-
-    for sw in software:
-        name = sw["name"]
-        assert name in by_title, f"Software missing from index.json: {name}"
-        entry = by_title[name]
-        assert entry["permalink"].endswith("/software/"), f"Bad software permalink: {entry['permalink']}"
-        for tag in sw.get("tags", []):
-            assert tag in entry["content"]
-
-
 def _parse_front_matter(md_path: Path) -> tuple[dict, str]:
     raw = md_path.read_text(encoding="utf-8")
     parts = raw.split("---", 2)
@@ -1122,7 +1150,6 @@ def test_step2_drafts_kinds_and_backfilled_talks(built_site: Path) -> None:
         "kinds/talk/index.html",
         "index.xml",
         "sitemap.xml",
-        "index.json",
     ):
         built_file = built_site / rel
         assert built_file.is_file(), f"Missing expected built file: {rel}"
@@ -1130,13 +1157,25 @@ def test_step2_drafts_kinds_and_backfilled_talks(built_site: Path) -> None:
         for slug in forbidden_slugs:
             assert slug not in content, f"Drafted slug {slug!r} leaked into {rel}"
 
+    forbidden_paths = [*forbidden_slugs, "/search/", "/search"]
     for html_path in built_site.rglob("*.html"):
+        rel_html = html_path.relative_to(built_site)
         soup = BeautifulSoup(html_path.read_text(encoding="utf-8"), "lxml")
         for a in soup.find_all("a", href=True):
             href = a["href"]
-            if href.startswith("/") and not href.startswith("//"):
+            is_internal = (href.startswith("/") and not href.startswith("//")) or href.startswith("https://vlap.github.io/")
+            if is_internal:
                 for slug in forbidden_slugs:
-                    assert slug not in href, f"Relative internal link {href!r} in {html_path.relative_to(built_site)} points to drafted post"
+                    assert slug not in href, f"Internal link {href!r} in {rel_html} points to drafted post"
+                assert "/search/" not in href and not href.endswith("/search"), (
+                    f"Internal link {href!r} in {rel_html} points to removed /search/"
+                )
+
+    for xml_rel in ("sitemap.xml", "index.xml"):
+        xml_text = (built_site / xml_rel).read_text(encoding="utf-8")
+        for slug in forbidden_slugs:
+            assert slug not in xml_text, f"Drafted slug {slug!r} leaked into {xml_rel}"
+        assert "/search/" not in xml_text, f"/search/ leaked into {xml_rel}"
 
     kept_slug = "2026-06-15-neural-surrogates-shallow-water-equations"
     kept_fm, _ = _parse_front_matter(posts_dir / f"{kept_slug}.md")
@@ -1191,3 +1230,222 @@ def test_step2_drafts_kinds_and_backfilled_talks(built_site: Path) -> None:
         assert not any(
             "/slides/" in (a.get("href") or "") for a in talk_soup.select(".post-content a[href]")
         ), f"Unexpected local /slides/ link in {slug}"
+
+
+def _extract_meta_refresh_target(html_text: str) -> str | None:
+    soup = BeautifulSoup(html_text, "lxml")
+    meta = soup.find("meta", attrs={"http-equiv": re.compile(r"^refresh$", re.I)})
+    if meta is None:
+        return None
+    content = meta.get("content") or ""
+    match = re.search(r"url=(.+)$", content, re.I)
+    return match.group(1).strip() if match else None
+
+
+def test_m3_redirects_and_removed_pages(built_site: Path) -> None:
+    """Verify removed pages redirect cleanly via Hugo aliases and /search/ + index.json are absent."""
+    expected_redirects = {
+        "about/index.html": ("https://vlap.github.io/", "/"),
+        "contact/index.html": ("https://vlap.github.io/", "/"),
+        "software/index.html": ("https://vlap.github.io/work/", "/work/"),
+        "archives/index.html": ("https://vlap.github.io/posts/", "/posts/"),
+    }
+    for rel, targets in expected_redirects.items():
+        html_path = built_site / rel
+        assert html_path.is_file(), f"Missing redirect file: {rel}"
+        raw = html_path.read_text(encoding="utf-8")
+        assert _is_meta_refresh_redirect(raw), f"Expected meta-refresh redirect in {rel}, got non-redirect page"
+        target = _extract_meta_refresh_target(raw)
+        assert target in targets, f"Redirect {rel} points to {target!r}, expected one of {targets}"
+
+    assert not (built_site / "search").exists(), "/search/ directory must not exist in public/"
+    assert not (built_site / "index.json").exists(), "index.json must not exist in public/"
+
+
+def test_m3_bio_appears_once_on_home(built_site: Path) -> None:
+    """Verify profile.yaml bio appears exactly once in public/, inside public/index.html."""
+    profile = yaml.safe_load((REPO_ROOT / "data" / "profile.yaml").read_text(encoding="utf-8"))
+    bio_norm = " ".join((profile.get("bio") or "").split())
+    assert len(bio_norm) > 40, "profile.yaml bio missing or unexpectedly short"
+
+    home_raw = (built_site / "index.html").read_text(encoding="utf-8")
+    home_soup = BeautifulSoup(home_raw, "lxml")
+    home_text = " ".join(home_soup.get_text(" ").split())
+    assert bio_norm in home_text, "profile.yaml bio missing from public/index.html"
+    assert home_text.count(bio_norm) == 1, "profile.yaml bio appears multiple times on public/index.html"
+
+    for html_path in built_site.rglob("*.html"):
+        rel = html_path.relative_to(built_site).as_posix()
+        if rel == "index.html":
+            continue
+        other_text = " ".join(BeautifulSoup(html_path.read_text(encoding="utf-8"), "lxml").get_text(" ").split())
+        assert bio_norm not in other_text, f"Bio leaked into {rel}"
+        assert "Climate models have become too expensive to improve" not in other_text, (
+            f"Bio prose leaked into {rel}"
+        )
+
+
+def test_m3_home_audience_links_and_log_threshold(built_site: Path) -> None:
+    """Verify Home audience links, removed dashboard blocks, and >=2 vs <2 Log threshold."""
+    home_soup = BeautifulSoup((built_site / "index.html").read_text(encoding="utf-8"), "lxml")
+    assert home_soup.select_one(".impact-metrics") is None, "Obsolete .impact-metrics still on Home"
+    assert home_soup.select_one(".research-highlights") is None, "Obsolete .research-highlights still on Home"
+    assert home_soup.select_one(".home-info .social-icons") is None, "Duplicate social icons still inside .home-info"
+
+    audience_links = home_soup.select(".home-audience-links a")
+    assert len(audience_links) == 3, f"Expected 3 audience links on Home, got {len(audience_links)}"
+    actual_cta = [(a.select_one(".home-audience-title").get_text(strip=True), a.get("href")) for a in audience_links]
+    assert actual_cta[0][0] == "Collaborate" and actual_cta[0][1].endswith("/work/")
+    assert actual_cta[1][0] == "Hiring" and actual_cta[1][1].endswith("/cv/")
+    assert actual_cta[2][0] == "Read" and actual_cta[2][1].endswith("/posts/")
+
+    # With 3 published Log items (>= 2), "Latest from the Log" must render up to 3 items with kind badges
+    home_posts = home_soup.select_one(".home-posts")
+    assert home_posts is not None, "Expected .home-posts on Home when >= 2 Log items are published"
+    heading = home_posts.select_one("h2")
+    assert heading is not None and heading.get_text(strip=True) == "Latest from the Log"
+    cards = home_posts.select("article.post-entry")
+    assert 2 <= len(cards) <= 3, f"Expected 2..3 cards in Latest from the Log, got {len(cards)}"
+    for card in cards:
+        badges = card.select(".kind-badge")
+        assert badges, "Expected kind badge on Home Log card"
+        assert all(b.get_text(strip=True) in {"note", "talk", "paper"} for b in badges)
+
+    # Probe < 2 published Log items using snap-safe temporary directories under REPO_ROOT
+    probe_src = Path(tempfile.mkdtemp(prefix="_tmp_hugo_probe_src_", dir=REPO_ROOT))
+    probe_out = Path(tempfile.mkdtemp(prefix="_tmp_hugo_probe_out_", dir=REPO_ROOT))
+    try:
+        shutil.copytree(REPO_ROOT / "content", probe_src / "content", dirs_exist_ok=True)
+        for talk_name in (
+            "2014-04-28-egu2014-global-modelling-surface-internal-tides.md",
+            "2013-06-21-ams19-global-modelling-surface-internal-tides.md",
+        ):
+            talk_path = probe_src / "content" / "posts" / talk_name
+            raw = talk_path.read_text(encoding="utf-8")
+            talk_path.write_text(raw.replace("draft: false", "draft: true", 1), encoding="utf-8")
+
+        proc = subprocess.run(
+            ["hugo", "--gc", "--minify", "--contentDir", str(probe_src / "content"), "-d", str(probe_out)],
+            cwd=str(REPO_ROOT),
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        assert proc.returncode == 0, f"Probe Hugo build (<2 posts) failed:\n{proc.stdout}\n{proc.stderr}"
+        probe_home = BeautifulSoup((probe_out / "index.html").read_text(encoding="utf-8"), "lxml")
+        assert probe_home.select_one(".home-posts") is None, (
+            "Home must NOT render .home-posts when < 2 Log items are published"
+        )
+        assert "Latest from the Log" not in probe_home.get_text()
+    finally:
+        shutil.rmtree(probe_src, ignore_errors=True)
+        shutil.rmtree(probe_out, ignore_errors=True)
+
+
+def test_m3_work_page_structure(built_site: Path) -> None:
+    """Verify /work/ has intro, projects, 7 software cards (no equations), 5 latest pubs, and simulations at bottom."""
+    work_raw = (built_site / "work" / "index.html").read_text(encoding="utf-8")
+    work_soup = BeautifulSoup(work_raw, "lxml")
+    content = work_soup.select_one(".post-content")
+    assert content is not None
+
+    work_text = content.get_text(" ", strip=True)
+    assert "Projects I am on now" in work_text
+    assert "Current Projects" in work_text
+    assert len(content.select(".software-card")) == 7
+    assert "$$" not in work_raw and "\\frac" not in work_raw, "Equations must not appear on /work/"
+
+    pub_items = content.select(".selected-pub-item")
+    assert len(pub_items) == 5, f"Expected 5 selected publications on /work/, got {len(pub_items)}"
+    pubs_link = content.find("a", href=re.compile(r"/publications/?$"))
+    assert pubs_link is not None, "Missing link to /publications/ on /work/"
+
+    # Verify latest 5 dated entries from data/publications.yaml appear in order
+    expected_titles = [
+        "Multi-model reconstructions and predictions of the CO2 fluxes and atmospheric CO2 variations",
+        "Dissecting mesopelagic particulate organic carbon budgets in the North Atlantic",
+        "Convection injects labile particulate organic carbon to the deep ocean",
+        "The key role of Mediterranean and North Atlantic sea surface temperatures",
+        "Comparing the seasonal predictability of the Tropical Pacific variability",
+    ]
+    rendered_titles = [el.get_text(" ", strip=True) for el in content.select(".selected-pub-item h3")]
+    for exp, got in zip(expected_titles, rendered_titles):
+        assert exp in got, f"Expected selected pub {exp!r}, got {got!r}"
+
+    # Simulation gallery must appear AFTER Selected Publications
+    pos_pubs = work_raw.find("selected-pub-list")
+    pos_sim = work_raw.find("simulation-gallery")
+    assert pos_pubs != -1 and pos_sim != -1 and pos_sim > pos_pubs, (
+        "simulation_gallery must appear after selected publications on /work/"
+    )
+
+
+def test_m3_publications_metrics_intro(built_site: Path) -> None:
+    """Verify /publications/ intro line displays paper count, citations, and h-index from data/*.yaml."""
+    stats = yaml.safe_load((REPO_ROOT / "data" / "stats.yaml").read_text(encoding="utf-8"))
+    scholar = yaml.safe_load((REPO_ROOT / "data" / "scholar_stats.yaml").read_text(encoding="utf-8"))
+    pub_text = BeautifulSoup((built_site / "publications" / "index.html").read_text(encoding="utf-8"), "lxml").get_text(" ", strip=True)
+
+    expected = f"{stats['publications']} papers · {scholar['citations']} citations · h-index {scholar['h_index']}"
+    assert expected in pub_text, f"Expected {expected!r} in /publications/ intro, got: {pub_text[:300]}"
+
+
+def test_m3_log_kind_filters_badges_and_linkedin_probe(built_site: Path) -> None:
+    """Verify /posts/ Log heading, kind filter pills, kind badges, and optional linkedin: front matter."""
+    log_soup = BeautifulSoup((built_site / "posts" / "index.html").read_text(encoding="utf-8"), "lxml")
+    h1 = log_soup.select_one("header.page-header h1")
+    assert h1 is not None and h1.get_text(strip=True) == "Log"
+
+    filter_links = log_soup.select(".log-kind-filter a")
+    assert len(filter_links) >= 3, f"Expected kind filter links on /posts/, got {filter_links}"
+    filter_hrefs = [a.get("href") or "" for a in filter_links]
+    assert any(h.endswith("/posts/") for h in filter_hrefs)
+    assert any(h.endswith("/kinds/note/") for h in filter_hrefs)
+    assert any(h.endswith("/kinds/talk/") for h in filter_hrefs)
+
+    for entry in log_soup.select("article.post-entry"):
+        assert entry.select(".kind-badge"), "Expected .kind-badge on Log list entry"
+
+    # Single post without linkedin: must not render .post-linkedin-link, and must show .kind-badge
+    note_soup = BeautifulSoup(
+        (built_site / "posts" / "2026-06-15-neural-surrogates-shallow-water-equations" / "index.html").read_text(encoding="utf-8"),
+        "lxml",
+    )
+    assert note_soup.select_one(".post-header .kind-badge") is not None
+    assert note_soup.select_one(".post-linkedin-link") is None
+
+    # Probe optional linkedin: front-matter key in an isolated temporary contentDir
+    probe_src = Path(tempfile.mkdtemp(prefix="_tmp_hugo_probe_src_", dir=REPO_ROOT))
+    probe_out = Path(tempfile.mkdtemp(prefix="_tmp_hugo_probe_out_", dir=REPO_ROOT))
+    try:
+        shutil.copytree(REPO_ROOT / "content", probe_src / "content", dirs_exist_ok=True)
+        talk_path = probe_src / "content" / "posts" / "2014-04-28-egu2014-global-modelling-surface-internal-tides.md"
+        raw = talk_path.read_text(encoding="utf-8")
+        talk_path.write_text(
+            raw.replace('year: 2014\n', 'year: 2014\nlinkedin: "https://www.linkedin.com/posts/example-talk"\n', 1),
+            encoding="utf-8",
+        )
+
+        proc = subprocess.run(
+            ["hugo", "--gc", "--minify", "--contentDir", str(probe_src / "content"), "-d", str(probe_out)],
+            cwd=str(REPO_ROOT),
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        assert proc.returncode == 0, f"Probe Hugo build (linkedin) failed:\n{proc.stdout}\n{proc.stderr}"
+        talk_probe_soup = BeautifulSoup(
+            (probe_out / "posts" / "2014-04-28-egu2014-global-modelling-surface-internal-tides" / "index.html").read_text(encoding="utf-8"),
+            "lxml",
+        )
+        li_link = talk_probe_soup.select_one('.post-linkedin-link a[href="https://www.linkedin.com/posts/example-talk"]')
+        assert li_link is not None, "Expected .post-linkedin-link when linkedin: front-matter is set"
+
+        note_probe_soup = BeautifulSoup(
+            (probe_out / "posts" / "2026-06-15-neural-surrogates-shallow-water-equations" / "index.html").read_text(encoding="utf-8"),
+            "lxml",
+        )
+        assert note_probe_soup.select_one(".post-linkedin-link") is None
+    finally:
+        shutil.rmtree(probe_src, ignore_errors=True)
+        shutil.rmtree(probe_out, ignore_errors=True)

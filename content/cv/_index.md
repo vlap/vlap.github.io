@@ -12,13 +12,6 @@ hideMeta: true
       <span class="cv-download-sublabel">Academic track &amp; complete publication record</span>
     </span>
   </a>
-  <a href="/downloads/vladimir-lapin-cv-applied-scientist.pdf" class="cv-download-btn" target="_blank" rel="noopener">
-    <svg class="cv-download-icon" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-    <span class="cv-download-text">
-      <span class="cv-download-title">Applied Scientist CV (PDF)</span>
-      <span class="cv-download-sublabel">ML emulation, physics &amp; research engineering</span>
-    </span>
-  </a>
   <a href="/downloads/vladimir-lapin-cv-industry.pdf" class="cv-download-btn" target="_blank" rel="noopener">
     <svg class="cv-download-icon" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
     <span class="cv-download-text">
@@ -36,7 +29,7 @@ hideMeta: true
   <a href="/publications/" class="cv-nav-link">Publications &rarr;</a>
 </nav>
 
-Senior Research Engineer in Climate Modelling &amp; HPC at the **Barcelona Supercomputing Center (BSC)**. Specialized in atmospheric and oceanic fluid dynamics, Tier-0 supercomputing on MareNostrum 5, data assimilation, and reproducible scientific workflows.
+<p class="cv-tools-line"><strong>Tools:</strong> Python (xarray, Dask, PyTorch), Fortran (MPI, OpenMP), Bash, Slurm, Autosubmit, CDO, NCO. <strong>Models:</strong> EC-Earth4, OpenIFS, NEMO/PISCES, OASIS3-MCT, ICON.</p>
 
 ---
 

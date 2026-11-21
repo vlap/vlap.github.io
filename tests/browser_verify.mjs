@@ -278,30 +278,29 @@ describe("vlap.github.io headless browser verification", () => {
     assert.equal(afterFirstClick.stored, afterFirstClick.theme);
     assert.equal(afterFirstClick.computedScheme, afterFirstClick.theme);
 
-    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/about/`);
-    const persistedAbout = await cdp.eval(`({
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/work/`);
+    const persistedWork = await cdp.eval(`({
       meta: document.querySelector('meta[name="color-scheme"]')?.content,
       theme: document.documentElement.dataset.theme,
-      badgeBg: getComputedStyle(document.querySelector('.badge-hpc')).backgroundColor
+      linkColor: getComputedStyle(document.querySelector('.post-content a')).color
     })`);
-    assert.equal(persistedAbout.theme, afterFirstClick.theme);
-    assert.equal(persistedAbout.meta, afterFirstClick.theme);
+    assert.equal(persistedWork.theme, afterFirstClick.theme);
+    assert.equal(persistedWork.meta, afterFirstClick.theme);
 
     await cdp.eval(`document.getElementById('theme-toggle').click()`);
     await new Promise((r) => setTimeout(r, 250));
-    const toggledAbout = await cdp.eval(`({
+    const toggledWork = await cdp.eval(`({
       meta: document.querySelector('meta[name="color-scheme"]')?.content,
       theme: document.documentElement.dataset.theme,
-      badgeBg: getComputedStyle(document.querySelector('.badge-hpc')).backgroundColor,
-      badgeVar: getComputedStyle(document.documentElement).getPropertyValue('--badge-hpc-bg').trim()
+      linkColor: getComputedStyle(document.querySelector('.post-content a')).color
     })`);
-    assert.notEqual(toggledAbout.theme, persistedAbout.theme);
-    assert.equal(toggledAbout.meta, toggledAbout.theme);
-    assert.notEqual(toggledAbout.badgeBg, persistedAbout.badgeBg, "--badge-hpc-bg must adapt between light and dark");
+    assert.notEqual(toggledWork.theme, persistedWork.theme);
+    assert.equal(toggledWork.meta, toggledWork.theme);
+    assert.notEqual(toggledWork.linkColor, persistedWork.linkColor, "--accent-ocean must adapt between light and dark");
   });
 
   it("activates .sim-facade native <button> via keyboard Enter and replaces with native <video>", async () => {
-    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/software/`);
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/work/`);
     const beforeInfo = await cdp.eval(`(async () => {
       const btns = [...document.querySelectorAll('button.sim-facade')];
       const posters = [...document.querySelectorAll('img.sim-poster')];
@@ -714,12 +713,9 @@ describe("vlap.github.io headless browser verification", () => {
   it("maintains zero CLS, zero horizontal overflow (desktop & mobile), mobile #theme-toggle >= 44px, and Tab reachability on /cv/", async () => {
     const routes = [
       "/",
-      "/about/",
-      "/software/",
+      "/work/",
       "/publications/",
       "/cv/",
-      "/contact/",
-      "/search/",
       "/posts/",
       "/kinds/",
       "/kinds/note/",
@@ -758,16 +754,12 @@ describe("vlap.github.io headless browser verification", () => {
             innerWidth: window.innerWidth
           };
         })()`);
-        // TODO(Step 3): themes/PaperMod/layouts/_partials/cover.html omits width/height on static/ cover images,
-        // causing CLS on list pages showing 2026-06-15's flowers_banner.png; enforce CLS === 0 once layouts/ is updated in Step 3.
-        if (route !== "/posts/" && route !== "/kinds/note/") {
-          assert.equal(metrics.cls, 0, `Expected CLS === 0 on ${route} (${viewport.width}px mobile=${viewport.mobile}), got ${metrics.cls}`);
-        }
+        assert.equal(metrics.cls, 0, `Expected CLS === 0 on ${route} (${viewport.width}px mobile=${viewport.mobile}), got ${metrics.cls}`);
         assert.ok(
           metrics.scrollWidth <= metrics.innerWidth,
           `Horizontal overflow on ${route} (${viewport.width}px mobile=${viewport.mobile}): ${metrics.scrollWidth} > ${metrics.innerWidth}`,
         );
-        if (!viewport.mobile && viewport.width <= 390 && route === "/software/") {
+        if (!viewport.mobile && viewport.width <= 390 && route === "/work/") {
           const gridOverflow = await cdp.eval(`(() => {
             const pc = document.querySelector('.post-content');
             const sw = document.querySelector('.software-container');
@@ -785,7 +777,7 @@ describe("vlap.github.io headless browser verification", () => {
             gridOverflow.pcScrollW <= gridOverflow.pcClientW
             && gridOverflow.swScrollW <= gridOverflow.swClientW
             && gridOverflow.simScrollW <= gridOverflow.simClientW,
-            `/software/ grid overflows container at ${viewport.width}px: ${JSON.stringify(gridOverflow)}`,
+            `/work/ grid overflows container at ${viewport.width}px: ${JSON.stringify(gridOverflow)}`,
           );
         }
         if (viewport.width === 375 && route === "/") {
@@ -836,48 +828,13 @@ describe("vlap.github.io headless browser verification", () => {
     assert.equal(enteredDeferredCv, true, "Deferred .cv-item:nth-of-type(n+6) must be reachable via sequential Tab");
   });
 
-  it("shows :focus-visible outline on #searchInput, excludes /404/ from index.json, and keeps SVG rollout labels inside card bounds", async () => {
+  it("keeps SVG rollout labels inside card bounds", async () => {
     await cdp.send("Emulation.setDeviceMetricsOverride", {
       width: 1280,
       height: 800,
       deviceScaleFactor: 1,
       mobile: false,
     });
-    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/search/`);
-    for (let i = 0; i < 40; i++) {
-      const ready = await cdp.eval(`!document.getElementById('searchInput')?.disabled`);
-      if (ready) break;
-      await new Promise((r) => setTimeout(r, 50));
-    }
-    await cdp.eval(`document.activeElement?.blur()`);
-    for (let i = 0; i < 40; i++) {
-      await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
-      await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
-      const activeId = await cdp.eval(`document.activeElement?.id`);
-      if (activeId === "searchInput") break;
-    }
-    const searchFocus = await cdp.eval(`(() => {
-      const el = document.activeElement;
-      const cs = getComputedStyle(el);
-      return {
-        id: el?.id,
-        matchesFocusVisible: el?.matches(':focus-visible'),
-        outlineStyle: cs.outlineStyle,
-        outlineWidth: cs.outlineWidth
-      };
-    })()`);
-    assert.equal(searchFocus.id, "searchInput");
-    assert.equal(searchFocus.matchesFocusVisible, true);
-    assert.notEqual(searchFocus.outlineStyle, "none");
-    assert.notEqual(searchFocus.outlineWidth, "0px");
-
-    const indexJson = await cdp.eval(`fetch('/index.json').then((r) => r.json())`);
-    assert.ok(Array.isArray(indexJson) && indexJson.length >= 10);
-    assert.equal(
-      indexJson.some((e) => (e.permalink || "").includes("/404") || (e.title || "").includes("404: Page Not Found")),
-      false,
-      "/404/ must not appear in /index.json",
-    );
 
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/images/posts/neural_surrogate_swe_rollout.svg`);
     const svgBounds = await cdp.eval(`(() => {
@@ -939,12 +896,12 @@ describe("vlap.github.io headless browser verification", () => {
       mobile: false,
     });
     const checksByRoute = [
-      ["/", [".post-tag"]],
-      ["/about/", [".badge-lead"]],
-      ["/software/", [".software-tag", ".sim-spec-pill", ".sim-physics"]],
+      ["/", [".home-audience-link", ".kind-badge", ".footer .social-icons a"]],
+      ["/work/", [".software-tag", ".sim-spec-pill", ".sim-physics", ".pub-badge-btn"]],
       ["/publications/", [".pub-year-pill", ".pub-copy-btn", ".pub-bibtex-summary"]],
-      ["/cv/", [".cv-nav-link", ".cv-date-badge", ".cv-skills-tag"]],
-      ["/posts/2026-06-15-neural-surrogates-shallow-water-equations/", [".chroma .c1", ".post-tags a", ".paginav .title"]],
+      ["/cv/", [".cv-nav-link", ".cv-date-badge", ".cv-skills-tag", ".cv-link"]],
+      ["/posts/", [".log-kind-pill", ".kind-badge"]],
+      ["/posts/2026-06-15-neural-surrogates-shallow-water-equations/", [".chroma .c1", ".post-tags a", ".paginav .title", ".kind-badge"]],
     ];
 
     for (const [route, selectors] of checksByRoute) {
@@ -1016,11 +973,23 @@ describe("vlap.github.io headless browser verification", () => {
     }
   });
 
-  it("renders profile-symbol.svg in home <h1>, removes duplicate /cv/ post-entry cards, and displays 3 CV PDF sublabels", async () => {
+  it("renders profile-symbol.svg, 3 nav items, 3 Home links, 6 footer social icons, 2 CV PDF buttons, and EGU2014 talk link", async () => {
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/`);
     const homeCheck = await cdp.eval(`(() => {
       const h1 = document.querySelector('.home-info h1');
       const img = h1?.querySelector('img.home-symbol-icon');
+      const navItems = [...document.querySelectorAll('#menu a')].map((a) => ({
+        name: a.textContent.trim(),
+        href: a.getAttribute('href'),
+      }));
+      const audienceLinks = [...document.querySelectorAll('.home-audience-links a')].map((a) => ({
+        title: a.querySelector('.home-audience-title')?.textContent.trim() || '',
+        href: a.getAttribute('href'),
+      }));
+      const footerIcons = [...document.querySelectorAll('footer.footer .social-icons a')].map((a) => ({
+        href: a.getAttribute('href'),
+        label: a.getAttribute('aria-label'),
+      }));
       return {
         hasImg: Boolean(img),
         src: img?.getAttribute('src'),
@@ -1030,6 +999,13 @@ describe("vlap.github.io headless browser verification", () => {
         naturalWidth: img?.naturalWidth,
         hasEmojiBar: Boolean(h1?.querySelector('.symbol-bar')),
         h1Text: h1?.textContent || '',
+        navItems,
+        audienceLinks,
+        footerIcons,
+        hasImpactMetrics: Boolean(document.querySelector('.impact-metrics')),
+        hasHighlights: Boolean(document.querySelector('.research-highlights')),
+        logHeading: document.querySelector('.home-posts h2')?.textContent.trim() || '',
+        logCount: document.querySelectorAll('.home-posts article.post-entry').length,
       };
     })()`);
     assert.equal(homeCheck.hasImg, true);
@@ -1040,20 +1016,41 @@ describe("vlap.github.io headless browser verification", () => {
     assert.ok(homeCheck.naturalWidth > 0, "Expected profile-symbol.svg to decode with naturalWidth > 0");
     assert.equal(homeCheck.hasEmojiBar, false);
     assert.equal(/[🌐♾🤖]/.test(homeCheck.h1Text), false);
+    assert.equal(homeCheck.hasImpactMetrics, false);
+    assert.equal(homeCheck.hasHighlights, false);
+    assert.deepEqual(
+      homeCheck.navItems.map((n) => n.name),
+      ["Work", "Log", "CV"],
+    );
+    assert.equal(homeCheck.audienceLinks.length, 3);
+    assert.equal(homeCheck.audienceLinks[0].title, "Collaborate");
+    assert.ok(homeCheck.audienceLinks[0].href.endsWith("/work/"));
+    assert.equal(homeCheck.audienceLinks[1].title, "Hiring");
+    assert.ok(homeCheck.audienceLinks[1].href.endsWith("/cv/"));
+    assert.equal(homeCheck.audienceLinks[2].title, "Read");
+    assert.ok(homeCheck.audienceLinks[2].href.endsWith("/posts/"));
+    assert.equal(homeCheck.footerIcons.length, 6);
+    assert.ok(homeCheck.footerIcons.every((i) => i.label && i.label.length > 0));
+    assert.equal(homeCheck.logHeading, "Latest from the Log");
+    assert.ok(homeCheck.logCount >= 2 && homeCheck.logCount <= 3);
 
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/cv/`);
     const cvCheck = await cdp.eval(`(() => {
       const btns = [...document.querySelectorAll('.cv-download-btn')];
+      const eguItem = [...document.querySelectorAll('.cv-item')].find((el) => el.textContent.includes('EGU2014'));
+      const eguTalkHref = eguItem?.querySelector('a[href*="/posts/2014-04-28-egu2014"]')?.getAttribute('href') || null;
       return {
         postEntries: document.querySelectorAll('article.post-entry').length,
         btnCount: btns.length,
         sublabels: btns.map((b) => b.querySelector('.cv-download-sublabel')?.textContent.trim() || ''),
+        eguTalkHref,
       };
     })()`);
     assert.equal(cvCheck.postEntries, 0);
-    assert.equal(cvCheck.btnCount, 3);
+    assert.equal(cvCheck.btnCount, 2);
     assert.ok(cvCheck.sublabels.every((s) => s.length > 0));
-    assert.equal(new Set(cvCheck.sublabels).size, 3);
+    assert.equal(new Set(cvCheck.sublabels).size, 2);
+    assert.ok(cvCheck.eguTalkHref, "Expected EGU2014 entry on /cv/ to link to its Log talk page");
   });
 
   it("highlights live publication matches via CSS.highlights, syncs ?q= URL state, and handles / and Escape shortcuts", async () => {
@@ -1187,39 +1184,7 @@ describe("vlap.github.io headless browser verification", () => {
     assert.deepEqual(unicodeHighlight, ["Foo"]);
   });
 
-  it("finds enriched publication and software entries via Fuse on /search/", async () => {
-    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/search/`);
-    for (let i = 0; i < 40; i++) {
-      const ready = await cdp.eval(`!document.getElementById('searchInput')?.disabled`);
-      if (ready) break;
-      await new Promise((r) => setTimeout(r, 50));
-    }
-
-    await cdp.eval(`document.getElementById('searchInput').focus()`);
-    await cdp.send("Input.insertText", { text: "Tsujino" });
-    await new Promise((r) => setTimeout(r, 350));
-    const pubSearchHrefs = await cdp.eval(`[...document.querySelectorAll('#searchResults li a')].map((a) => a.getAttribute('href'))`);
-    assert.ok(
-      pubSearchHrefs.some((h) => h && h.includes("/publications/?q=")),
-      `Expected /publications/?q= result for Tsujino, got ${JSON.stringify(pubSearchHrefs)}`,
-    );
-
-    await cdp.eval(`(() => {
-      const inp = document.getElementById('searchInput');
-      inp.value = '';
-      inp.dispatchEvent(new Event('input', { bubbles: true }));
-      inp.focus();
-    })()`);
-    await cdp.send("Input.insertText", { text: "pisces-inidata" });
-    await new Promise((r) => setTimeout(r, 350));
-    const swSearchHrefs = await cdp.eval(`[...document.querySelectorAll('#searchResults li a')].map((a) => a.getAttribute('href'))`);
-    assert.ok(
-      swSearchHrefs.some((h) => h && h.endsWith("/software/")),
-      `Expected /software/ result for pisces-inidata, got ${JSON.stringify(swSearchHrefs)}`,
-    );
-  });
-
-  it("preserves centered 720px alignment, clean pill links, modern CSS polish, and reduced motion", async () => {
+  it("preserves centered 720px alignment, clean pill links, modern CSS polish, redirects, and reduced motion", async () => {
     await cdp.send("Emulation.setDeviceMetricsOverride", {
       width: 1280,
       height: 800,
@@ -1256,10 +1221,40 @@ describe("vlap.github.io headless browser verification", () => {
     assert.ok(Math.abs(homeAlign.homeInfoRight - homeAlign.homePostsRight) <= 2);
     assert.ok(Math.abs(homeAlign.imgCenterX - homeAlign.nameCenterX) <= 4);
 
-    for (const staticRoute of ["/about/", "/software/", "/publications/", "/cv/", "/contact/"]) {
+    for (const staticRoute of ["/work/", "/publications/", "/cv/"]) {
       await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}${staticRoute}`);
       const hasMeta = await cdp.eval(`Boolean(document.querySelector('.post-meta'))`);
       assert.equal(hasMeta, false, `Unexpected .post-meta on static portfolio route ${staticRoute}`);
+    }
+
+    const redirectAndMissing = await cdp.eval(`(async () => {
+      const redirects = {};
+      for (const [src, targetSuffix] of [
+        ['/about/', '/'],
+        ['/contact/', '/'],
+        ['/software/', '/work/'],
+        ['/archives/', '/posts/'],
+      ]) {
+        const res = await fetch(src);
+        const html = await res.text();
+        redirects[src] = { status: res.status, hasRefresh: /http-equiv="?refresh"?/i.test(html), html };
+      }
+      const searchRes = await fetch('/search/');
+      const jsonRes = await fetch('/index.json');
+      return { redirects, searchStatus: searchRes.status, jsonStatus: jsonRes.status };
+    })()`);
+    assert.equal(redirectAndMissing.searchStatus, 404);
+    assert.equal(redirectAndMissing.jsonStatus, 404);
+    for (const [src, expected] of [
+      ["/about/", `${serverObj.baseUrl}/`],
+      ["/contact/", `${serverObj.baseUrl}/`],
+      ["/software/", `${serverObj.baseUrl}/work/`],
+      ["/archives/", `${serverObj.baseUrl}/posts/`],
+    ]) {
+      const info = redirectAndMissing.redirects[src];
+      assert.equal(info.status, 200);
+      assert.equal(info.hasRefresh, true, `Expected meta refresh on ${src}`);
+      assert.ok(info.html.includes(expected), `Expected ${src} redirect to target ${expected}, got ${info.html}`);
     }
 
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/cv/`);

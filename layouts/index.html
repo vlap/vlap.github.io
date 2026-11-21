@@ -6,17 +6,17 @@
 
 {{- $pages := (where site.RegularPages "Section" "posts").ByDate.Reverse }}
 
-{{- if gt (len $pages) 0 }}
+{{- if ge (len $pages) 2 }}
 <div class="home-posts">
     <div class="home-posts-header">
-        <h2 class="section-title">Recent Research Log</h2>
+        <h2 class="section-title">Latest from the Log</h2>
     </div>
-    {{- range first 5 $pages }}
+    {{- range first 3 $pages }}
     <article class="post-entry">
         <header class="entry-header">
-            <h2 class="entry-hint-parent">
+            <h3 class="entry-hint-parent">
                 {{- .Title }}
-            </h2>
+            </h3>
         </header>
         {{- if (ne (.Param "hideSummary") true) }}
         <div class="entry-content">
@@ -27,10 +27,10 @@
             {{- if not (.Param "hideMeta") }}
             <span class="post-meta">{{- partial "post_meta.html" . -}}</span>
             {{- end }}
-            {{- with .Params.tags }}
-            <div class="entry-tags">
+            {{- with (.GetTerms "kinds") }}
+            <div class="entry-kinds">
                 {{- range . }}
-                <a href="{{ (printf "tags/%s/" (. | urlize)) | absURL }}" class="post-tag">#{{ . }}</a>
+                <a href="{{ .RelPermalink }}" class="kind-badge">{{ .LinkTitle | lower }}</a>
                 {{- end }}
             </div>
             {{- end }}
@@ -38,9 +38,9 @@
         <a class="entry-link" aria-label="post link to {{ .Title | plainify }}" href="{{ .Permalink }}"></a>
     </article>
     {{- end }}
-    
+
     <div class="home-posts-footer">
-        <a class="view-all-link" href="{{ "/posts/" | absURL }}">View all log entries &rarr;</a>
+        <a class="view-all-link" href="{{ "/posts/" | relLangURL }}">All log entries &rarr;</a>
     </div>
 </div>
 {{- end }}

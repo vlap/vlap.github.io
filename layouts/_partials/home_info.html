@@ -1,6 +1,4 @@
 {{- $profile := hugo.Data.profile }}
-{{- $stats := hugo.Data.stats }}
-{{- $scholar := hugo.Data.scholar_stats }}
 
 <article class="first-entry home-info">
     {{- if site.Params.homeInfoParams.Image -}}
@@ -16,7 +14,7 @@
             {{ or $profile.name site.Params.homeInfoParams.Title "Dr. Vladimir Lapin" }}
             <img src="/images/decor/profile-symbol.svg" alt="" aria-hidden="true" class="home-symbol-icon" width="28" height="28">
         </h1>
-        <p class="home-subtitle">{{ or $profile.tagline "Senior Research Engineer · Climate &amp; Geophysical Models · HPC · Predictions · AI Adoption" }}</p>
+        <p class="home-subtitle">{{ or $profile.tagline "Senior Research Engineer, BSC · Climate models, HPC, ML emulators" }}</p>
     </header>
     <div class="entry-content md-content">
         {{ $opts := dict "display" "block" }}
@@ -29,47 +27,18 @@
     </div>
     {{- end }}
 
-    <div class="impact-metrics">
-        <a href="{{ "/publications/" | absURL }}" class="metric-item">
-            <span class="metric-value">{{ $stats.publications }}</span>
-            <span class="metric-label">Papers</span>
+    <nav class="home-audience-links" aria-label="Site sections">
+        <a href="{{ "/work/" | relLangURL }}" class="home-audience-link">
+            <span class="home-audience-title">Collaborate</span>
+            <span class="home-audience-desc">what I work on, the code, and how to reach me.</span>
         </a>
-        {{- if $scholar }}
-        <a href="{{ $profile.social.googlescholar }}" target="_blank" rel="noopener" class="metric-item">
-            <span class="metric-value">{{ $scholar.citations }}</span>
-            <span class="metric-label">Citations</span>
+        <a href="{{ "/cv/" | relLangURL }}" class="home-audience-link">
+            <span class="home-audience-title">Hiring</span>
+            <span class="home-audience-desc">CV, career history and PDF downloads.</span>
         </a>
-        <a href="{{ $profile.social.googlescholar }}" target="_blank" rel="noopener" class="metric-item">
-            <span class="metric-value">{{ $scholar.h_index }}</span>
-            <span class="metric-label">h-index</span>
+        <a href="{{ "/posts/" | relLangURL }}" class="home-audience-link">
+            <span class="home-audience-title">Read</span>
+            <span class="home-audience-desc">notes, talks and papers.</span>
         </a>
-        {{- end }}
-        <a href="{{ "/software/" | absURL }}" class="metric-item">
-            <span class="metric-value">{{ $stats.software }}</span>
-            <span class="metric-label">Tools</span>
-        </a>
-    </div>
-
-    <h2 class="visually-hidden">Research Highlights</h2>
-    <div class="research-highlights">
-        <a href="{{ "/software/" | absURL }}" class="highlight-item">
-            <span class="highlight-icon grayscale" aria-hidden="true">⬡</span>
-            <h3>Climate Commons (<code>cvc-commons</code>)</h3>
-            <p>Modernizing Earth system prediction workflows with schemas and CI.</p>
-        </a>
-        <a href="{{ "/posts/2026-05-04-senior-dev-hpc-workflows/" | absURL }}" class="highlight-item">
-            <span class="highlight-icon grayscale" aria-hidden="true">⚙</span>
-            <h3>HPC &amp; Earth System Models</h3>
-            <p>Coupling EC-Earth4, OpenIFS, and scaling on MareNostrum 5.</p>
-        </a>
-        <a href="{{ "/posts/2026-09-24-openifs-mass-conservation-stochastic-rounding/" | absURL }}" class="highlight-item">
-            <span class="highlight-icon grayscale" aria-hidden="true">∫</span>
-            <h3>Atmospheric &amp; Ocean Numerics</h3>
-            <p>Tracer mass conservation, stochastic rounding, and tidal solvers.</p>
-        </a>
-    </div>
-
-    <footer class="entry-footer">
-        {{ partial "social_icons.html" (dict "align" "center") }}
-    </footer>
+    </nav>
 </article>

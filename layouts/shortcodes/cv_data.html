@@ -5,6 +5,14 @@
 {{- $summaryLabel := .Get "summary_label" | default "entries" -}}
 {{- $sectionId := .Get "section_id" -}}
 {{- $data := index hugo.Data $file -}}
+{{- $talkPages := slice -}}
+{{- if eq $file "presentations" -}}
+  {{- range where site.RegularPages "Section" "posts" -}}
+    {{- if and (in (or .Params.kinds slice) "talk") .Params.event .Params.year -}}
+      {{- $talkPages = $talkPages | append . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 {{- if $collapsible }}
 <details class="cv-section-details"{{ if $sectionId }} data-cv-section="{{ $sectionId }}"{{ end }}>
   <summary class="cv-details-summary">
@@ -14,6 +22,15 @@
 {{- end }}
 <div class="cv-section">
   {{ range $data }}
+  {{- $item := . -}}
+  {{- $talkPage := false -}}
+  {{- if and (eq $file "presentations") $item.event $item.year -}}
+    {{- range $talkPages -}}
+      {{- if and (eq (string .Params.event) (string $item.event)) (eq (int .Params.year) (int $item.year)) -}}
+        {{- $talkPage = . -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
   <div class="cv-item">
     <div class="cv-entry-header">
       {{ if eq $heading "h2" }}
@@ -29,6 +46,7 @@
       {{ if .institution }}<span>{{ .institution }}</span>{{ end }}
       {{ if .location }} | <span>{{ .location }}</span>{{ end }}
       {{ if .url }} | <a href="{{ .url }}" target="_blank" rel="noopener" class="cv-link">Link &rarr;</a>{{ end }}
+      {{ if $talkPage }} | <a href="{{ $talkPage.RelPermalink }}" class="cv-link">Talk page &rarr;</a>{{ end }}
     </div>
     {{ if .skills }}
     <div class="cv-skills">

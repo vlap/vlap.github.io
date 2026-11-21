@@ -3,7 +3,7 @@ locale = "en-us"
 title = "Vladimir Lapin"
 theme = "PaperMod"
 
-description = "Personal website of Dr. Vladimir Lapin, Senior Research Engineer at BSC. Specialized in Climate Modelling, HPC Engineering, Applied Mathematics, and Machine Learning."
+description = "Vladimir Lapin, Senior Research Engineer at BSC. Climate models, HPC and ML emulators."
 keywords = ["Vladimir Lapin", "Climate Modelling", "HPC Engineering", "Applied Mathematics", "Machine Learning", "BSC", "Barcelona Supercomputing Center", "Data Assimilation"]
 
 [params]
@@ -11,14 +11,14 @@ keywords = ["Vladimir Lapin", "Climate Modelling", "HPC Engineering", "Applied M
     author = "Dr. Vladimir Lapin"
     
     # SEO & Social Cards
-    description = "Senior Research Engineer · Climate & Geophysical Models · HPC · Predictions · AI Adoption"
+    description = "Vladimir Lapin, Senior Research Engineer at BSC. Climate models, HPC and ML emulators."
     images = ["images/decor/vladimir_lapin.jpg"]
     
     # Post & Navigation Features
-    ShowReadingTime = true
-    ShowShareButtons = true
+    ShowReadingTime = false
+    ShowShareButtons = false
     ShowPostNavLinks = true
-    ShowBreadCrumbs = true
+    ShowBreadCrumbs = false
     ShowCodeCopyButtons = true
     ShowToc = false
     ShowScrollToTop = true
@@ -48,8 +48,8 @@ keywords = ["Vladimir Lapin", "Climate Modelling", "HPC Engineering", "Applied M
         imageTitle = "Vladimir Lapin"
         
         [[params.profileMode.buttons]]
-            name = "Software"
-            url = "/software/"
+            name = "Work"
+            url = "/work/"
         [[params.profileMode.buttons]]
             name = "CV"
             url = "/cv/"
@@ -59,17 +59,29 @@ keywords = ["Vladimir Lapin", "Climate Modelling", "HPC Engineering", "Applied M
         Image = "images/decor/vladimir_lapin.jpg"
 
     [[params.socialIcons]]
+        name = "email"
+        title = "Email"
+        url = "mailto:vladimir.lapin@bsc.es"
+    [[params.socialIcons]]
         name = "github"
+        title = "GitHub"
         url = "https://github.com/vlap"
     [[params.socialIcons]]
         name = "linkedin"
+        title = "LinkedIn"
         url = "https://linkedin.com/in/vladimir-lapin"
     [[params.socialIcons]]
         name = "googlescholar"
+        title = "Google Scholar"
         url = "https://scholar.google.com/citations?user=ZVQF-ggAAAAJ&hl=en"
     [[params.socialIcons]]
         name = "orcid"
+        title = "ORCID"
         url = "https://orcid.org/0000-0001-7302-8539"
+    [[params.socialIcons]]
+        name = "rss"
+        title = "RSS"
+        url = "/index.xml"
 
 [taxonomies]
     tag = "tags"
@@ -77,13 +89,13 @@ keywords = ["Vladimir Lapin", "Climate Modelling", "HPC Engineering", "Applied M
     kind = "kinds"
 
 [outputs]
-    home = ["HTML", "RSS", "JSON"]
+    home = ["HTML", "RSS"]
 
 [menu]
     [[menu.main]]
-        identifier = "about"
-        name = "About"
-        url = "/about/"
+        identifier = "work"
+        name = "Work"
+        url = "/work/"
         weight = 10
     [[menu.main]]
         identifier = "log"
@@ -91,30 +103,10 @@ keywords = ["Vladimir Lapin", "Climate Modelling", "HPC Engineering", "Applied M
         url = "/posts/"
         weight = 20
     [[menu.main]]
-        identifier = "software"
-        name = "Software"
-        url = "/software/"
-        weight = 30
-    [[menu.main]]
-        identifier = "publications"
-        name = "Publications"
-        url = "/publications/"
-        weight = 40
-    [[menu.main]]
         identifier = "cv"
         name = "CV"
         url = "/cv/"
-        weight = 50
-    [[menu.main]]
-        identifier = "contact"
-        name = "Contact"
-        url = "/contact/"
-        weight = 60
-    [[menu.main]]
-        identifier = "search"
-        name = "Search"
-        url = "/search/"
-        weight = 70
+        weight = 30
 
 [markup]
   [markup.goldmark]
