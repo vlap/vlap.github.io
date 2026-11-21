@@ -89,6 +89,20 @@
     color-scheme: light;
 }
 
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --theme: rgb(29, 30, 32);
+        --entry: rgb(46, 46, 51);
+        --primary: rgb(218, 218, 219);
+        --secondary: rgb(155, 156, 157);
+        --tertiary: rgb(65, 66, 68);
+        --content: rgb(196, 196, 197);
+        --code-block-bg: rgb(46, 46, 51);
+        --code-bg: rgb(55, 56, 62);
+        --border: rgb(51, 51, 51);
+    }
+}
+
 @supports not (color: light-dark(white, black)) {
     :root[data-theme="dark"] {
         --accent-pine: var(--accent-pine-dark);
@@ -241,12 +255,12 @@ h1,
     color: var(--primary);
 }
 
-.post-content a:not(.cv-download-btn):not(.cv-nav-link):not(.cv-link):not(.pub-badge-btn):not(.pub-year-pill):not(.post-tag):not(.kind-badge):not(.view-all-link):not(.action-pill):not(.anchor) {
+.post-content a:not(.cv-download-btn):not(.cv-nav-link):not(.cv-link):not(.pub-badge-btn):not(.pub-year-pill):not(.post-tag):not(.kind-badge):not(.view-all-link):not(.action-pill):not(.software-github-link):not(.anchor) {
     color: var(--accent-ocean);
     text-decoration-color: var(--accent-pine-mid);
 }
 
-.post-content a:not(.cv-download-btn):not(.cv-nav-link):not(.cv-link):not(.pub-badge-btn):not(.pub-year-pill):not(.post-tag):not(.kind-badge):not(.view-all-link):not(.action-pill):not(.anchor):hover {
+.post-content a:not(.cv-download-btn):not(.cv-nav-link):not(.cv-link):not(.pub-badge-btn):not(.pub-year-pill):not(.post-tag):not(.kind-badge):not(.view-all-link):not(.action-pill):not(.software-github-link):not(.anchor):hover {
     color: var(--accent-pine);
 }
 
@@ -2291,9 +2305,14 @@ table td {
     max-width: 100%;
 }
 
-.pub-bibtex-details[open] {
+details.pub-bibtex-details[open] {
     flex: 1 0 100%;
     width: 100%;
+}
+
+details.pub-bibtex-details[open] > .pub-bibtex-summary {
+    width: fit-content;
+    max-width: 100%;
 }
 
 .pub-bibtex-summary {
