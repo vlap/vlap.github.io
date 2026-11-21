@@ -71,6 +71,11 @@ keywords = ["Vladimir Lapin", "Climate Modelling", "HPC Engineering", "Applied M
         name = "orcid"
         url = "https://orcid.org/0000-0001-7302-8539"
 
+[taxonomies]
+    tag = "tags"
+    category = "categories"
+    kind = "kinds"
+
 [outputs]
     home = ["HTML", "RSS", "JSON"]
 

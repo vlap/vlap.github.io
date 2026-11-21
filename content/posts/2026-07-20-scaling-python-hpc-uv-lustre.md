@@ -1,7 +1,7 @@
 ---
 title: "Eliminating the Conda Bottleneck on HPC: Fast Python & Climate Workflows with uv on Lustre"
 date: 2026-07-20T12:00:00+02:00
-draft: false
+draft: true
 type: "posts"
 summary: "We've all watched a 64-node Slurm job stall for three minutes just importing xarray. Here is why standard Conda environments choke parallel filesystems like Lustre, and how pairing Astral uv with system LMOD modules eliminates job startup lag on MareNostrum 5."
 tags: ["HPC", "Python", "Lustre", "Slurm", "Workflow Optimization", "MareNostrum 5"]

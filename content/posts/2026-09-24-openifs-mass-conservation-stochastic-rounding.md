@@ -1,7 +1,7 @@
 ---
 title: "Atmospheric Tracer Mass Conservation in OpenIFS: Single Precision Drift, Weather Divergence, and Stochastic Rounding"
 date: 2026-09-24T18:00:00+02:00
-draft: false
+draft: true
 type: "posts"
 math: true
 summary: "The first time you run OpenIFS in single precision, the global CO₂ mass budget will look like it has a severe leak. Here is what we found after tracking the diagnostics term-by-term, why >99.5% of the drift is chaotic weather, and how stochastic rounding fixed the real numerical error."

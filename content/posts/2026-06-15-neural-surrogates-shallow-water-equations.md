@@ -3,6 +3,7 @@ title: "Discovering Flowers: Why Multihead Coordinate Warps are a Breakthrough f
 date: 2026-06-15T14:00:00+02:00
 draft: false
 type: "posts"
+kinds: ["note"]
 math: true
 summary: "When Till Muser shared Flowers—a neural PDE solver built entirely from multihead coordinate warps without Fourier multipliers or attention—it immediately resonated with our CFD background. Here is our experience discovering and benchmarking Flowers on the 2D Shallow Water Equations from PDEBench."
 tags: ["Flowers", "AI Surrogates", "Neural Operators", "Geophysical Fluid Dynamics", "PDEBench", "PyTorch", "HPC"]

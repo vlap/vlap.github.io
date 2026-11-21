@@ -34,9 +34,7 @@ KATEX_EXPECTED = {
 
 KATEX_PAGES = [
     "software/index.html",
-    "posts/2026-05-04-senior-dev-hpc-workflows/index.html",
     "posts/2026-06-15-neural-surrogates-shallow-water-equations/index.html",
-    "posts/2026-09-24-openifs-mass-conservation-stochastic-rounding/index.html",
 ]
 
 
@@ -74,7 +72,7 @@ def non_redirect_html_pages(built_site: Path) -> list[tuple[Path, BeautifulSoup]
         if _is_meta_refresh_redirect(raw):
             continue
         pages.append((html_path.relative_to(built_site), BeautifulSoup(raw, "lxml")))
-    assert len(pages) >= 40, f"Expected >=40 built HTML pages, got {len(pages)}"
+    assert len(pages) >= 20, f"Expected >=20 built HTML pages, got {len(pages)}"
     return pages
 
 
@@ -471,6 +469,11 @@ def test_hugo_toml_clean_and_contact_nav(
     assert len(re.findall(r"(?im)^\s*showCodeCopyButtons\s*=", raw_toml)) == 1
 
     cfg = tomllib.loads(raw_toml)
+    assert cfg.get("taxonomies") == {
+        "tag": "tags",
+        "category": "categories",
+        "kind": "kinds",
+    }, f"Unexpected [taxonomies] in hugo.toml: {cfg.get('taxonomies')}"
     params = cfg.get("params", {})
     for key in (
         "ShowReadingTime",
@@ -504,7 +507,7 @@ def test_hugo_toml_clean_and_contact_nav(
         for rel, soup in non_redirect_html_pages
         if len(rel.parts) == 3 and rel.parts[0] == "posts" and rel.parts[2] == "index.html"
     ]
-    assert len(post_pages) >= 5, f"Expected >= 5 built post pages, got {len(post_pages)}"
+    assert len(post_pages) == 3, f"Expected 3 built post pages, got {len(post_pages)}"
 
     code_posts = 0
     for rel, soup in post_pages:
@@ -519,7 +522,7 @@ def test_hugo_toml_clean_and_contact_nav(
             code_posts += 1
             scripts = "\n".join(s.get_text() for s in soup.find_all("script"))
             assert "copy-code" in scripts, f"Missing copy-code script on post with <pre><code>: {rel}"
-    assert code_posts >= 4, f"Expected >= 4 posts with <pre><code>, found {code_posts}"
+    assert code_posts >= 1, f"Expected >= 1 post with <pre><code>, found {code_posts}"
 
     for rel, soup in non_redirect_html_pages:
         assert soup.find("a", href=re.compile(r"/tools/")) is None, f"Dead /tools/ link found on {rel}"
@@ -785,8 +788,12 @@ def test_heading_hierarchy_no_skipped_levels(
         "cv/presentations/index.html",
         "cv/trainings/index.html",
         "contact/index.html",
-        "posts/2026-05-04-senior-dev-hpc-workflows/index.html",
-        "posts/2026-09-24-openifs-mass-conservation-stochastic-rounding/index.html",
+        "kinds/index.html",
+        "kinds/note/index.html",
+        "kinds/talk/index.html",
+        "posts/2026-06-15-neural-surrogates-shallow-water-equations/index.html",
+        "posts/2014-04-28-egu2014-global-modelling-surface-internal-tides/index.html",
+        "posts/2013-06-21-ams19-global-modelling-surface-internal-tides/index.html",
     ):
         assert expected in checked_routes, f"Expected route missing from heading audit: {expected}"
 
@@ -1057,7 +1064,7 @@ def test_index_json_enriched_with_publications_and_software(built_site: Path) ->
     pubs = yaml.safe_load((REPO_ROOT / "data" / "publications.yaml").read_text(encoding="utf-8"))
     software = yaml.safe_load((REPO_ROOT / "data" / "curated_software.yaml").read_text(encoding="utf-8"))
 
-    assert len(entries) >= 10 + len(pubs) + len(software)
+    assert len(entries) >= 9 + len(pubs) + len(software)
     assert not any("/404" in e.get("permalink", "") for e in entries)
 
     by_title = {e.get("title"): e for e in entries}
@@ -1076,3 +1083,111 @@ def test_index_json_enriched_with_publications_and_software(built_site: Path) ->
         assert entry["permalink"].endswith("/software/"), f"Bad software permalink: {entry['permalink']}"
         for tag in sw.get("tags", []):
             assert tag in entry["content"]
+
+
+def _parse_front_matter(md_path: Path) -> tuple[dict, str]:
+    raw = md_path.read_text(encoding="utf-8")
+    parts = raw.split("---", 2)
+    assert len(parts) == 3, f"Expected YAML front matter in {md_path}"
+    return yaml.safe_load(parts[1]) or {}, parts[2]
+
+
+def test_step2_drafts_kinds_and_backfilled_talks(built_site: Path) -> None:
+    """Verify drafted posts are excluded, kinds taxonomy works, and backfilled talks are valid."""
+    posts_dir = REPO_ROOT / "content" / "posts"
+    drafted_slugs = [
+        "2026-05-04-senior-dev-hpc-workflows",
+        "2026-07-20-scaling-python-hpc-uv-lustre",
+        "2026-09-22-pragmatic-scientist-audit-climate-workflows",
+        "2026-09-24-openifs-mass-conservation-stochastic-rounding",
+    ]
+    forbidden_slugs = [*drafted_slugs, "senior-dev-hpc-workflows"]
+
+    for slug in drafted_slugs:
+        md_path = posts_dir / f"{slug}.md"
+        assert md_path.is_file(), f"Drafted post file must remain on disk: {md_path}"
+        fm, _ = _parse_front_matter(md_path)
+        assert fm.get("draft") is True, f"Expected draft: true in {md_path.name}"
+        assert not (built_site / "posts" / slug).exists(), f"Drafted post leaked to public/posts/{slug}"
+
+    assert not (built_site / "posts" / "senior-dev-hpc-workflows").exists(), (
+        "Alias /posts/senior-dev-hpc-workflows/ leaked from drafted post"
+    )
+
+    for rel in (
+        "posts/index.html",
+        "archives/index.html",
+        "kinds/index.html",
+        "kinds/note/index.html",
+        "kinds/talk/index.html",
+        "index.xml",
+        "sitemap.xml",
+        "index.json",
+    ):
+        built_file = built_site / rel
+        assert built_file.is_file(), f"Missing expected built file: {rel}"
+        content = built_file.read_text(encoding="utf-8")
+        for slug in forbidden_slugs:
+            assert slug not in content, f"Drafted slug {slug!r} leaked into {rel}"
+
+    for html_path in built_site.rglob("*.html"):
+        soup = BeautifulSoup(html_path.read_text(encoding="utf-8"), "lxml")
+        for a in soup.find_all("a", href=True):
+            href = a["href"]
+            if href.startswith("/") and not href.startswith("//"):
+                for slug in forbidden_slugs:
+                    assert slug not in href, f"Relative internal link {href!r} in {html_path.relative_to(built_site)} points to drafted post"
+
+    kept_slug = "2026-06-15-neural-surrogates-shallow-water-equations"
+    kept_fm, _ = _parse_front_matter(posts_dir / f"{kept_slug}.md")
+    assert kept_fm.get("draft") is False
+    assert kept_fm.get("kinds") == ["note"], f"Expected kinds: ['note'] on {kept_slug}, got {kept_fm.get('kinds')}"
+    assert (built_site / "posts" / kept_slug / "index.html").is_file()
+    note_html = (built_site / "kinds" / "note" / "index.html").read_text(encoding="utf-8")
+    assert kept_slug in note_html, f"{kept_slug} missing from /kinds/note/"
+
+    slides_dir = REPO_ROOT / "static" / "slides"
+    assert not slides_dir.exists() or not any(slides_dir.iterdir()), (
+        "Backfilled talks must use external URLs only, nothing in static/slides/"
+    )
+
+    presentations = yaml.safe_load((REPO_ROOT / "data" / "presentations.yaml").read_text(encoding="utf-8"))
+    pres_pairs = {(p.get("event"), p.get("year")) for p in presentations}
+
+    talk_specs = [
+        ("2014-04-28-egu2014-global-modelling-surface-internal-tides", "EGU2014", 2014),
+        (
+            "2013-06-21-ams19-global-modelling-surface-internal-tides",
+            "19th Conference on Atmospheric and Oceanic Fluid Dynamics of the AMS",
+            2013,
+        ),
+    ]
+    talk_index_html = (built_site / "kinds" / "talk" / "index.html").read_text(encoding="utf-8")
+    for slug, expected_event, expected_year in talk_specs:
+        md_path = posts_dir / f"{slug}.md"
+        assert md_path.is_file(), f"Missing backfilled talk file: {md_path}"
+        fm, body = _parse_front_matter(md_path)
+        assert fm.get("draft") is False, f"Expected draft: false in {md_path.name}"
+        assert fm.get("kinds") == ["talk"], f"Expected kinds: ['talk'] in {md_path.name}"
+        assert fm.get("event") == expected_event
+        assert fm.get("year") == expected_year
+        assert (fm.get("event"), fm.get("year")) in pres_pairs, (
+            f"Talk {(fm.get('event'), fm.get('year'))} missing from data/presentations.yaml"
+        )
+        assert "\n> " in body or body.lstrip().startswith("> "), f"Expected quoted abstract in {md_path.name}"
+        assert "From the official" in body, f"Expected abstract attribution in {md_path.name}"
+
+        assert slug in talk_index_html, f"{slug} missing from /kinds/talk/"
+        built_talk = built_site / "posts" / slug / "index.html"
+        assert built_talk.is_file(), f"Missing built talk page: {built_talk}"
+        talk_soup = BeautifulSoup(built_talk.read_text(encoding="utf-8"), "lxml")
+        assert talk_soup.select_one(".post-content blockquote") is not None, (
+            f"Missing rendered <blockquote> abstract on {slug}"
+        )
+        ext_links = [
+            a["href"] for a in talk_soup.select(".post-content a[href]") if a["href"].startswith("https://")
+        ]
+        assert ext_links, f"Expected external HTTPS link(s) in {slug}"
+        assert not any(
+            "/slides/" in (a.get("href") or "") for a in talk_soup.select(".post-content a[href]")
+        ), f"Unexpected local /slides/ link in {slug}"

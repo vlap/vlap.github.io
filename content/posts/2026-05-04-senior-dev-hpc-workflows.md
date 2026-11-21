@@ -1,7 +1,7 @@
 ---
 title: "Running Decadal Climate Ensembles on Tier-0 HPC: Autosubmit DAGs, Lustre Striping, and Cluster Telemetry"
 date: 2026-05-04T19:00:00+02:00
-draft: false
+draft: true
 type: "posts"
 math: true
 summary: "Engineering lessons from managing multi-member Earth system model ensembles on MareNostrum 5: orchestrating DAGs with Autosubmit, tuning Lustre striping for NetCDF outputs, and NUMA-aware MPI rank placement."
