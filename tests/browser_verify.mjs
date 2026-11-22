@@ -380,6 +380,8 @@ describe("vlap.github.io headless browser verification", () => {
       return {
         controls: video.controls,
         muted: video.muted,
+        tabIndex: video.tabIndex,
+        isFocused: document.activeElement === video,
         poster: video.getAttribute('poster'),
         sources
       };
@@ -387,6 +389,8 @@ describe("vlap.github.io headless browser verification", () => {
     assert.ok(videoInfo, "Expected .sim-video video element after facade activation");
     assert.equal(videoInfo.controls, true);
     assert.equal(videoInfo.muted, true);
+    assert.equal(videoInfo.tabIndex, 0, "Inserted <video> must have tabIndex=0");
+    assert.equal(videoInfo.isFocused, true, "Activating button.sim-facade must move focus to inserted <video>");
     assert.ok(videoInfo.poster && videoInfo.poster.startsWith("/images/simulations/"), `Unexpected poster: ${videoInfo.poster}`);
     assert.ok(videoInfo.sources.some((s) => s.type === "video/webm" && s.src?.endsWith(".webm")));
     assert.ok(videoInfo.sources.some((s) => s.type === "video/mp4" && s.src?.endsWith(".mp4")));
@@ -716,10 +720,16 @@ describe("vlap.github.io headless browser verification", () => {
       "/work/",
       "/publications/",
       "/cv/",
+      "/cv/presentations/",
+      "/cv/trainings/",
       "/posts/",
       "/kinds/",
       "/kinds/note/",
       "/kinds/talk/",
+      "/tags/",
+      "/tags/hpc/",
+      "/categories/",
+      "/404.html",
       "/posts/2026-06-15-neural-surrogates-shallow-water-equations/",
       "/posts/2014-04-28-egu2014-global-modelling-surface-internal-tides/",
       "/posts/2013-06-21-ams19-global-modelling-surface-internal-tides/",
@@ -863,22 +873,77 @@ describe("vlap.github.io headless browser verification", () => {
     }
   });
 
-  it("injects button.copy-code on posts with <pre><code> and copies code block text", async () => {
+  it("injects button.copy-code on posts with <pre><code>, supports keyboard Tab & clipboard rejection, and skips .pub-bibtex-block", async () => {
+    await cdp.send("Emulation.setDeviceMetricsOverride", {
+      width: 1280,
+      height: 800,
+      deviceScaleFactor: 1,
+      mobile: false,
+    });
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/posts/2026-06-15-neural-surrogates-shallow-water-equations/`);
-    const codeCopyInfo = await cdp.eval(`(() => {
-      let copied = null;
+    await cdp.eval(`(() => {
+      window.__copiedText = null;
+      window.__unhandledRejections = [];
+      window.addEventListener('unhandledrejection', (e) => {
+        window.__unhandledRejections.push(String(e.reason));
+      });
       Object.defineProperty(navigator, 'clipboard', {
-        value: { writeText: (txt) => { copied = txt; return Promise.resolve(); } },
+        value: { writeText: (txt) => { window.__copiedText = txt; return Promise.resolve(); } },
         configurable: true
       });
+    })()`);
+
+    // Verify button.copy-code is in keyboard Tab order (never display: none at rest) and visible on :focus-visible
+    const preTargetOk = await cdp.eval(`(() => {
+      const btn = document.querySelector('button.copy-code');
+      const restDisplay = btn ? getComputedStyle(btn).display : null;
+      const container = btn?.closest('.highlight, pre');
+      let prev = container?.previousElementSibling;
+      while (prev && !prev.querySelector('a, button, summary, [tabindex]')) {
+        prev = prev.previousElementSibling;
+      }
+      const anchor = prev?.querySelector('a, button, summary, [tabindex]') || document.querySelector('.post-header a');
+      anchor?.focus();
+      return { ok: Boolean(btn && anchor), restDisplay };
+    })()`);
+    assert.equal(preTargetOk.ok, true);
+    assert.notEqual(preTargetOk.restDisplay, "none", "button.copy-code must not use display: none at rest");
+    let tabbedToCopy = false;
+    for (let i = 0; i < 15; i++) {
+      await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+      await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+      tabbedToCopy = await cdp.eval(`document.activeElement?.classList.contains('copy-code') || false`);
+      if (tabbedToCopy) break;
+    }
+    assert.equal(tabbedToCopy, true, "button.copy-code must be reachable via keyboard Tab");
+
+    const focusStyle = await cdp.eval(`(() => {
+      const btn = document.activeElement;
+      const cs = getComputedStyle(btn);
+      return {
+        type: btn.getAttribute('type'),
+        display: cs.display,
+        opacity: Number(cs.opacity),
+        outlineStyle: cs.outlineStyle,
+        outlineWidth: cs.outlineWidth
+      };
+    })()`);
+    assert.equal(focusStyle.type, "button");
+    assert.notEqual(focusStyle.display, "none");
+    assert.equal(focusStyle.opacity, 1);
+    assert.notEqual(focusStyle.outlineStyle, "none");
+    assert.notEqual(focusStyle.outlineWidth, "0px");
+
+    const expectedText = await cdp.eval(`document.querySelector('pre > code')?.textContent || ''`);
+    await cdp.eval(`document.querySelector('button.copy-code').click()`);
+    await new Promise((r) => setTimeout(r, 50));
+    const codeCopyInfo = await cdp.eval(`(() => {
       const codeBlocks = document.querySelectorAll('pre > code');
       const copyBtns = document.querySelectorAll('button.copy-code');
-      const expectedText = codeBlocks[0]?.textContent || '';
-      copyBtns[0]?.click();
       return {
         codeBlockCount: codeBlocks.length,
         copyBtnCount: copyBtns.length,
-        copiedMatches: copied === expectedText && expectedText.length > 0,
+        copiedMatches: window.__copiedText === ${JSON.stringify(expectedText)} && ${expectedText.length} > 0,
         btnTextAfterClick: copyBtns[0]?.textContent.trim()
       };
     })()`);
@@ -886,6 +951,32 @@ describe("vlap.github.io headless browser verification", () => {
     assert.ok(codeCopyInfo.copyBtnCount >= 1, "Expected ShowCodeCopyButtons script to inject button.copy-code");
     assert.equal(codeCopyInfo.copiedMatches, true);
     assert.equal(codeCopyInfo.btnTextAfterClick, "copied!");
+
+    // Verify rejected clipboard promise does not throw unhandledrejection or falsely show "copied!"
+    await cdp.eval(`(() => {
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText: () => Promise.reject(new Error('Clipboard denied')) },
+        configurable: true
+      });
+      document.querySelector('button.copy-code').click();
+    })()`);
+    await new Promise((r) => setTimeout(r, 50));
+    const rejectInfo = await cdp.eval(`(() => {
+      const btn = document.querySelector('button.copy-code');
+      return {
+        text: btn?.textContent.trim(),
+        hasFailedClass: btn?.classList.contains('copy-failed') || false,
+        unhandled: window.__unhandledRejections
+      };
+    })()`);
+    assert.deepEqual(rejectInfo.unhandled, [], "Rejected clipboard write must not cause unhandledrejection");
+    assert.notEqual(rejectInfo.text, "copied!", "Rejected clipboard write must not falsely display 'copied!'");
+    assert.equal(rejectInfo.hasFailedClass, true);
+
+    // Verify zero .copy-code buttons are injected inside .pub-bibtex-block on /publications/
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/publications/`);
+    const pubCopyCodeCount = await cdp.eval(`document.querySelectorAll('.pub-bibtex-block .copy-code, button.copy-code').length`);
+    assert.equal(pubCopyCodeCount, 0, "/publications/ must not inject duplicate button.copy-code inside BibTeX blocks");
   });
 
   it("achieves WCAG 2.1 AA (>= 4.5:1) computed contrast in light and dark modes across all monograph selectors", async () => {
@@ -897,6 +988,10 @@ describe("vlap.github.io headless browser verification", () => {
       ["/cv/presentations/", [".cv-link", ".action-pill", ".action-pill--primary"]],
       ["/cv/trainings/", [".cv-skills-tag", ".cv-date-badge"]],
       ["/posts/", [".log-kind-pill.active", ".log-kind-pill:not(.active)", ".kind-badge", ".log-row-date", ".post-tag"]],
+      ["/tags/", [".terms-tags a", "h1"]],
+      ["/tags/hpc/", [".kind-badge", ".log-row-date", ".post-tag"]],
+      ["/categories/", ["h1", "#menu a", ".footer .social-icons a"]],
+      ["/404.html", ["h1", ".post-content p", ".post-content a", ".footer .social-icons a"]],
       ["/posts/2026-06-15-neural-surrogates-shallow-water-equations/", [".chroma .c1", ".post-tags a", ".paginav .title", ".kind-badge"]],
     ];
 
@@ -2048,10 +2143,16 @@ describe("vlap.github.io headless browser verification", () => {
       "/work/",
       "/publications/",
       "/cv/",
+      "/cv/presentations/",
+      "/cv/trainings/",
       "/posts/",
       "/kinds/",
       "/kinds/note/",
       "/kinds/talk/",
+      "/tags/",
+      "/tags/hpc/",
+      "/categories/",
+      "/404.html",
       "/posts/2026-06-15-neural-surrogates-shallow-water-equations/",
       "/posts/2014-04-28-egu2014-global-modelling-surface-internal-tides/",
       "/posts/2013-06-21-ams19-global-modelling-surface-internal-tides/",
@@ -2160,5 +2261,223 @@ describe("vlap.github.io headless browser verification", () => {
       try { draftServer?.server?.close(); } catch {}
       fs.rmSync(draftsDir, { recursive: true, force: true });
     }
+  });
+
+  it("lands #year-* pill jumps on target heading without CLS, trims ?q=%20%20, provides >=44px mobile #pubFilterClear, unifies BibTeX pre/code, and provides skip-to-content link", async () => {
+    // 1. Skip-to-content link on Home (desktop) with zero CLS
+    await cdp.send("Emulation.setDeviceMetricsOverride", {
+      width: 1280,
+      height: 800,
+      deviceScaleFactor: 1,
+      mobile: false,
+    });
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/`);
+    await cdp.eval(`(() => {
+      window.__skipCls = 0;
+      new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (!entry.hadRecentInput) window.__skipCls += entry.value;
+        }
+      }).observe({ type: 'layout-shift', buffered: true });
+    })()`);
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+    await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+    const skipFocus = await cdp.eval(`(() => {
+      const el = document.activeElement;
+      const r = el?.getBoundingClientRect();
+      return {
+        isSkipLink: el?.classList.contains('skip-link') || false,
+        href: el?.getAttribute('href'),
+        visible: Boolean(r && r.width >= 40 && r.height >= 20 && r.top >= 0 && r.left >= 0)
+      };
+    })()`);
+    assert.equal(skipFocus.isSkipLink, true, "First Tab stop on page must be .skip-link");
+    assert.equal(skipFocus.href, "#main-content");
+    assert.equal(skipFocus.visible, true, ".skip-link must become visible on keyboard focus");
+
+    await cdp.send("Input.dispatchKeyEvent", {
+      type: "keyDown",
+      key: "Enter",
+      code: "Enter",
+      text: "\r",
+      unmodifiedText: "\r",
+      windowsVirtualKeyCode: 13,
+      nativeVirtualKeyCode: 13,
+    });
+    await cdp.send("Input.dispatchKeyEvent", {
+      type: "keyUp",
+      key: "Enter",
+      code: "Enter",
+      windowsVirtualKeyCode: 13,
+      nativeVirtualKeyCode: 13,
+    });
+    await new Promise((r) => setTimeout(r, 100));
+    const afterSkip = await cdp.eval(`({
+      activeId: document.activeElement?.id,
+      cls: window.__skipCls
+    })`);
+    assert.equal(afterSkip.activeId, "main-content", "Activating .skip-link must move focus to #main-content");
+    assert.equal(afterSkip.cls, 0, "Focusing/activating .skip-link must not cause CLS");
+
+    // 2. /publications/ #year-2011 and #year-Other pill click accuracy under content-visibility: auto
+    for (const hash of ["#year-2011", "#year-Other"]) {
+      await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/publications/`);
+      const cvBefore = await cdp.eval(`getComputedStyle(document.querySelector('.pub-year-group:nth-of-type(n+3)')).contentVisibility`);
+      assert.equal(cvBefore, "auto");
+      await cdp.eval(`(() => {
+        window.__yearCls = 0;
+        new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            if (!entry.hadRecentInput) window.__yearCls += entry.value;
+          }
+        }).observe({ type: 'layout-shift', buffered: true });
+        document.querySelector('.pub-year-pill[href="${hash}"]').focus();
+      })()`);
+      await cdp.send("Input.dispatchKeyEvent", {
+        type: "keyDown",
+        key: "Enter",
+        code: "Enter",
+        text: "\r",
+        unmodifiedText: "\r",
+        windowsVirtualKeyCode: 13,
+        nativeVirtualKeyCode: 13,
+      });
+      await cdp.send("Input.dispatchKeyEvent", {
+        type: "keyUp",
+        key: "Enter",
+        code: "Enter",
+        windowsVirtualKeyCode: 13,
+        nativeVirtualKeyCode: 13,
+      });
+      await new Promise((r) => setTimeout(r, 250));
+      const jumpRes = await cdp.eval(`(() => {
+        const el = document.querySelector('${hash}');
+        return {
+          top: el ? el.getBoundingClientRect().top : 99999,
+          hash: window.location.hash,
+          cls: window.__yearCls
+        };
+      })()`);
+      assert.ok(
+        jumpRes.top >= 0 && jumpRes.top <= 100,
+        `Clicking .pub-year-pill[href="${hash}"] landed off-target: top=${jumpRes.top}px`,
+      );
+      assert.equal(jumpRes.hash, hash);
+      assert.equal(jumpRes.cls, 0, `Jumping to ${hash} caused CLS=${jumpRes.cls}`);
+    }
+
+    // 3. .pub-bibtex-block <pre> and <code> unified background & >= 4.5:1 contrast in light and dark modes
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/publications/`);
+    await cdp.eval(`document.querySelector('.pub-bibtex-details').open = true`);
+    const origTheme = await cdp.eval(`document.documentElement.dataset.theme`);
+    try {
+      for (const theme of ["light", "dark"]) {
+        await cdp.eval(`document.documentElement.dataset.theme = ${JSON.stringify(theme)}`);
+        await new Promise((r) => setTimeout(r, 200));
+        const bibCheck = await cdp.eval(`(() => {
+          const pre = document.querySelector('.pub-bibtex-block pre');
+          const code = document.querySelector('.pub-bibtex-block pre code');
+          const parseRgba = (str) => {
+            const m = str.match(/rgba?\\(([^)]+)\\)/);
+            if (!m) return [0, 0, 0, 0];
+            const parts = m[1].split(',').map((s) => Number(s.trim()));
+            return [parts[0], parts[1], parts[2], parts[3] ?? 1];
+          };
+          const over = (fg, bg) => {
+            const a = fg[3];
+            return [
+              a * fg[0] + (1 - a) * bg[0],
+              a * fg[1] + (1 - a) * bg[1],
+              a * fg[2] + (1 - a) * bg[2],
+              1,
+            ];
+          };
+          const lum = ([r, g, b]) => {
+            const ch = [r, g, b].map((v) => {
+              const s = v / 255;
+              return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+            });
+            return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
+          };
+          const effectiveBg = (el) => {
+            const layers = [];
+            let cur = el;
+            while (cur) {
+              layers.push(parseRgba(getComputedStyle(cur).backgroundColor));
+              cur = cur.parentElement;
+            }
+            let bg = [255, 255, 255, 1];
+            for (let i = layers.length - 1; i >= 0; i--) bg = over(layers[i], bg);
+            return bg;
+          };
+          const preBg = effectiveBg(pre);
+          const codeBg = effectiveBg(code);
+          const codeFg = over(parseRgba(getComputedStyle(code).color), codeBg);
+          const l1 = lum(codeFg);
+          const l2 = lum(codeBg);
+          const contrast = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+          return {
+            preBg: preBg.slice(0, 3),
+            codeBg: codeBg.slice(0, 3),
+            contrast
+          };
+        })()`);
+        assert.deepEqual(
+          bibCheck.codeBg,
+          bibCheck.preBg,
+          `BibTeX pre/code background mismatch in ${theme}: pre=${JSON.stringify(bibCheck.preBg)} code=${JSON.stringify(bibCheck.codeBg)}`,
+        );
+        assert.ok(bibCheck.contrast >= 4.5, `BibTeX code contrast in ${theme} is ${bibCheck.contrast.toFixed(2)}:1 < 4.5:1`);
+      }
+    } finally {
+      await cdp.eval(`document.documentElement.dataset.theme = ${JSON.stringify(origTheme)}`);
+    }
+
+    // 4. ?q=%20%20 whitespace trimming & mobile #pubFilterClear >= 44x44px touch target
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/publications/?q=%20%20`);
+    const wsState = await cdp.eval(`(() => {
+      const inp = document.getElementById('pubFilterInput');
+      const clr = document.getElementById('pubFilterClear');
+      const total = document.querySelectorAll('.pub-card').length;
+      const visible = [...document.querySelectorAll('.pub-card')].filter((c) => c.style.display !== 'none').length;
+      return {
+        value: inp?.value,
+        clearDisplay: clr ? getComputedStyle(clr).display : null,
+        total,
+        visible
+      };
+    })()`);
+    assert.equal(wsState.value, "", "?q=%20%20 must not leave whitespace in #pubFilterInput");
+    assert.equal(wsState.clearDisplay, "none");
+    assert.equal(wsState.visible, wsState.total);
+
+    await cdp.send("Emulation.setDeviceMetricsOverride", {
+      width: 375,
+      height: 812,
+      deviceScaleFactor: 1,
+      mobile: true,
+    });
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/publications/?q=ocean`);
+    const clearBox = await cdp.eval(`(() => {
+      const r = document.getElementById('pubFilterClear')?.getBoundingClientRect();
+      return r ? { width: r.width, height: r.height } : null;
+    })()`);
+    assert.ok(
+      clearBox && clearBox.width >= 44 && clearBox.height >= 44,
+      `Mobile #pubFilterClear touch target too small: ${JSON.stringify(clearBox)}`,
+    );
+
+    // 5. /404.html renders cleanly at root without post-meta or empty post-tags
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/404.html`);
+    const notFoundState = await cdp.eval(`({
+      h1: document.querySelector('h1')?.textContent.trim(),
+      hasPostMeta: Boolean(document.querySelector('.post-meta')),
+      hasEmptyPostTags: Boolean(document.querySelector('footer.post-footer ul.post-tags')),
+      hasHomeLink: [...document.querySelectorAll('main a[href]')].some((a) => a.getAttribute('href') === '/' || a.getAttribute('href')?.endsWith('/'))
+    })`);
+    assert.ok(notFoundState.h1 && notFoundState.h1.includes("404"), `Unexpected /404.html h1: ${notFoundState.h1}`);
+    assert.equal(notFoundState.hasPostMeta, false);
+    assert.equal(notFoundState.hasEmptyPostTags, false);
+    assert.equal(notFoundState.hasHomeLink, true);
   });
 });

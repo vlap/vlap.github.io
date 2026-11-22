@@ -367,6 +367,42 @@ table td {
     justify-content: center;
 }
 
+.skip-link {
+    position: fixed;
+    inset-block-start: 0.75rem;
+    inset-inline-start: 0.75rem;
+    z-index: 1000;
+    padding: 0.55rem 0.9rem;
+    border-radius: 4px;
+    background: var(--accent-pine);
+    color: var(--theme);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid var(--accent-pine);
+}
+
+.skip-link:not(:focus):not(:focus-visible) {
+    clip-path: inset(50%);
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    white-space: nowrap;
+}
+
+.skip-link:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+main#main-content:focus:not(:focus-visible) {
+    outline: none;
+}
+
 .visually-hidden:where(:not(:focus-within, :active)) {
     position: absolute !important;
     clip-path: inset(50%) !important;
@@ -1683,6 +1719,21 @@ table td {
     }
 }
 
+@media (pointer: coarse), (max-width: 768px) {
+    #pubFilterInput {
+        padding-right: 48px;
+    }
+
+    #pubFilterClear {
+        right: 2px;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        line-height: 44px;
+    }
+}
+
 /* ==========================================================================
    CV Page Styling & Timeline
    ========================================================================== */
@@ -2106,6 +2157,8 @@ table td {
 
 #pubFilterClear {
     position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     right: 8px;
     width: 32px;
     height: 32px;
@@ -2175,6 +2228,7 @@ table td {
     margin-bottom: 2.2rem;
     min-width: 0;
     max-width: 100%;
+    scroll-margin-top: 1rem;
 }
 
 .pub-year-group:nth-of-type(n+3),
@@ -2351,6 +2405,7 @@ details.pub-bibtex-details[open] > .pub-bibtex-summary {
 
 .pub-bibtex-block pre {
     background: var(--code-bg);
+    color: var(--primary);
     padding: 0.8rem 1rem;
     border-radius: 4px;
     font-size: 0.78rem;
@@ -2359,6 +2414,18 @@ details.pub-bibtex-details[open] > .pub-bibtex-summary {
     line-height: 1.4;
     max-width: 100%;
     overflow-x: auto;
+}
+
+.pub-bibtex-block pre code {
+    display: block;
+    padding: 0;
+    margin: 0;
+    background: transparent !important;
+    color: var(--primary);
+    border-radius: 0;
+    font-size: inherit;
+    line-height: inherit;
+    word-break: normal;
 }
 
 .pub-copy-btn {
@@ -2639,9 +2706,51 @@ details.toc a:hover {
     color: var(--primary);
 }
 
+.copy-code {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 24px;
+    min-block-size: 24px;
+    padding: 0.15rem 0.45rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #f3f4f6;
+    background: rgba(31, 41, 55, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+div.highlight:hover .copy-code,
+pre:hover .copy-code,
 div.highlight:focus-within .copy-code,
-pre:focus-within .copy-code {
-    display: block;
+pre:focus-within .copy-code,
+.copy-code:focus-visible,
+.copy-code.copied,
+.copy-code.copy-failed {
+    display: inline-flex;
+    opacity: 1;
+}
+
+.copy-code:focus-visible {
+    outline: 2px solid #f3f4f6;
+    outline-offset: 2px;
+}
+
+.copy-code.copy-failed {
+    background: #7f1d1d;
+    border-color: #fca5a5;
+    color: #fef2f2;
+}
+
+@media (hover: none) {
+    .copy-code {
+        opacity: 1;
+    }
 }
 
 .post-content th {
@@ -2823,7 +2932,8 @@ h1, h2, h3, .post-title, .pub-card-title {
     .cv-download-btn,
     .cv-details-chevron,
     .cv-item,
-    .pub-card {
+    .pub-card,
+    .copy-code {
         transition: none;
     }
 

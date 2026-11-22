@@ -55,7 +55,9 @@ function playSimVideo(facade) {
     sMp4.type = 'video/mp4';
     video.appendChild(sWebm);
     video.appendChild(sMp4);
+    video.tabIndex = 0;
     container.replaceChildren(video);
+    video.focus({ preventScroll: true });
 }
 </script>
 

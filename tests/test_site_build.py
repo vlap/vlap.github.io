@@ -437,7 +437,7 @@ def test_internal_links_resolve_in_built_site(
 
 
 def test_404_excluded_from_sitemap_and_rss_and_no_index_json(built_site: Path) -> None:
-    """Verify /404/ is excluded from sitemap.xml and index.xml, /search/ and index.json are absent, and 404 builds."""
+    """Verify /404.html exists cleanly at site root, index.xml only includes Log posts, and /search/ + index.json are absent."""
     assert not (built_site / "index.json").exists(), "index.json should not be generated"
     assert not (built_site / "search").exists(), "/search/ should not be generated"
 
@@ -450,18 +450,39 @@ def test_404_excluded_from_sitemap_and_rss_and_no_index_json(built_site: Path) -
 
     rss_root = ET.fromstring((built_site / "index.xml").read_text(encoding="utf-8"))
     rss_links = [el.text or "" for el in rss_root.findall("./channel/item/link")]
-    assert len(rss_links) >= 1
+    expected_post_suffixes = {
+        "/posts/2026-06-15-neural-surrogates-shallow-water-equations/",
+        "/posts/2014-04-28-egu2014-global-modelling-surface-internal-tides/",
+        "/posts/2013-06-21-ams19-global-modelling-surface-internal-tides/",
+    }
+    assert len(rss_links) == 3, f"Expected exact 3 Log items in index.xml, got {len(rss_links)}: {rss_links}"
     assert not any(link.endswith("/404/") or link.endswith("/404.html") for link in rss_links), (
         "404 page leaked into index.xml"
     )
+    for link in rss_links:
+        assert "/posts/" in link, f"Non-Log link leaked into index.xml: {link}"
+        assert not any(bad in link for bad in ("/work/", "/publications/", "/cv/")), (
+            f"Non-Log page leaked into index.xml: {link}"
+        )
+    matched_suffixes = {
+        next((s for s in expected_post_suffixes if link.endswith(s)), "")
+        for link in rss_links
+    }
+    assert matched_suffixes == expected_post_suffixes, f"Unexpected RSS post links: {rss_links}"
 
-    page_404 = built_site / "404" / "index.html"
-    if not page_404.is_file():
-        page_404 = built_site / "404.html"
-    assert page_404.is_file(), "404 page should still be rendered"
+    page_404 = built_site / "404.html"
+    assert page_404.is_file(), "404.html must exist at site root for GitHub Pages"
+    assert not (built_site / "404" / "index.html").exists(), "Legacy 404/index.html must not exist"
     soup_404 = BeautifulSoup(page_404.read_text(encoding="utf-8"), "lxml")
     robots = soup_404.find("meta", attrs={"name": "robots"})
     assert robots is not None and robots.get("content") == "noindex, nofollow"
+    assert soup_404.select_one(".post-meta") is None, "404.html must not emit author .post-meta"
+    assert soup_404.select_one("footer.post-footer") is None, "404.html must not emit empty .post-footer"
+    home_link_404 = any(
+        (a.get("href") or "").rstrip("/") in {"", "https://vlap.github.io"}
+        for a in soup_404.select("main a[href]")
+    )
+    assert home_link_404, "404.html must provide a link back to homepage"
 
 
 def test_presentations_yaml_no_urls_typo_and_renders_link(built_site: Path) -> None:
@@ -2051,4 +2072,43 @@ def test_zero_nick_higham_and_no_teamwork_metadata(
 
         for a in soup.find_all("a", href=True):
             assert "What Is" not in a.get_text(" ", strip=True), f"Forbidden 'What Is' series link on {rel}"
+
+
+def test_tier5_skip_link_copy_code_sim_focus_and_bibtex_css(
+    built_site: Path,
+    built_stylesheet: str,
+    non_redirect_html_pages: list[tuple[Path, BeautifulSoup]],
+) -> None:
+    """Verify skip-link + #main-content, copy-code hardening, sim-facade focus, and BibTeX code CSS."""
+    for rel, soup in non_redirect_html_pages:
+        skip = soup.select_one("a.skip-link")
+        main = soup.select_one("main#main-content")
+        assert skip is not None and skip.get("href") == "#main-content", f"Missing skip-link on {rel}"
+        assert main is not None and main.get("tabindex") == "-1", f"Missing main#main-content[tabindex=-1] on {rel}"
+
+    footer_src = (REPO_ROOT / "layouts" / "_partials" / "footer.html").read_text(encoding="utf-8")
+    assert "copybutton.type" in footer_src
+    assert ".pub-bibtex-block" in footer_src
+    assert ".catch(" in footer_src
+
+    sim_src = (REPO_ROOT / "layouts" / "shortcodes" / "simulation_gallery.html").read_text(encoding="utf-8")
+    assert "video.tabIndex = 0" in sim_src
+    assert "video.focus(" in sim_src
+
+    pub_src = (REPO_ROOT / "layouts" / "shortcodes" / "pub_list.html").read_text(encoding="utf-8")
+    assert ".trim()" in pub_src
+
+    rules = _parse_css_rules(built_stylesheet)
+    copy_rules = _find_qualified_rules(rules, lambda p: p == ".copy-code")
+    assert len(copy_rules) >= 2, "Missing .copy-code override in built CSS"
+    assert any(
+        "display:inline-flex" in c.replace(" ", "") and "display:none" not in c.replace(" ", "")
+        for _, c in copy_rules
+    ), ".copy-code must override PaperMod display: none with inline-flex"
+
+    bib_code_rules = _find_qualified_rules(rules, lambda p: p == ".pub-bibtex-block pre code")
+    assert bib_code_rules, "Missing .pub-bibtex-block pre code rule"
+    bib_code_css = ";".join(c for _, c in bib_code_rules).replace(" ", "")
+    assert "background:transparent!important" in bib_code_css or "background:00!important" in bib_code_css
+
 

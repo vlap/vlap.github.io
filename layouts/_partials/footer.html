@@ -62,14 +62,28 @@
 
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener("click", function (e) {
+            var rawId = this.getAttribute("href").substr(1);
+            if (!rawId) return;
+            var id = decodeURIComponent(rawId);
+            var target = document.getElementById(id);
+            if (!target) return;
             e.preventDefault();
-            var id = this.getAttribute("href").substr(1);
-            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+            if (this.classList.contains("pub-year-pill")) {
+                var groups = document.querySelectorAll(".pub-year-group");
+                for (var i = 0; i < groups.length; i++) {
+                    groups[i].style.contentVisibility = "visible";
+                    if (groups[i] === target) break;
+                }
+                target.scrollIntoView({ behavior: "auto", block: "start" });
+            } else if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                target.scrollIntoView({
                     behavior: "smooth"
                 });
             } else {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+                target.scrollIntoView();
+            }
+            if (this.classList.contains("skip-link") && target.hasAttribute("tabindex")) {
+                target.focus({ preventScroll: true });
             }
             if (id === "top") {
                 history.replaceState(null, null, " ");
@@ -117,23 +131,39 @@
 {{- if (and (eq .Kind "page") (ne .Layout "archives") (ne .Layout "search") (.Param "ShowCodeCopyButtons")) }}
 <script>
     document.querySelectorAll('pre > code').forEach((codeblock) => {
+        if (codeblock.closest('.pub-bibtex-block')) return;
         const container = codeblock.parentNode.parentNode;
 
         const copybutton = document.createElement('button');
+        copybutton.type = 'button';
         copybutton.classList.add('copy-code');
-        copybutton.textContent = '{{- i18n "code_copy" | default "copy" }}';
+        const defaultLabel = '{{- i18n "code_copy" | default "copy" }}';
+        const copiedLabel = '{{- i18n "code_copied" | default "copied!" }}';
+        copybutton.textContent = defaultLabel;
 
-        function copyingDone() {
-            copybutton.textContent = '{{- i18n "code_copied" | default "copied!" }}';
-            setTimeout(() => {
-                copybutton.textContent = '{{- i18n "code_copy" | default "copy" }}';
+        let resetTimer = null;
+        function setCopyState(label, stateClass) {
+            clearTimeout(resetTimer);
+            copybutton.textContent = label;
+            copybutton.classList.remove('copied', 'copy-failed');
+            if (stateClass) copybutton.classList.add(stateClass);
+            resetTimer = setTimeout(() => {
+                copybutton.textContent = defaultLabel;
+                copybutton.classList.remove('copied', 'copy-failed');
             }, 2000);
         }
 
-        copybutton.addEventListener('click', (cb) => {
-            if ('clipboard' in navigator) {
-                navigator.clipboard.writeText(codeblock.textContent);
-                copyingDone();
+        function copyingDone() {
+            setCopyState(copiedLabel, 'copied');
+        }
+
+        function copyingFailed() {
+            setCopyState('copy failed', 'copy-failed');
+        }
+
+        copybutton.addEventListener('click', () => {
+            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                navigator.clipboard.writeText(codeblock.textContent).then(copyingDone).catch(copyingFailed);
                 return;
             }
 
@@ -143,9 +173,14 @@
             selection.removeAllRanges();
             selection.addRange(range);
             try {
-                document.execCommand('copy');
-                copyingDone();
-            } catch (e) { };
+                if (document.execCommand('copy')) {
+                    copyingDone();
+                } else {
+                    copyingFailed();
+                }
+            } catch (e) {
+                copyingFailed();
+            }
             selection.removeRange(range);
         });
 

@@ -78,6 +78,7 @@
 
   {{- partial "extend_post_content.html" . }}
 
+  {{- if ne .Layout "404" }}
   <footer class="post-footer">
     {{- $tags := .Language.Params.Taxonomies.tag | default "tags" }}
     <ul class="post-tags">
@@ -92,6 +93,7 @@
     {{- partial "share_icons.html" . -}}
     {{- end }}
   </footer>
+  {{- end }}
 
   {{- if (.Param "comments") }}
   {{- partial "comments.html" . }}

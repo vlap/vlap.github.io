@@ -21,8 +21,9 @@
 {{- else }}
 <body id="top">
 {{- end }}
+    <a class="skip-link" href="#main-content">Skip to content</a>
     {{ partialCached "header.html" . .Page -}}
-    <main class="main">
+    <main id="main-content" class="main" tabindex="-1">
         {{- block "main" . }}{{ end }}
     </main>
     {{ partialCached "footer.html" . .Layout .Kind (.Param "hideFooter") (.Param "ShowCodeCopyButtons") -}}

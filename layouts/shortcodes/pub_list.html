@@ -377,10 +377,13 @@ function clearPubFilter() {
   var input = document.getElementById('pubFilterInput');
   if (!input) return;
 
-  var initialQuery = new URLSearchParams(window.location.search).get('q');
+  var rawInitialQuery = new URLSearchParams(window.location.search).get('q');
+  var initialQuery = rawInitialQuery ? rawInitialQuery.trim() : '';
   if (initialQuery) {
     input.value = initialQuery;
     filterPublications(initialQuery, { syncUrl: false });
+  } else if (rawInitialQuery !== null) {
+    syncPubFilterUrl('');
   }
 
   document.addEventListener('keydown', function(e) {
