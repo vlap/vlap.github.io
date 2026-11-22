@@ -377,11 +377,15 @@ describe("vlap.github.io headless browser verification", () => {
         src: s.getAttribute('src'),
         type: s.getAttribute('type')
       }));
+      const vs = getComputedStyle(video);
       return {
         controls: video.controls,
         muted: video.muted,
         tabIndex: video.tabIndex,
         isFocused: document.activeElement === video,
+        outlineOffset: parseFloat(vs.outlineOffset),
+        outlineWidth: parseFloat(vs.outlineWidth),
+        outlineStyle: vs.outlineStyle,
         poster: video.getAttribute('poster'),
         sources
       };
@@ -391,6 +395,8 @@ describe("vlap.github.io headless browser verification", () => {
     assert.equal(videoInfo.muted, true);
     assert.equal(videoInfo.tabIndex, 0, "Inserted <video> must have tabIndex=0");
     assert.equal(videoInfo.isFocused, true, "Activating button.sim-facade must move focus to inserted <video>");
+    assert.ok(videoInfo.outlineStyle !== "none" && videoInfo.outlineWidth >= 2, `Expected visible outline on activated <video>, got ${videoInfo.outlineWidth}px ${videoInfo.outlineStyle}`);
+    assert.ok(videoInfo.outlineOffset < 0, `Activated <video> outlineOffset must be < 0 to avoid clipping by .sim-video { overflow: hidden }, got ${videoInfo.outlineOffset}`);
     assert.ok(videoInfo.poster && videoInfo.poster.startsWith("/images/simulations/"), `Unexpected poster: ${videoInfo.poster}`);
     assert.ok(videoInfo.sources.some((s) => s.type === "video/webm" && s.src?.endsWith(".webm")));
     assert.ok(videoInfo.sources.some((s) => s.type === "video/mp4" && s.src?.endsWith(".mp4")));
@@ -1497,7 +1503,7 @@ describe("vlap.github.io headless browser verification", () => {
       mobile: false,
     });
 
-    for (const staticRoute of ["/work/", "/publications/", "/cv/"]) {
+    for (const staticRoute of ["/work/", "/publications/", "/cv/", "/cv/presentations/", "/cv/trainings/"]) {
       await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}${staticRoute}`);
       const hasMeta = await cdp.eval(`Boolean(document.querySelector('.post-meta'))`);
       assert.equal(hasMeta, false, `Unexpected .post-meta on static portfolio route ${staticRoute}`);
@@ -2433,7 +2439,7 @@ describe("vlap.github.io headless browser verification", () => {
       await cdp.eval(`document.documentElement.dataset.theme = ${JSON.stringify(origTheme)}`);
     }
 
-    // 4. ?q=%20%20 whitespace trimming & mobile #pubFilterClear >= 44x44px touch target
+    // 4. ?q=%20%20 whitespace trimming & desktop/mobile #pubFilterInput vs #pubFilterClear zero overlap
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/publications/?q=%20%20`);
     const wsState = await cdp.eval(`(() => {
       const inp = document.getElementById('pubFilterInput');
@@ -2451,21 +2457,43 @@ describe("vlap.github.io headless browser verification", () => {
     assert.equal(wsState.clearDisplay, "none");
     assert.equal(wsState.visible, wsState.total);
 
-    await cdp.send("Emulation.setDeviceMetricsOverride", {
-      width: 375,
-      height: 812,
-      deviceScaleFactor: 1,
-      mobile: true,
-    });
-    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/publications/?q=ocean`);
-    const clearBox = await cdp.eval(`(() => {
-      const r = document.getElementById('pubFilterClear')?.getBoundingClientRect();
-      return r ? { width: r.width, height: r.height } : null;
-    })()`);
-    assert.ok(
-      clearBox && clearBox.width >= 44 && clearBox.height >= 44,
-      `Mobile #pubFilterClear touch target too small: ${JSON.stringify(clearBox)}`,
-    );
+    for (const vp of [
+      { name: "desktop", width: 1280, height: 800, mobile: false },
+      { name: "mobile", width: 375, height: 812, mobile: true },
+    ]) {
+      await cdp.send("Emulation.setDeviceMetricsOverride", {
+        width: vp.width,
+        height: vp.height,
+        deviceScaleFactor: 1,
+        mobile: vp.mobile,
+      });
+      await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/publications/?q=ocean`);
+      const filterGeom = await cdp.eval(`(() => {
+        const inp = document.getElementById('pubFilterInput');
+        const clr = document.getElementById('pubFilterClear');
+        const ir = inp?.getBoundingClientRect();
+        const cr = clr?.getBoundingClientRect();
+        const padRight = inp ? parseFloat(getComputedStyle(inp).paddingRight) : 0;
+        return ir && cr ? {
+          textStopsAt: ir.right - padRight,
+          clearLeft: cr.left,
+          padRight,
+          clearWidth: cr.width,
+          clearHeight: cr.height
+        } : null;
+      })()`);
+      assert.ok(filterGeom, `Missing #pubFilterInput or #pubFilterClear on ${vp.name}`);
+      if (vp.mobile) {
+        assert.ok(
+          filterGeom.clearWidth >= 44 && filterGeom.clearHeight >= 44,
+          `Mobile #pubFilterClear touch target too small: ${JSON.stringify(filterGeom)}`,
+        );
+      }
+      assert.ok(
+        filterGeom.textStopsAt <= filterGeom.clearLeft,
+        `${vp.name} #pubFilterInput text overlaps #pubFilterClear: ${JSON.stringify(filterGeom)}`,
+      );
+    }
 
     // 5. /404.html renders cleanly at root without post-meta or empty post-tags
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/404.html`);
@@ -2479,5 +2507,53 @@ describe("vlap.github.io headless browser verification", () => {
     assert.equal(notFoundState.hasPostMeta, false);
     assert.equal(notFoundState.hasEmptyPostTags, false);
     assert.equal(notFoundState.hasHomeLink, true);
+  });
+
+  it("lands /cv/ .cv-nav-link jumps on #trainings--certifications and #selected-presentations under content-visibility: auto", async () => {
+    for (const vp of [
+      { name: "desktop", width: 1280, height: 800, mobile: false },
+      { name: "mobile", width: 375, height: 812, mobile: true },
+    ]) {
+      await cdp.send("Emulation.setDeviceMetricsOverride", {
+        width: vp.width,
+        height: vp.height,
+        deviceScaleFactor: 1,
+        mobile: vp.mobile,
+      });
+      await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/cv/`);
+      await cdp.eval(`document.querySelector('.cv-nav-link[href="#trainings--certifications"]').click()`);
+      await new Promise((r) => setTimeout(r, 450));
+      const trainingsJump = await cdp.eval(`(() => {
+        const el = document.getElementById('trainings--certifications');
+        const det = document.querySelector('details.cv-section-details[data-cv-section="trainings--certifications"]');
+        return {
+          open: Boolean(det?.open),
+          top: el ? el.getBoundingClientRect().top : 99999
+        };
+      })()`);
+      assert.equal(trainingsJump.open, true, `${vp.name}: #trainings--certifications link must open details`);
+      assert.ok(
+        trainingsJump.top >= 0 && trainingsJump.top <= 100,
+        `${vp.name} #trainings--certifications landed off-target: top=${trainingsJump.top}px`,
+      );
+
+      await cdp.eval(`window.scrollTo(0, 0)`);
+      await new Promise((r) => setTimeout(r, 150));
+      await cdp.eval(`document.querySelector('.cv-nav-link[href="#selected-presentations"]').click()`);
+      await new Promise((r) => setTimeout(r, 450));
+      const presJump = await cdp.eval(`(() => {
+        const el = document.getElementById('selected-presentations');
+        const det = document.querySelector('details.cv-section-details[data-cv-section="selected-presentations"]');
+        return {
+          open: Boolean(det?.open),
+          top: el ? el.getBoundingClientRect().top : 99999
+        };
+      })()`);
+      assert.equal(presJump.open, true, `${vp.name}: #selected-presentations link must open details`);
+      assert.ok(
+        presJump.top >= 0 && presJump.top <= 100,
+        `${vp.name} #selected-presentations (with Trainings open) landed off-target: top=${presJump.top}px`,
+      );
+    }
   });
 });

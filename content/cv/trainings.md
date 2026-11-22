@@ -3,6 +3,7 @@ title: "Trainings & Certifications"
 date: 2026-05-04
 draft: false
 type: "cv"
+hideMeta: true
 ---
 
 I regularly participate in professional trainings to stay updated with the latest advancements in AI, HPC, and Climate Science.

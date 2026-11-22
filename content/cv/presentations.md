@@ -3,6 +3,7 @@ title: "Selected Presentations"
 date: 2026-05-04
 draft: false
 type: "cv"
+hideMeta: true
 ---
 
 A selection of {{< count type="presentations" >}} presentations given at various international conferences, workshops, and seminars.

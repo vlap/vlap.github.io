@@ -68,11 +68,19 @@
             var target = document.getElementById(id);
             if (!target) return;
             e.preventDefault();
-            if (this.classList.contains("pub-year-pill")) {
+            if (this.classList.contains("pub-year-pill") || (document.querySelector(".pub-year-group") && target.closest(".pub-year-group"))) {
                 var groups = document.querySelectorAll(".pub-year-group");
                 for (var i = 0; i < groups.length; i++) {
                     groups[i].style.contentVisibility = "visible";
                     if (groups[i] === target) break;
+                }
+                target.scrollIntoView({ behavior: "auto", block: "start" });
+            } else if (this.classList.contains("cv-nav-link") || (!this.classList.contains("skip-link") && document.querySelector(".cv-item"))) {
+                var cvItems = document.querySelectorAll(".cv-item");
+                for (var j = 0; j < cvItems.length; j++) {
+                    if (cvItems[j] === target || cvItems[j].contains(target) || (cvItems[j].compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+                        cvItems[j].style.contentVisibility = "visible";
+                    }
                 }
                 target.scrollIntoView({ behavior: "auto", block: "start" });
             } else if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {

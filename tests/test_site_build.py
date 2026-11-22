@@ -2112,3 +2112,47 @@ def test_tier5_skip_link_copy_code_sim_focus_and_bibtex_css(
     assert "background:transparent!important" in bib_code_css or "background:00!important" in bib_code_css
 
 
+def test_tier5_r2_css_cascade_video_focus_and_cv_subpage_meta(
+    built_site: Path,
+    built_stylesheet: str,
+) -> None:
+    """Verify #pubFilterInput/#pubFilterClear cascade order, .sim-video video:focus-visible, and no .post-meta on CV subpages."""
+    for rel in ("cv/presentations/index.html", "cv/trainings/index.html"):
+        soup = BeautifulSoup((built_site / rel).read_text(encoding="utf-8"), "lxml")
+        assert soup.select_one(".post-meta") is None, f"Unexpected .post-meta on {rel}"
+
+    rules = _parse_css_rules(built_stylesheet)
+    video_fv = _find_qualified_rules(rules, lambda p: p == ".sim-video video:focus-visible")
+    assert video_fv, "Missing .sim-video video:focus-visible rule"
+    assert "outline-offset:-2px" in video_fv[0][1].replace(" ", "")
+
+    # Verify @media (pointer:coarse),(max-width:768px) #pubFilterInput override follows base #pubFilterInput
+    base_idx = None
+    media_idx = None
+    for idx, rule in enumerate(rules):
+        if rule.type == "qualified-rule" and _serialize_prelude(rule) == "#pubFilterInput":
+            base_idx = idx
+            base_css = _serialize_content(rule).replace(" ", "")
+            pad_match = re.search(r"padding:\s*\d+px(\d+)px", base_css)
+            assert pad_match is not None and int(pad_match.group(1)) >= 44, (
+                f"Desktop #pubFilterInput padding-right must be >= 44px, got {base_css}"
+            )
+        elif rule.type == "at-rule" and rule.lower_at_keyword == "media":
+            prelude = _serialize_prelude(rule).replace(" ", "")
+            if "pointer:coarse" in prelude and "max-width:768px" in prelude:
+                nested = tinycss2.parse_rule_list(rule.content, skip_comments=True, skip_whitespace=True)
+                nested_selectors = {_serialize_prelude(nr) for nr in nested if nr.type == "qualified-rule"}
+                if "#pubFilterInput" in nested_selectors and "#pubFilterClear" in nested_selectors:
+                    media_idx = idx
+                    for nr in nested:
+                        if nr.type == "qualified-rule" and _serialize_prelude(nr) == "#pubFilterInput":
+                            m_pad = re.search(r"padding-right:(\d+)px", _serialize_content(nr).replace(" ", ""))
+                            assert m_pad is not None and int(m_pad.group(1)) >= 50, (
+                                f"Mobile #pubFilterInput padding-right must be >= 50px, got {_serialize_content(nr)}"
+                            )
+    assert base_idx is not None and media_idx is not None and media_idx > base_idx, (
+        f"@media (pointer:coarse),(max-width:768px) #pubFilterInput/#pubFilterClear override (idx={media_idx}) must follow base rule (idx={base_idx})"
+    )
+
+
+
