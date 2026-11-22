@@ -72,9 +72,9 @@ function startStaticServer(rootDir) {
   });
 }
 
-function runHugoBuild(outDir, baseUrl) {
+function runHugoBuild(outDir, baseUrl, extraArgs = []) {
   return new Promise((resolve, reject) => {
-    const proc = spawn("hugo", ["--gc", "--minify", "-d", outDir, "--baseURL", `${baseUrl}/`], {
+    const proc = spawn("hugo", ["--gc", "--minify", ...extraArgs, "-d", outDir, "--baseURL", `${baseUrl}/`], {
       cwd: REPO_ROOT,
       stdio: ["ignore", "pipe", "pipe"],
     });
@@ -888,96 +888,198 @@ describe("vlap.github.io headless browser verification", () => {
     assert.equal(codeCopyInfo.btnTextAfterClick, "copied!");
   });
 
-  it("achieves WCAG 2.1 AA (>= 4.5:1) computed contrast in light and dark modes across all Idea 2A selectors", async () => {
+  it("achieves WCAG 2.1 AA (>= 4.5:1) computed contrast in light and dark modes across all monograph selectors", async () => {
+    const checksByRoute = [
+      ["/", [".home-audience-link", ".home-subtitle", ".kind-badge", ".log-row-date", ".view-all-link", ".footer .social-icons a"]],
+      ["/work/", [".software-tag", ".sim-spec-pill", ".sim-physics", ".pub-badge-btn"]],
+      ["/publications/", [".pub-year-pill", ".pub-year-heading", ".pub-copy-btn", ".pub-bibtex-summary", ".action-pill"]],
+      ["/cv/", [".cv-nav-link", ".cv-date-badge", ".cv-download-sublabel", ".cv-download-badge", ".cv-download-badge--primary", ".action-pill"]],
+      ["/cv/presentations/", [".cv-link", ".action-pill", ".action-pill--primary"]],
+      ["/cv/trainings/", [".cv-skills-tag", ".cv-date-badge"]],
+      ["/posts/", [".log-kind-pill.active", ".log-kind-pill:not(.active)", ".kind-badge", ".log-row-date", ".post-tag"]],
+      ["/posts/2026-06-15-neural-surrogates-shallow-water-equations/", [".chroma .c1", ".post-tags a", ".paginav .title", ".kind-badge"]],
+    ];
+
+    for (const viewport of [
+      { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false },
+      { width: 375, height: 812, deviceScaleFactor: 1, mobile: true },
+    ]) {
+      await cdp.send("Emulation.setDeviceMetricsOverride", viewport);
+      for (const [route, selectors] of checksByRoute) {
+        await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}${route}`);
+        const origTheme = await cdp.eval(`document.documentElement.dataset.theme`);
+        try {
+          for (const theme of ["light", "dark"]) {
+            await cdp.eval(`document.documentElement.dataset.theme = ${JSON.stringify(theme)}`);
+            await new Promise((r) => setTimeout(r, 350));
+            const results = await cdp.eval(`((sels) => {
+              const parseRgba = (str) => {
+                const m = str.match(/rgba?\\(([^)]+)\\)/);
+                if (!m) return [0, 0, 0, 0];
+                const parts = m[1].split(',').map((s) => Number(s.trim()));
+                return [parts[0], parts[1], parts[2], parts[3] ?? 1];
+              };
+              const over = (fg, bg) => {
+                const a = fg[3];
+                return [
+                  a * fg[0] + (1 - a) * bg[0],
+                  a * fg[1] + (1 - a) * bg[1],
+                  a * fg[2] + (1 - a) * bg[2],
+                  1,
+                ];
+              };
+              const lum = ([r, g, b]) => {
+                const ch = [r, g, b].map((v) => {
+                  const s = v / 255;
+                  return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+                });
+                return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
+              };
+              const effectiveBg = (el) => {
+                const layers = [];
+                let cur = el;
+                while (cur) {
+                  layers.push(parseRgba(getComputedStyle(cur).backgroundColor));
+                  cur = cur.parentElement;
+                }
+                let bg = [255, 255, 255, 1];
+                for (let i = layers.length - 1; i >= 0; i--) {
+                  bg = over(layers[i], bg);
+                }
+                return bg;
+              };
+              return sels.map((sel) => {
+                const matched = [...document.querySelectorAll(sel)];
+                if (matched.length === 0) return { sel, matchedCount: 0, visibleCount: 0, failures: [] };
+                const visible = matched.filter((el) => {
+                  if (el.closest('details:not([open]) > :not(summary)')) return false;
+                  const r = el.getBoundingClientRect();
+                  return r.width > 0 && r.height > 0;
+                });
+                const failures = [];
+                for (const el of visible) {
+                  el.scrollIntoView({ block: 'nearest' });
+                  const bg = effectiveBg(el);
+                  const fg = over(parseRgba(getComputedStyle(el).color), bg);
+                  const l1 = lum(fg);
+                  const l2 = lum(bg);
+                  const ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+                  if (ratio < 4.5) {
+                    failures.push({
+                      text: el.textContent.trim().slice(0, 40),
+                      ratio,
+                      fg: fg.slice(0, 3),
+                      bg: bg.slice(0, 3),
+                    });
+                  }
+                }
+                return { sel, matchedCount: matched.length, visibleCount: visible.length, failures };
+              });
+            })(${JSON.stringify(selectors)})`);
+
+            for (const res of results) {
+              assert.ok(
+                res.matchedCount > 0 && res.visibleCount > 0,
+                `Missing or invisible selector ${res.sel} on ${route} (${viewport.width}px ${theme}): ${JSON.stringify(res)}`,
+              );
+              assert.equal(
+                res.failures.length,
+                0,
+                `Contrast failure on ${route} (${viewport.width}px ${theme}) for ${res.sel}: ${JSON.stringify(res.failures)}`,
+              );
+            }
+          }
+        } finally {
+          await cdp.eval(`document.documentElement.dataset.theme = ${JSON.stringify(origTheme)}`);
+        }
+      }
+    }
+  });
+
+  it("renders M2 tidal field SVG, monograph Log rows, 3 nav items, 3 Home links, 6 footer social icons, 2 CV PDF buttons, and EGU2014 talk link", async () => {
     await cdp.send("Emulation.setDeviceMetricsOverride", {
       width: 1280,
       height: 800,
       deviceScaleFactor: 1,
       mobile: false,
     });
-    const checksByRoute = [
-      ["/", [".home-audience-link", ".kind-badge", ".footer .social-icons a"]],
-      ["/work/", [".software-tag", ".sim-spec-pill", ".sim-physics", ".pub-badge-btn"]],
-      ["/publications/", [".pub-year-pill", ".pub-copy-btn", ".pub-bibtex-summary"]],
-      ["/cv/", [".cv-nav-link", ".cv-date-badge", ".cv-skills-tag", ".cv-link"]],
-      ["/posts/", [".log-kind-pill", ".kind-badge"]],
-      ["/posts/2026-06-15-neural-surrogates-shallow-water-equations/", [".chroma .c1", ".post-tags a", ".paginav .title", ".kind-badge"]],
-    ];
-
-    for (const [route, selectors] of checksByRoute) {
-      await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}${route}`);
-      const origTheme = await cdp.eval(`document.documentElement.dataset.theme`);
-      try {
-        for (const theme of ["light", "dark"]) {
-          await cdp.eval(`document.documentElement.dataset.theme = ${JSON.stringify(theme)}`);
-          await new Promise((r) => setTimeout(r, 350));
-          const results = await cdp.eval(`((sels) => {
-            const parseRgba = (str) => {
-              const m = str.match(/rgba?\\(([^)]+)\\)/);
-              if (!m) return [0, 0, 0, 0];
-              const parts = m[1].split(',').map((s) => Number(s.trim()));
-              return [parts[0], parts[1], parts[2], parts[3] ?? 1];
-            };
-            const over = (fg, bg) => {
-              const a = fg[3];
-              return [
-                a * fg[0] + (1 - a) * bg[0],
-                a * fg[1] + (1 - a) * bg[1],
-                a * fg[2] + (1 - a) * bg[2],
-                1,
-              ];
-            };
-            const lum = ([r, g, b]) => {
-              const ch = [r, g, b].map((v) => {
-                const s = v / 255;
-                return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
-              });
-              return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
-            };
-            const effectiveBg = (el) => {
-              const layers = [];
-              let cur = el;
-              while (cur) {
-                layers.push(parseRgba(getComputedStyle(cur).backgroundColor));
-                cur = cur.parentElement;
-              }
-              let bg = [255, 255, 255, 1];
-              for (let i = layers.length - 1; i >= 0; i--) {
-                bg = over(layers[i], bg);
-              }
-              return bg;
-            };
-            return sels.map((sel) => {
-              const el = document.querySelector(sel);
-              if (!el) return { sel, missing: true };
-              const bg = effectiveBg(el);
-              const fg = over(parseRgba(getComputedStyle(el).color), bg);
-              const l1 = lum(fg);
-              const l2 = lum(bg);
-              const ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
-              return { sel, missing: false, ratio, fg: fg.slice(0, 3), bg: bg.slice(0, 3) };
-            });
-          })(${JSON.stringify(selectors)})`);
-
-          for (const res of results) {
-            assert.equal(res.missing, false, `Missing selector ${res.sel} on ${route}`);
-            assert.ok(
-              res.ratio >= 4.5,
-              `Contrast failure on ${route} (${theme}) for ${res.sel}: ${res.ratio.toFixed(2)}:1 < 4.5:1 (fg=${res.fg}, bg=${res.bg})`,
-            );
-          }
-        }
-      } finally {
-        await cdp.eval(`document.documentElement.dataset.theme = ${JSON.stringify(origTheme)}`);
-      }
-    }
-  });
-
-  it("renders profile-symbol.svg, 3 nav items, 3 Home links, 6 footer social icons, 2 CV PDF buttons, and EGU2014 talk link", async () => {
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/`);
+    const origHomeTheme = await cdp.eval(`document.documentElement.dataset.theme`);
+    const themeSnapshots = {};
+    try {
+      for (const theme of ["light", "dark"]) {
+        await cdp.eval(`document.documentElement.dataset.theme = ${JSON.stringify(theme)}`);
+        await new Promise((r) => setTimeout(r, 250));
+        themeSnapshots[theme] = await cdp.eval(`(() => {
+          const band = document.querySelector('.home-info .tidal-field-band');
+          const svg = document.querySelector('.home-info .tidal-field-svg');
+          const hi = document.querySelector('.home-info')?.getBoundingClientRect();
+          const bandRect = band?.getBoundingClientRect();
+          const svgRect = svg?.getBoundingClientRect();
+          const coamp = svg?.querySelector('g.tidal-coamplitude');
+          const cotid = svg?.querySelector('g.tidal-cotidal');
+          const zero = svg?.querySelector('.tidal-cotidal-zero');
+          const amphiCircle = svg?.querySelector('g.tidal-amphidromes circle');
+          const csSvg = svg ? getComputedStyle(svg) : null;
+          const csCoamp = coamp ? getComputedStyle(coamp) : null;
+          const csCotid = cotid ? getComputedStyle(cotid) : null;
+          const csZero = zero ? getComputedStyle(zero) : null;
+          const csCircle = amphiCircle ? getComputedStyle(amphiCircle) : null;
+          const firstCoPath = coamp?.querySelector('path');
+          const csPath = firstCoPath ? getComputedStyle(firstCoPath) : null;
+          return {
+            legacyImg: Boolean(document.querySelector('img.home-symbol-icon')),
+            legacySrc: Boolean(document.querySelector('[src*="profile-symbol.svg"]')),
+            bandCount: document.querySelectorAll('.home-info .tidal-field-band').length,
+            svgCount: document.querySelectorAll('.home-info .tidal-field-svg').length,
+            bandAriaHidden: band?.getAttribute('aria-hidden'),
+            svgAriaHidden: svg?.getAttribute('aria-hidden'),
+            viewBox: svg?.getAttribute('viewBox'),
+            primitiveCount: svg ? svg.querySelectorAll('path, circle, ellipse, polyline, polygon').length : 0,
+            bandInBounds: Boolean(hi && bandRect && bandRect.width >= 40 && bandRect.height >= 24 && bandRect.left >= hi.left - 1 && bandRect.right <= hi.right + 1),
+            svgInBounds: Boolean(hi && svgRect && svgRect.width >= 40 && svgRect.height >= 24 && svgRect.left >= hi.left - 1 && svgRect.right <= hi.right + 1),
+            svgDisplay: csSvg?.display,
+            svgVisibility: csSvg?.visibility,
+            svgOpacity: csSvg ? Number(csSvg.opacity) : 0,
+            coampColor: csCoamp?.color,
+            coampOpacity: csCoamp ? Number(csCoamp.opacity) : 0,
+            pathStroke: csPath?.stroke,
+            cotidColor: csCotid?.color,
+            cotidOpacity: csCotid ? Number(csCotid.opacity) : 0,
+            zeroColor: csZero?.color,
+            circleFill: csCircle?.fill,
+            circleStroke: csCircle?.stroke,
+          };
+        })()`);
+      }
+    } finally {
+      await cdp.eval(`document.documentElement.dataset.theme = ${JSON.stringify(origHomeTheme)}`);
+    }
+
+    for (const theme of ["light", "dark"]) {
+      const snap = themeSnapshots[theme];
+      assert.equal(snap.legacyImg, false, `Legacy img.home-symbol-icon present in ${theme}`);
+      assert.equal(snap.legacySrc, false, `Legacy profile-symbol.svg present in ${theme}`);
+      assert.equal(snap.bandCount, 1);
+      assert.equal(snap.svgCount, 1);
+      assert.equal(snap.bandAriaHidden, "true");
+      assert.equal(snap.svgAriaHidden, "true");
+      assert.ok(snap.viewBox && snap.viewBox.split(/\s+/).length === 4, `Invalid viewBox: ${snap.viewBox}`);
+      assert.ok(snap.primitiveCount >= 4, `Expected >= 4 contour primitives, got ${snap.primitiveCount}`);
+      assert.equal(snap.bandInBounds, true, `.tidal-field-band out of bounds in ${theme}`);
+      assert.equal(snap.svgInBounds, true, `.tidal-field-svg out of bounds in ${theme}`);
+      assert.notEqual(snap.svgDisplay, "none");
+      assert.notEqual(snap.svgVisibility, "hidden");
+      assert.ok(snap.svgOpacity > 0 && snap.coampOpacity > 0 && snap.cotidOpacity > 0);
+      assert.ok(snap.pathStroke && snap.pathStroke !== "none", `Missing stroke on tidal path: ${snap.pathStroke}`);
+      assert.ok(snap.circleStroke && snap.circleStroke !== "none");
+    }
+    assert.notEqual(themeSnapshots.light.coampColor, themeSnapshots.dark.coampColor, "coamplitude color must adapt between light and dark");
+    assert.notEqual(themeSnapshots.light.cotidColor, themeSnapshots.dark.cotidColor, "cotidal color must adapt between light and dark");
+    assert.notEqual(themeSnapshots.light.circleFill, themeSnapshots.dark.circleFill, "amphidrome circle fill must adapt between light and dark");
+
     const homeCheck = await cdp.eval(`(() => {
       const h1 = document.querySelector('.home-info h1');
-      const img = h1?.querySelector('img.home-symbol-icon');
       const navItems = [...document.querySelectorAll('#menu a')].map((a) => ({
         name: a.textContent.trim(),
         href: a.getAttribute('href'),
@@ -990,13 +1092,18 @@ describe("vlap.github.io headless browser verification", () => {
         href: a.getAttribute('href'),
         label: a.getAttribute('aria-label'),
       }));
+      const logRows = [...document.querySelectorAll('.home-posts .log-rows .log-row')].map((row) => {
+        const cs = getComputedStyle(row);
+        return {
+          hasBadge: Boolean(row.querySelector('.kind-badge')),
+          badgeText: row.querySelector('.kind-badge')?.textContent.trim() || '',
+          titleHref: row.querySelector('a.log-row-title-link')?.getAttribute('href') || '',
+          dateText: row.querySelector('time.log-row-date')?.textContent.trim() || '',
+          boxShadow: cs.boxShadow,
+          borderRadius: cs.borderRadius,
+        };
+      });
       return {
-        hasImg: Boolean(img),
-        src: img?.getAttribute('src'),
-        alt: img?.getAttribute('alt'),
-        ariaHidden: img?.getAttribute('aria-hidden'),
-        complete: img?.complete,
-        naturalWidth: img?.naturalWidth,
         hasEmojiBar: Boolean(h1?.querySelector('.symbol-bar')),
         h1Text: h1?.textContent || '',
         navItems,
@@ -1005,17 +1112,11 @@ describe("vlap.github.io headless browser verification", () => {
         hasImpactMetrics: Boolean(document.querySelector('.impact-metrics')),
         hasHighlights: Boolean(document.querySelector('.research-highlights')),
         logHeading: document.querySelector('.home-posts h2')?.textContent.trim() || '',
-        logCount: document.querySelectorAll('.home-posts article.post-entry').length,
+        logRows,
       };
     })()`);
-    assert.equal(homeCheck.hasImg, true);
-    assert.equal(homeCheck.src, "/images/decor/profile-symbol.svg");
-    assert.equal(homeCheck.alt, "");
-    assert.equal(homeCheck.ariaHidden, "true");
-    assert.equal(homeCheck.complete, true);
-    assert.ok(homeCheck.naturalWidth > 0, "Expected profile-symbol.svg to decode with naturalWidth > 0");
     assert.equal(homeCheck.hasEmojiBar, false);
-    assert.equal(/[🌐♾🤖]/.test(homeCheck.h1Text), false);
+    assert.equal(/[🌐♾🤖🌍]/.test(homeCheck.h1Text), false);
     assert.equal(homeCheck.hasImpactMetrics, false);
     assert.equal(homeCheck.hasHighlights, false);
     assert.deepEqual(
@@ -1032,7 +1133,15 @@ describe("vlap.github.io headless browser verification", () => {
     assert.equal(homeCheck.footerIcons.length, 6);
     assert.ok(homeCheck.footerIcons.every((i) => i.label && i.label.length > 0));
     assert.equal(homeCheck.logHeading, "Latest from the Log");
-    assert.ok(homeCheck.logCount >= 2 && homeCheck.logCount <= 3);
+    assert.ok(homeCheck.logRows.length >= 2 && homeCheck.logRows.length <= 3, `Expected 2..3 Home log rows, got ${homeCheck.logRows.length}`);
+    for (const row of homeCheck.logRows) {
+      assert.equal(row.hasBadge, true);
+      assert.ok(["note", "talk", "paper"].includes(row.badgeText), `Unexpected badge: ${row.badgeText}`);
+      assert.ok(row.titleHref.length > 0, "Missing a.log-row-title-link href on Home");
+      assert.match(row.dateText, /^\d{4}-\d{2}-\d{2}$/);
+      assert.equal(row.boxShadow, "none");
+      assert.equal(row.borderRadius, "0px");
+    }
 
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/cv/`);
     const cvCheck = await cdp.eval(`(() => {
@@ -1040,7 +1149,7 @@ describe("vlap.github.io headless browser verification", () => {
       const eguItem = [...document.querySelectorAll('.cv-item')].find((el) => el.textContent.includes('EGU2014'));
       const eguTalkHref = eguItem?.querySelector('a[href*="/posts/2014-04-28-egu2014"]')?.getAttribute('href') || null;
       return {
-        postEntries: document.querySelectorAll('article.post-entry').length,
+        postEntries: document.querySelectorAll('article.post-entry, .log-entry, .log-row').length,
         btnCount: btns.length,
         sublabels: btns.map((b) => b.querySelector('.cv-download-sublabel')?.textContent.trim() || ''),
         eguTalkHref,
@@ -1184,42 +1293,114 @@ describe("vlap.github.io headless browser verification", () => {
     assert.deepEqual(unicodeHighlight, ["Foo"]);
   });
 
-  it("preserves centered 720px alignment, clean pill links, modern CSS polish, redirects, and reduced motion", async () => {
+  it("preserves left-aligned monograph header, 720px alignment, clean pill links, modern CSS polish, redirects, and reduced motion", async () => {
+    for (const vp of [
+      { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false },
+      { width: 375, height: 812, deviceScaleFactor: 1, mobile: true },
+    ]) {
+      await cdp.send("Emulation.setDeviceMetricsOverride", vp);
+      await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/`);
+      const origTheme = await cdp.eval(`document.documentElement.dataset.theme`);
+      try {
+        for (const theme of ["light", "dark"]) {
+          await cdp.eval(`document.documentElement.dataset.theme = ${JSON.stringify(theme)}`);
+          await new Promise((r) => setTimeout(r, 200));
+          const homeAlign = await cdp.eval(`(() => {
+            const rectsOverlap = (a, b) => !(
+              a.right <= b.left + 0.5 ||
+              b.right <= a.left + 0.5 ||
+              a.bottom <= b.top + 0.5 ||
+              b.bottom <= a.top + 0.5
+            );
+            const m = document.querySelector('.main')?.getBoundingClientRect();
+            const hiEl = document.querySelector('.home-info');
+            const hi = hiEl?.getBoundingClientRect();
+            const hp = document.querySelector('.home-posts')?.getBoundingClientRect();
+            const imgEl = document.querySelector('.home-info-image img');
+            const img = imgEl?.getBoundingClientRect();
+            const h1 = document.querySelector('.home-info h1');
+            const subEl = document.querySelector('.home-subtitle');
+            const subRect = subEl?.getBoundingClientRect();
+            const fieldRect = document.querySelector('.home-info .tidal-field-band')?.getBoundingClientRect();
+            const range = document.createRange();
+            const textNode = [...(h1?.childNodes || [])].find((n) => n.nodeType === Node.TEXT_NODE && n.nodeValue.trim());
+            if (textNode) range.selectNodeContents(textNode);
+            const nameRect = textNode ? range.getBoundingClientRect() : h1?.getBoundingClientRect();
+            const hiStyle = hiEl ? getComputedStyle(hiEl) : null;
+            const h1Style = h1 ? getComputedStyle(h1) : null;
+            return {
+              clientWidth: document.documentElement.clientWidth,
+              mainWidth: m?.width || 0,
+              mainCenterX: m ? m.left + m.width / 2 : 0,
+              homeInfoLeft: hi?.left || 0,
+              homeInfoRight: hi?.right || 0,
+              homePostsLeft: hp?.left || 0,
+              homePostsRight: hp?.right || 0,
+              hasHomePosts: Boolean(hp),
+              homeInfoTextAlign: hiStyle?.textAlign || '',
+              h1TextAlign: h1Style?.textAlign || '',
+              h1Justify: h1Style?.justifyContent || '',
+              imgComplete: Boolean(imgEl?.complete && imgEl?.naturalWidth > 0),
+              imgFetchPriority: imgEl?.getAttribute('fetchpriority') || '',
+              imgWidth: img?.width || 0,
+              imgHeight: img?.height || 0,
+              imgCenterX: img ? img.left + img.width / 2 : 0,
+              nameCenterX: nameRect ? nameRect.left + nameRect.width / 2 : 0,
+              imgBottom: img?.bottom || 0,
+              nameTop: nameRect?.top || 0,
+              nameLeft: nameRect?.left || 0,
+              subtitleLeft: subRect?.left || 0,
+              imgInsideHomeInfo: Boolean(img && hi && img.left >= hi.left - 1 && img.right <= hi.right + 1 && img.top >= hi.top - 1),
+              overlapImgName: Boolean(img && nameRect && rectsOverlap(img, nameRect)),
+              overlapImgSub: Boolean(img && subRect && rectsOverlap(img, subRect)),
+              overlapImgField: Boolean(img && fieldRect && rectsOverlap(img, fieldRect)),
+              overlapNameField: Boolean(nameRect && fieldRect && rectsOverlap(nameRect, fieldRect)),
+            };
+          })()`);
+
+          if (!vp.mobile) {
+            assert.ok(homeAlign.mainWidth <= 780, `Expected centered .main width <= 780px, got ${homeAlign.mainWidth}`);
+            assert.ok(Math.abs(homeAlign.mainCenterX - homeAlign.clientWidth / 2) <= 4);
+            if (homeAlign.hasHomePosts) {
+              assert.ok(Math.abs(homeAlign.homeInfoLeft - homeAlign.homePostsLeft) <= 2);
+              assert.ok(Math.abs(homeAlign.homeInfoRight - homeAlign.homePostsRight) <= 2);
+            }
+          }
+          assert.ok(
+            homeAlign.homeInfoTextAlign === "left" || homeAlign.homeInfoTextAlign === "start",
+            `Expected left-aligned .home-info, got ${homeAlign.homeInfoTextAlign}`,
+          );
+          assert.notEqual(homeAlign.h1TextAlign, "center");
+          assert.notEqual(homeAlign.h1Justify, "center");
+          assert.ok(homeAlign.nameLeft < homeAlign.mainCenterX, "Expected h1 left edge left of mainCenterX");
+          assert.ok(Math.abs(homeAlign.nameLeft - homeAlign.subtitleLeft) <= 4);
+          assert.equal(
+            Math.abs(homeAlign.imgCenterX - homeAlign.nameCenterX) <= 4 && homeAlign.imgBottom <= homeAlign.nameTop,
+            false,
+            "Legacy centered stacked avatar+name layout must not return",
+          );
+          assert.equal(homeAlign.imgComplete, true);
+          assert.equal(homeAlign.imgFetchPriority, "high");
+          assert.ok(homeAlign.imgWidth >= 48 && homeAlign.imgWidth <= 130, `Unexpected imgWidth: ${homeAlign.imgWidth}`);
+          assert.ok(homeAlign.imgHeight >= 48 && homeAlign.imgHeight <= 130, `Unexpected imgHeight: ${homeAlign.imgHeight}`);
+          assert.ok(Math.abs(homeAlign.imgWidth - homeAlign.imgHeight) <= 2);
+          assert.equal(homeAlign.imgInsideHomeInfo, true);
+          assert.equal(homeAlign.overlapImgName, false);
+          assert.equal(homeAlign.overlapImgSub, false);
+          assert.equal(homeAlign.overlapImgField, false);
+          assert.equal(homeAlign.overlapNameField, false);
+        }
+      } finally {
+        await cdp.eval(`document.documentElement.dataset.theme = ${JSON.stringify(origTheme)}`);
+      }
+    }
+
     await cdp.send("Emulation.setDeviceMetricsOverride", {
       width: 1280,
       height: 800,
       deviceScaleFactor: 1,
       mobile: false,
     });
-
-    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/`);
-    const homeAlign = await cdp.eval(`(() => {
-      const m = document.querySelector('.main')?.getBoundingClientRect();
-      const hi = document.querySelector('.home-info')?.getBoundingClientRect();
-      const hp = document.querySelector('.home-posts')?.getBoundingClientRect();
-      const img = document.querySelector('.home-info-image img')?.getBoundingClientRect();
-      const h1 = document.querySelector('.home-info h1');
-      const range = document.createRange();
-      const textNode = [...(h1?.childNodes || [])].find((n) => n.nodeType === Node.TEXT_NODE && n.nodeValue.trim());
-      if (textNode) range.selectNodeContents(textNode);
-      const nameRect = textNode ? range.getBoundingClientRect() : h1?.getBoundingClientRect();
-      return {
-        clientWidth: document.documentElement.clientWidth,
-        mainWidth: m?.width || 0,
-        mainCenterX: m ? m.left + m.width / 2 : 0,
-        homeInfoLeft: hi?.left || 0,
-        homeInfoRight: hi?.right || 0,
-        homePostsLeft: hp?.left || 0,
-        homePostsRight: hp?.right || 0,
-        imgCenterX: img ? img.left + img.width / 2 : 0,
-        nameCenterX: nameRect ? nameRect.left + nameRect.width / 2 : 0,
-      };
-    })()`);
-    assert.ok(homeAlign.mainWidth <= 780, `Expected centered .main width <= 780px, got ${homeAlign.mainWidth}`);
-    assert.ok(Math.abs(homeAlign.mainCenterX - homeAlign.clientWidth / 2) <= 4);
-    assert.ok(Math.abs(homeAlign.homeInfoLeft - homeAlign.homePostsLeft) <= 2);
-    assert.ok(Math.abs(homeAlign.homeInfoRight - homeAlign.homePostsRight) <= 2);
-    assert.ok(Math.abs(homeAlign.imgCenterX - homeAlign.nameCenterX) <= 4);
 
     for (const staticRoute of ["/work/", "/publications/", "/cv/"]) {
       await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}${staticRoute}`);
@@ -1394,31 +1575,53 @@ describe("vlap.github.io headless browser verification", () => {
     });
 
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/kinds/note/`);
-    const noteLinks = await cdp.eval(
-      `[...document.querySelectorAll('article.post-entry a.entry-link')].map((a) => a.getAttribute('href'))`,
+    const noteRows = await cdp.eval(
+      `[...document.querySelectorAll('.log-rows .log-row')].map((row) => ({
+        href: row.querySelector('a.log-row-title-link')?.getAttribute('href') || '',
+        hasBadge: Boolean(row.querySelector('.kind-badge')),
+        dateText: row.querySelector('time.log-row-date')?.textContent.trim() || '',
+        boxShadow: getComputedStyle(row).boxShadow,
+        borderRadius: getComputedStyle(row).borderRadius,
+      }))`,
     );
-    assert.equal(noteLinks.length, 1, `Expected 1 note on /kinds/note/, got ${JSON.stringify(noteLinks)}`);
+    assert.equal(noteRows.length, 1, `Expected 1 note on /kinds/note/, got ${JSON.stringify(noteRows)}`);
     assert.ok(
-      noteLinks[0].endsWith("/posts/2026-06-15-neural-surrogates-shallow-water-equations/"),
-      `Unexpected note link: ${noteLinks[0]}`,
+      noteRows[0].href.endsWith("/posts/2026-06-15-neural-surrogates-shallow-water-equations/"),
+      `Unexpected note link: ${noteRows[0].href}`,
     );
+    assert.equal(noteRows[0].hasBadge, true);
+    assert.match(noteRows[0].dateText, /^\d{4}-\d{2}-\d{2}$/);
+    assert.equal(noteRows[0].boxShadow, "none");
+    assert.equal(noteRows[0].borderRadius, "0px");
 
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/kinds/talk/`);
-    const talkLinks = await cdp.eval(
-      `[...document.querySelectorAll('article.post-entry a.entry-link')].map((a) => a.getAttribute('href'))`,
+    const talkRows = await cdp.eval(
+      `[...document.querySelectorAll('.log-rows .log-row')].map((row) => ({
+        href: row.querySelector('a.log-row-title-link')?.getAttribute('href') || '',
+        hasBadge: Boolean(row.querySelector('.kind-badge')),
+        dateText: row.querySelector('time.log-row-date')?.textContent.trim() || '',
+        boxShadow: getComputedStyle(row).boxShadow,
+        borderRadius: getComputedStyle(row).borderRadius,
+      }))`,
     );
-    assert.equal(talkLinks.length, 2, `Expected 2 talks on /kinds/talk/, got ${JSON.stringify(talkLinks)}`);
+    assert.equal(talkRows.length, 2, `Expected 2 talks on /kinds/talk/, got ${JSON.stringify(talkRows)}`);
     assert.ok(
-      talkLinks.some((h) => h.endsWith("/posts/2014-04-28-egu2014-global-modelling-surface-internal-tides/")),
-      `Missing EGU2014 talk link in ${JSON.stringify(talkLinks)}`,
+      talkRows.some((r) => r.href.endsWith("/posts/2014-04-28-egu2014-global-modelling-surface-internal-tides/")),
+      `Missing EGU2014 talk link in ${JSON.stringify(talkRows)}`,
     );
     assert.ok(
-      talkLinks.some((h) => h.endsWith("/posts/2013-06-21-ams19-global-modelling-surface-internal-tides/")),
-      `Missing AMS 19th talk link in ${JSON.stringify(talkLinks)}`,
+      talkRows.some((r) => r.href.endsWith("/posts/2013-06-21-ams19-global-modelling-surface-internal-tides/")),
+      `Missing AMS 19th talk link in ${JSON.stringify(talkRows)}`,
     );
+    for (const r of talkRows) {
+      assert.equal(r.hasBadge, true);
+      assert.match(r.dateText, /^\d{4}-\d{2}-\d{2}$/);
+      assert.equal(r.boxShadow, "none");
+      assert.equal(r.borderRadius, "0px");
+    }
 
     cdp.events = [];
-    await cdp.eval(`document.querySelector('article.post-entry a.entry-link').click()`);
+    await cdp.eval(`document.querySelector('.log-rows .log-row a.log-row-title-link').click()`);
     await cdp.waitForLoad();
     await new Promise((r) => setTimeout(r, 150));
 
@@ -1549,5 +1752,413 @@ describe("vlap.github.io headless browser verification", () => {
       `(document.querySelector('.pub-metrics-intro')?.textContent || '').replace(/\\s+/g, ' ').trim()`,
     );
     assert.match(pubIntro, /^\d+ papers · \d+ citations · h-index \d+ \(OpenAlex\)\.$/);
+  });
+
+  it("enforces tabular-nums glyph width invariance and clean CV mobile wrapping across routes", async () => {
+    const routesAndSelectors = [
+      ["/", [".log-row-date"]],
+      ["/work/", [".sim-spec-pill", ".pub-card-year"]],
+      ["/posts/", [".log-row-date", ".log-kind-pill"]],
+      ["/cv/", [".cv-date-badge", ".cv-download-badge"]],
+      ["/publications/", [".pub-year-pill", ".pub-card-year", ".pub-year-heading", ".pub-metrics-intro"]],
+    ];
+
+    for (const vp of [
+      { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false },
+      { width: 375, height: 812, deviceScaleFactor: 1, mobile: true },
+    ]) {
+      await cdp.send("Emulation.setDeviceMetricsOverride", vp);
+      for (const [route, selectors] of routesAndSelectors) {
+        await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}${route}`);
+        const res = await cdp.eval(`((sels) => {
+          const out = [];
+          for (const sel of sels) {
+            const matches = [...document.querySelectorAll(sel)].filter((el) => {
+              if (el.closest('details:not([open]) > :not(summary)')) return false;
+              const r = el.getBoundingClientRect();
+              return r.width > 0 && r.height > 0;
+            });
+            if (matches.length === 0) {
+              out.push({ sel, visibleCount: 0, failures: ['no visible elements'] });
+              continue;
+            }
+            const failures = [];
+            for (const el of matches.slice(0, 5)) {
+              const cs = getComputedStyle(el);
+              if (!cs.fontVariantNumeric.includes('tabular-nums')) {
+                failures.push('missing tabular-nums: ' + cs.fontVariantNumeric);
+              }
+              const probe = document.createElement('span');
+              probe.style.position = 'fixed';
+              probe.style.visibility = 'hidden';
+              probe.style.whiteSpace = 'nowrap';
+              probe.style.fontFamily = cs.fontFamily;
+              probe.style.fontSize = cs.fontSize;
+              probe.style.fontWeight = cs.fontWeight;
+              probe.style.fontVariantNumeric = cs.fontVariantNumeric;
+              probe.style.letterSpacing = cs.letterSpacing;
+              probe.textContent = '1111';
+              document.body.appendChild(probe);
+              const r1 = document.createRange();
+              r1.selectNodeContents(probe);
+              const w1 = r1.getBoundingClientRect().width;
+              probe.textContent = '8888';
+              const r8 = document.createRange();
+              r8.selectNodeContents(probe);
+              const w8 = r8.getBoundingClientRect().width;
+              probe.remove();
+              if (Math.abs(w1 - w8) > 0.25) {
+                failures.push('width delta ' + Math.abs(w1 - w8).toFixed(3));
+              }
+            }
+            out.push({ sel, visibleCount: matches.length, failures });
+          }
+          return out;
+        })(${JSON.stringify(selectors)})`);
+
+        for (const item of res) {
+          assert.ok(item.visibleCount > 0, `Expected visible elements for ${item.sel} on ${route}`);
+          assert.equal(
+            item.failures.length,
+            0,
+            `tabular-nums check failed for ${item.sel} on ${route} (${vp.width}px): ${JSON.stringify(item.failures)}`,
+          );
+        }
+      }
+
+      if (vp.mobile) {
+        await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/cv/`);
+        const cvWrap = await cdp.eval(`(() => {
+          const rectsOverlap = (a, b) => !(
+            a.right <= b.left + 0.5 ||
+            b.right <= a.left + 0.5 ||
+            a.bottom <= b.top + 0.5 ||
+            b.bottom <= a.top + 0.5
+          );
+          const headers = [...document.querySelectorAll('.cv-entry-header')].filter((h) => !h.closest('details:not([open])'));
+          return headers.map((h) => {
+            const hr = h.getBoundingClientRect();
+            const title = h.querySelector('.cv-entry-title')?.getBoundingClientRect();
+            const badge = h.querySelector('.cv-date-badge')?.getBoundingClientRect();
+            if (!title || !badge) return { missing: true };
+            const overlap = rectsOverlap(title, badge);
+            const rightAligned = Math.abs(badge.right - hr.right) <= 2;
+            const leftWrapped = Math.abs(badge.left - hr.left) <= 2 && badge.top >= title.bottom - 1;
+            return { missing: false, overlap, rightAligned, leftWrapped };
+          });
+        })()`);
+        assert.ok(cvWrap.length > 0, "Expected visible .cv-entry-header elements on /cv/");
+        for (const row of cvWrap) {
+          assert.equal(row.missing, false);
+          assert.equal(row.overlap, false, "CV title and date badge must not overlap on mobile");
+          assert.ok(row.rightAligned || row.leftWrapped, `CV date badge alignment failed: ${JSON.stringify(row)}`);
+        }
+      }
+    }
+  });
+
+  it("enforces action pill containment, zero overlap, and >= 3.5px gap without clipping across viewports", async () => {
+    const routeContainers = [
+      ["/", [".entry-kinds"]],
+      ["/work/", [".software-tags", ".sim-specs", ".pub-card-actions"]],
+      ["/posts/", [".log-kind-filter", ".entry-kinds", ".entry-tags"]],
+      ["/cv/", [".cv-nav-bar"]],
+      ["/cv/presentations/", [".cv-item-actions"]],
+      ["/cv/trainings/", [".cv-skills"]],
+      ["/publications/", [".pub-year-nav", ".pub-card-actions"]],
+      ["/posts/2014-04-28-egu2014-global-modelling-surface-internal-tides/", [".post-kinds", ".post-tags"]],
+      ["/posts/2026-06-15-neural-surrogates-shallow-water-equations/", [".post-kinds", ".post-tags"]],
+    ];
+
+    for (const vp of [
+      { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false },
+      { width: 375, height: 812, deviceScaleFactor: 1, mobile: true },
+    ]) {
+      await cdp.send("Emulation.setDeviceMetricsOverride", vp);
+      for (const [route, containers] of routeContainers) {
+        await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}${route}`);
+        const audit = await cdp.eval(`((containerSels) => {
+          const rectsOverlap = (a, b) => !(
+            a.right <= b.left + 0.5 ||
+            b.right <= a.left + 0.5 ||
+            a.bottom <= b.top + 0.5 ||
+            b.bottom <= a.top + 0.5
+          );
+          for (const deferred of document.querySelectorAll('.pub-year-group:nth-of-type(n+3), .cv-item:nth-of-type(n+6)')) {
+            if (!deferred.closest('details:not([open])')) {
+              deferred.scrollIntoView({ block: 'center' });
+            }
+          }
+          const report = [];
+          for (const sel of containerSels) {
+            const boxes = [...document.querySelectorAll(sel)].filter((c) => {
+              if (c.closest('details:not([open]) > :not(summary)')) return false;
+              const r = c.getBoundingClientRect();
+              return r.width > 0 && r.height > 0;
+            });
+            if (boxes.length === 0) {
+              report.push({ sel, boxCount: 0, pillCount: 0, issues: ['0 visible containers'] });
+              continue;
+            }
+            let pillCount = 0;
+            const issues = [];
+            for (const box of boxes) {
+              const items = [...box.querySelectorAll(':scope > a, :scope > button, :scope > span, :scope > li > a, :scope > details > summary')]
+                .filter((el) => {
+                  const r = el.getBoundingClientRect();
+                  return r.width > 0 && r.height > 0;
+                });
+              pillCount += items.length;
+              const rects = items.map((el) => ({ el, r: el.getBoundingClientRect() }));
+              for (const { el, r } of rects) {
+                if (el.clientWidth > 0 && el.scrollWidth > el.clientWidth + 1) {
+                  issues.push('internal scrollWidth clip on ' + el.textContent.trim() + ': ' + el.scrollWidth + '>' + el.clientWidth);
+                }
+                if (r.left < -0.5 || r.right > window.innerWidth + 0.5) {
+                  issues.push('viewport clip on ' + el.textContent.trim() + ': left=' + r.left + ' right=' + r.right + ' vw=' + window.innerWidth);
+                }
+              }
+              for (let i = 0; i < rects.length; i++) {
+                for (let j = i + 1; j < rects.length; j++) {
+                  const a = rects[i].r;
+                  const b = rects[j].r;
+                  if (rectsOverlap(a, b)) {
+                    issues.push('overlap between "' + rects[i].el.textContent.trim() + '" and "' + rects[j].el.textContent.trim() + '"');
+                    continue;
+                  }
+                  const verticalOverlap = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+                  if (verticalOverlap > 2) {
+                    const hGap = Math.max(a.left - b.right, b.left - a.right);
+                    if (hGap < 3.5) {
+                      issues.push('tight gap ' + hGap.toFixed(2) + 'px between "' + rects[i].el.textContent.trim() + '" and "' + rects[j].el.textContent.trim() + '"');
+                    }
+                  }
+                }
+              }
+            }
+            report.push({ sel, boxCount: boxes.length, pillCount, issues });
+          }
+          return report;
+        })(${JSON.stringify(containers)})`);
+
+        for (const entry of audit) {
+          assert.ok(entry.boxCount > 0 && entry.pillCount > 0, `Vacuous pill check for ${entry.sel} on ${route}`);
+          assert.equal(
+            entry.issues.length,
+            0,
+            `Pill geometry issues on ${route} (${vp.width}px) for ${entry.sel}: ${JSON.stringify(entry.issues)}`,
+          );
+        }
+      }
+    }
+  });
+
+  it("renders CV PDFs above the fold, serves valid PDF bytes, and expands details for print media", async () => {
+    await cdp.send("Emulation.setDeviceMetricsOverride", {
+      width: 1280,
+      height: 800,
+      deviceScaleFactor: 1,
+      mobile: false,
+    });
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/cv/`);
+
+    const cvAboveFold = await cdp.eval(`(() => {
+      const btns = [...document.querySelectorAll('.cv-download-btn')];
+      return btns.map((b) => {
+        const r = b.getBoundingClientRect();
+        return {
+          href: b.getAttribute('href'),
+          text: b.textContent.replace(/\\s+/g, ' ').trim(),
+          bottom: r.bottom,
+          height: r.height,
+        };
+      });
+    })()`);
+    assert.equal(cvAboveFold.length, 2);
+    for (const btn of cvAboveFold) {
+      assert.ok(btn.bottom <= 800, `CV button ${btn.href} extends below fold: ${btn.bottom}`);
+      assert.ok(btn.height >= 44, `CV button ${btn.href} height < 44px: ${btn.height}`);
+    }
+    const industryBtn = cvAboveFold.find((b) => b.href === "/downloads/vladimir-lapin-cv-industry.pdf");
+    assert.ok(industryBtn && industryBtn.text.includes("2-page"), `Industry button missing 2-page label: ${JSON.stringify(industryBtn)}`);
+
+    for (const pdfPath of [
+      "/downloads/vladimir-lapin-cv-industry.pdf",
+      "/downloads/vladimir-lapin-cv-research-full.pdf",
+      "/downloads/phd-thesis-vlapin.pdf",
+      "/downloads/msc-thesis-vlapin.pdf",
+    ]) {
+      const res = await fetch(`${serverObj.baseUrl}${pdfPath}`);
+      assert.equal(res.status, 200, `Expected 200 for ${pdfPath}, got ${res.status}`);
+      assert.ok((res.headers.get("content-type") || "").includes("application/pdf"));
+      const buf = Buffer.from(await res.arrayBuffer());
+      assert.equal(buf.subarray(0, 5).toString("ascii"), "%PDF-", `Invalid PDF magic bytes for ${pdfPath}`);
+    }
+
+    try {
+      await cdp.eval(`window.dispatchEvent(new Event('beforeprint'))`);
+      await cdp.send("Emulation.setEmulatedMedia", { media: "print" });
+      await new Promise((r) => setTimeout(r, 150));
+      const cvPrint = await cdp.eval(`(() => ({
+        allOpen: [...document.querySelectorAll('details.cv-section-details')].every((d) => d.open === true),
+        cvItemVisibility: getComputedStyle(document.querySelector('.cv-item:nth-of-type(n+6)')).contentVisibility,
+        barDisplay: getComputedStyle(document.querySelector('.cv-download-bar')).display,
+        navDisplay: getComputedStyle(document.querySelector('.cv-nav-bar')).display,
+      }))()`);
+      assert.equal(cvPrint.allOpen, true, "beforeprint must open all details.cv-section-details");
+      assert.equal(cvPrint.cvItemVisibility, "visible", "@media print must reset .cv-item content-visibility");
+      assert.equal(cvPrint.barDisplay, "none");
+      assert.equal(cvPrint.navDisplay, "none");
+    } finally {
+      await cdp.send("Emulation.setEmulatedMedia", { media: "screen" });
+      await cdp.eval(`window.dispatchEvent(new Event('afterprint'))`);
+    }
+
+    const restoredClosed = await cdp.eval(
+      `[...document.querySelectorAll('details.cv-section-details')].every((d) => d.open === false)`,
+    );
+    assert.equal(restoredClosed, true, "afterprint must restore previously collapsed details.cv-section-details");
+
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/publications/`);
+    try {
+      await cdp.send("Emulation.setEmulatedMedia", { media: "print" });
+      await new Promise((r) => setTimeout(r, 150));
+      const pubPrint = await cdp.eval(`(() => ({
+        groupVisibility: getComputedStyle(document.querySelector('.pub-year-group:nth-of-type(n+3)')).contentVisibility,
+        filterDisplay: getComputedStyle(document.querySelector('.pub-filter-container')).display,
+        yearNavDisplay: getComputedStyle(document.querySelector('.pub-year-nav')).display,
+      }))()`);
+      assert.equal(pubPrint.groupVisibility, "visible", "@media print must reset .pub-year-group content-visibility");
+      assert.equal(pubPrint.filterDisplay, "none");
+      assert.equal(pubPrint.yearNavDisplay, "none");
+    } finally {
+      await cdp.send("Emulation.setEmulatedMedia", { media: "screen" });
+    }
+  });
+
+  it("contains zero Nick Higham WordPress patterns across all built routes", async () => {
+    await cdp.send("Emulation.setDeviceMetricsOverride", {
+      width: 1280,
+      height: 800,
+      deviceScaleFactor: 1,
+      mobile: false,
+    });
+    const routes = [
+      "/",
+      "/work/",
+      "/publications/",
+      "/cv/",
+      "/posts/",
+      "/kinds/",
+      "/kinds/note/",
+      "/kinds/talk/",
+      "/posts/2026-06-15-neural-surrogates-shallow-water-equations/",
+      "/posts/2014-04-28-egu2014-global-modelling-surface-internal-tides/",
+      "/posts/2013-06-21-ams19-global-modelling-surface-internal-tides/",
+    ];
+    for (const route of routes) {
+      await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}${route}`);
+      const audit = await cdp.eval(`(() => {
+        const main = document.querySelector('main.main');
+        const parentCols = main?.parentElement ? getComputedStyle(main.parentElement).gridTemplateColumns : '';
+        const inputs = [...document.querySelectorAll('input')].map((i) => ({ id: i.id, type: i.type }));
+        const hasWhatIs = [...document.querySelectorAll('a')].some((a) => /\\bWhat Is\\b/.test(a.textContent));
+        return {
+          forbiddenNodes: document.querySelectorAll('aside, #secondary, .widget-area, .sidebar, .widget_recent_entries, .widget_archive, .widget_categories, input[type="email"]').length,
+          parentCols,
+          inputs,
+          hasMathJax: typeof window.MathJax !== 'undefined',
+          hasWhatIs,
+        };
+      })()`);
+      assert.equal(audit.forbiddenNodes, 0, `Forbidden WP/sidebar widget found on ${route}`);
+      assert.ok(!audit.parentCols.includes(" "), `Multi-column sidebar wrapper found on ${route}: ${audit.parentCols}`);
+      assert.equal(audit.hasMathJax, false, `Unexpected MathJax on ${route}`);
+      assert.equal(audit.hasWhatIs, false, `Unexpected 'What Is' series link on ${route}`);
+      for (const inp of audit.inputs) {
+        assert.ok(route === "/publications/" && inp.id === "pubFilterInput", `Unexpected input on ${route}: ${JSON.stringify(inp)}`);
+      }
+    }
+  });
+
+  it("scrolls long KaTeX equations and --buildDrafts wide tables locally on 375x812 mobile", async () => {
+    await cdp.send("Emulation.setDeviceMetricsOverride", {
+      width: 375,
+      height: 812,
+      deviceScaleFactor: 1,
+      mobile: true,
+    });
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/posts/2026-06-15-neural-surrogates-shallow-water-equations/`);
+    const katexScroll = await cdp.eval(`(() => {
+      const blocks = [...document.querySelectorAll('.katex-display')];
+      return {
+        count: blocks.length,
+        allOverflowAuto: blocks.every((b) => getComputedStyle(b).overflowX === 'auto'),
+        scrollWidth: document.documentElement.scrollWidth,
+        innerWidth: window.innerWidth,
+      };
+    })()`);
+    assert.ok(katexScroll.count > 0, "Expected .katex-display blocks on published math note");
+    assert.equal(katexScroll.allOverflowAuto, true);
+    assert.ok(katexScroll.scrollWidth <= 375, `KaTeX note overflowed 375px: ${katexScroll.scrollWidth}`);
+
+    const draftsDir = fs.mkdtempSync(path.join(REPO_ROOT, "_tmp_hugo_drafts_"));
+    let draftServer;
+    try {
+      draftServer = await startStaticServer(draftsDir);
+      await runHugoBuild(draftsDir, draftServer.baseUrl, ["--buildDrafts"]);
+      await navigateAndCheckErrors(
+        cdp,
+        `${draftServer.baseUrl}/posts/2026-09-24-openifs-mass-conservation-stochastic-rounding/`,
+      );
+      const tableCheck = await cdp.eval(`(() => {
+        const tables = [...document.querySelectorAll('.post-content table')];
+        const td = tables[0]?.querySelector('td');
+        let tdTabular = false;
+        let tdDelta = 999;
+        if (td) {
+          const cs = getComputedStyle(td);
+          tdTabular = cs.fontVariantNumeric.includes('tabular-nums');
+          const probe = document.createElement('span');
+          probe.style.position = 'fixed';
+          probe.style.visibility = 'hidden';
+          probe.style.whiteSpace = 'nowrap';
+          probe.style.fontFamily = cs.fontFamily;
+          probe.style.fontSize = cs.fontSize;
+          probe.style.fontWeight = cs.fontWeight;
+          probe.style.fontVariantNumeric = cs.fontVariantNumeric;
+          probe.textContent = '1111';
+          document.body.appendChild(probe);
+          const r1 = document.createRange();
+          r1.selectNodeContents(probe);
+          const w1 = r1.getBoundingClientRect().width;
+          probe.textContent = '8888';
+          const r8 = document.createRange();
+          r8.selectNodeContents(probe);
+          const w8 = r8.getBoundingClientRect().width;
+          probe.remove();
+          tdDelta = Math.abs(w1 - w8);
+        }
+        return {
+          tableCount: tables.length,
+          allBlockAuto: tables.every((t) => {
+            const cs = getComputedStyle(t);
+            return cs.display === 'block' && cs.overflowX === 'auto';
+          }),
+          scrollWidth: document.documentElement.scrollWidth,
+          innerWidth: window.innerWidth,
+          tdTabular,
+          tdDelta,
+        };
+      })()`);
+      assert.ok(tableCheck.tableCount > 0, "Expected wide <table> in drafted OpenIFS post");
+      assert.equal(tableCheck.allBlockAuto, true);
+      assert.ok(tableCheck.scrollWidth <= 375, `Drafted table overflowed 375px: ${tableCheck.scrollWidth}`);
+      assert.equal(tableCheck.tdTabular, true);
+      assert.ok(tableCheck.tdDelta <= 0.25, `table td glyph width delta ${tableCheck.tdDelta} > 0.25px`);
+    } finally {
+      try { draftServer?.server?.close(); } catch {}
+      fs.rmSync(draftsDir, { recursive: true, force: true });
+    }
   });
 });

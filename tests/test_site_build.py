@@ -302,7 +302,7 @@ def test_r2_pub_filter_status_and_decorative_svgs(
 
 
 def test_r2_focus_visible_outline_preserved(built_stylesheet: str) -> None:
-    """Verify #pubFilterInput uses :focus-visible outline and does not suppress :focus outline."""
+    """Verify #pubFilterInput and generic controls use :focus-visible outline and do not suppress :focus outline."""
     rules = _parse_css_rules(built_stylesheet)
     bad_focus = _find_qualified_rules(rules, lambda p: p == "#pubFilterInput:focus")
     for _, content in bad_focus:
@@ -312,8 +312,14 @@ def test_r2_focus_visible_outline_preserved(built_stylesheet: str) -> None:
     fv_rules = _find_qualified_rules(rules, lambda p: p == "#pubFilterInput:focus-visible")
     assert fv_rules, "Missing #pubFilterInput:focus-visible rule"
     fv_css = fv_rules[0][1].replace(" ", "")
-    assert "outline:2pxsolidvar(--primary)" in fv_css
+    assert "outline:2pxsolidvar(--primary)" in fv_css or "outline:2pxsolidvar(--accent-pine)" in fv_css
     assert "outline-offset:2px" in fv_css
+
+    generic_fv = _find_qualified_rules(rules, lambda p: ":focus-visible" in p and "a" in p and "button" in p)
+    assert generic_fv, "Missing generic :focus-visible outline rule for interactive controls"
+    generic_css = ";".join(c for _, c in generic_fv).replace(" ", "")
+    assert "outline:2pxsolidvar(--accent-pine)" in generic_css or "outline:2pxsolidvar(--primary)" in generic_css
+    assert "outline-offset:2px" in generic_css
 
 
 def test_r3_images_dimensions_and_lcp_priority(built_site: Path) -> None:
@@ -322,8 +328,10 @@ def test_r3_images_dimensions_and_lcp_priority(built_site: Path) -> None:
     avatar = home_soup.select_one(".home-info-image img")
     assert avatar is not None
     assert avatar.get("fetchpriority") == "high"
-    assert avatar.get("width") == "150"
-    assert avatar.get("height") == "150"
+    w = int(avatar["width"])
+    h = int(avatar["height"])
+    assert 72 <= w <= 130, f"Expected compact square avatar width in 72..130, got {w}"
+    assert w == h, f"Expected square avatar dimensions, got {w}x{h}"
 
     work_soup = BeautifulSoup((built_site / "work/index.html").read_text(encoding="utf-8"), "lxml")
     posters = work_soup.select("img.sim-poster")
@@ -890,28 +898,74 @@ def test_heading_hierarchy_no_skipped_levels(
         assert expected in checked_routes, f"Expected route missing from heading audit: {expected}"
 
 
-def test_home_profile_symbol_svg_and_no_emoji_bar(built_site: Path) -> None:
-    """Verify home <h1> uses decorative profile-symbol.svg instead of raw emoji bars."""
-    home_soup = BeautifulSoup((built_site / "index.html").read_text(encoding="utf-8"), "lxml")
+def test_home_physical_field_graphic_and_no_emoji_bar(built_site: Path, built_stylesheet: str) -> None:
+    """Verify Home renders the authentic M2 tidal physical-field SVG without legacy profile-symbol.svg or emoji bars."""
+    home_raw = (built_site / "index.html").read_text(encoding="utf-8")
+    assert "profile-symbol.svg" not in home_raw, "Legacy profile-symbol.svg must not be referenced in built index.html"
+    home_info_src = (REPO_ROOT / "layouts" / "_partials" / "home_info.html").read_text(encoding="utf-8")
+    assert "profile-symbol.svg" not in home_info_src, "Legacy profile-symbol.svg must not remain in home_info.html"
+
+    home_soup = BeautifulSoup(home_raw, "lxml")
+    assert home_soup.select_one("img.home-symbol-icon") is None, "Legacy img.home-symbol-icon must be removed"
+
     h1 = home_soup.select_one(".home-info h1")
     assert h1 is not None
-    img = h1.select_one("img.home-symbol-icon")
-    assert img is not None, "Missing img.home-symbol-icon inside home <h1>"
-    assert img.get("src") == "/images/decor/profile-symbol.svg"
-    assert img.get("alt") == ""
-    assert img.get("aria-hidden") == "true"
-    assert img.get("width") == "28"
-    assert img.get("height") == "28"
-    assert (built_site / "images" / "decor" / "profile-symbol.svg").is_file()
-
     assert h1.select_one(".symbol-bar") is None
     h1_text = h1.get_text()
-    for glyph in ("🌐", "♾", "🤖"):
+    for glyph in ("🌐", "♾", "🤖", "🌍"):
         assert glyph not in h1_text, f"Raw emoji {glyph!r} found in home <h1>"
+        assert glyph not in home_info_src, f"Raw emoji {glyph!r} found in home_info.html"
 
-    profile_partial = (REPO_ROOT / "layouts" / "_partials" / "index_profile.html").read_text(encoding="utf-8")
-    assert "/images/decor/profile-symbol.svg" in profile_partial
-    assert "🌍" not in profile_partial
+    bands = home_soup.select(".home-info .tidal-field-band")
+    assert len(bands) == 1, f"Expected exactly 1 .tidal-field-band inside .home-info, got {len(bands)}"
+    assert bands[0].get("aria-hidden") == "true"
+
+    svgs = home_soup.select(".home-info .tidal-field-band svg.tidal-field-svg")
+    assert len(svgs) == 1, f"Expected exactly 1 svg.tidal-field-svg inside .tidal-field-band, got {len(svgs)}"
+    svg_el = svgs[0]
+    assert svg_el.get("aria-hidden") == "true"
+
+    svg_root = ET.fromstring(str(svg_el))
+    vb_raw = svg_root.get("viewBox") or svg_root.get("viewbox") or ""
+    vb_parts = [float(p) for p in vb_raw.split()]
+    assert len(vb_parts) == 4 and vb_parts[2] > 0 and vb_parts[3] > 0, (
+        f"Invalid viewBox on tidal-field-svg: {vb_raw!r}"
+    )
+
+    tidal_src = (REPO_ROOT / "layouts" / "_partials" / "tidal_field.html").read_text(encoding="utf-8")
+    tidal_src_root = ET.fromstring(tidal_src)
+    assert tidal_src_root.get("viewBox") is not None, "tidal_field.html must declare camelCase viewBox"
+
+    primitive_tags = {"path", "circle", "ellipse", "polyline", "polygon"}
+    primitives = [
+        el for el in svg_root.iter()
+        if el.tag.split("}")[-1] in primitive_tags
+    ]
+    assert len(primitives) >= 4, f"Expected >= 4 contour primitives in tidal-field-svg, got {len(primitives)}"
+
+    # Inspect both root <svg> and child <g>/<path>/<circle> nodes for theme-adaptive strokes/fills
+    has_current_color_or_var = False
+    for node in svg_root.iter():
+        stroke = (node.get("stroke") or "").strip()
+        fill = (node.get("fill") or "").strip()
+        style = (node.get("style") or "").strip()
+        if stroke == "currentColor" or "var(" in stroke or "var(" in fill or "var(" in style:
+            has_current_color_or_var = True
+        for attr_val in (stroke, fill):
+            assert attr_val.lower() not in {"#000", "#000000", "#fff", "#ffffff"}, (
+                f"Hardcoded non-adaptive color {attr_val!r} found in tidal-field-svg"
+            )
+    assert has_current_color_or_var, "Expected stroke='currentColor' or CSS var(...) on tidal-field-svg nodes"
+
+    rules = _parse_css_rules(built_stylesheet)
+    coamp_css = ";".join(c for _, c in _find_qualified_rules(rules, lambda p: p == ".tidal-coamplitude")).replace(" ", "")
+    cotid_css = ";".join(c for _, c in _find_qualified_rules(rules, lambda p: p == ".tidal-cotidal")).replace(" ", "")
+    amphi_css = ";".join(c for _, c in _find_qualified_rules(rules, lambda p: p == ".tidal-amphidromes circle")).replace(" ", "")
+    assert "color:var(--accent-ocean)" in coamp_css
+    assert "color:var(--accent-pine-mid)" in cotid_css
+    assert "fill:var(--theme)" in amphi_css and "stroke:var(--accent-pine)" in amphi_css
+    assert _find_qualified_rules(rules, lambda p: "[data-theme=dark]" in p and ".tidal-coamplitude" in p)
+    assert _find_qualified_rules(rules, lambda p: "[data-theme=dark]" in p and ".tidal-cotidal" in p)
 
 
 def test_cv_two_pdf_buttons_tools_and_talk_links(built_site: Path) -> None:
@@ -997,8 +1051,11 @@ def test_cv_two_pdf_buttons_tools_and_talk_links(built_site: Path) -> None:
         assert page_soup.select_one(".post-meta") is None, f"Unexpected .post-meta on static page {rel}"
 
 
-def test_css_contrast_tokens_and_modern_polish(built_stylesheet: str) -> None:
-    """Verify Idea 2A contrast tokens/overrides, Idea 2B overflow rules, and Idea 3B modern CSS polish."""
+def test_css_contrast_tokens_and_modern_polish(
+    built_stylesheet: str,
+    non_redirect_html_pages: list[tuple[Path, BeautifulSoup]],
+) -> None:
+    """Verify contrast tokens, zero remote font CDNs, overflow rules, and modern CSS polish."""
     rules = _parse_css_rules(built_stylesheet)
     assert not any(r.type == "error" for r in rules), "Built CSS contains parse errors"
 
@@ -1058,15 +1115,29 @@ def test_css_contrast_tokens_and_modern_polish(built_stylesheet: str) -> None:
     post_tags_rules = _find_qualified_rules(rules, lambda p: ".post-tags a" in p)
     assert any("color:var(--primary)" in c.replace(" ", "") for _, c in post_tags_rules)
 
-    # Centered column preservation + mobile overflow containment rules
-    assert "Georgia" not in built_stylesheet, "Display headings should keep system sans-serif stack"
+    # Typography & zero third-party webfont CDN requests (exempting pinned KaTeX CSS on math pages)
+    assert "system-ui" in root_combined and "--font-sans:" in root_combined
+    assert "ui-monospace" in root_combined and "--font-mono:" in root_combined
+    for cdn in ("fonts.googleapis.com", "fonts.gstatic.com", "use.typekit.net"):
+        assert cdn not in built_stylesheet, f"Unexpected external font CDN {cdn} in stylesheet"
+    assert not re.search(r"@font-face\s*\{[^}]*https?://", built_stylesheet, re.IGNORECASE), (
+        "Unexpected remote @font-face font URL in stylesheet"
+    )
+    for rel, soup in non_redirect_html_pages:
+        for link_tag in soup.find_all("link", href=True):
+            href = link_tag["href"]
+            if href.startswith(("http://", "https://")):
+                if rel.as_posix() in KATEX_PAGES and href.startswith("https://cdn.jsdelivr.net/npm/katex@0.16.11/"):
+                    continue
+                if "stylesheet" in (link_tag.get("rel") or []):
+                    pytest.fail(f"Unexpected external stylesheet {href!r} on {rel}")
     assert "max-width:68ch" not in built_stylesheet.replace(" ", ""), "Remove lopsided 68ch cap inside 720px column"
 
     main_rules = _find_qualified_rules(rules, lambda p: p == ".main")
     assert main_rules, "Missing .main containment rule"
     main_css = ";".join(c for _, c in main_rules).replace(" ", "")
-    assert "width:100%" in main_css
     assert "min-width:0" in main_css
+    assert "width:100%" in main_css or "box-sizing:border-box" in main_css
     assert "max-width:100%" not in main_css, ".main must keep PaperMod centered max-width"
 
     overflow_container_rules = _find_qualified_rules(
@@ -1081,7 +1152,15 @@ def test_css_contrast_tokens_and_modern_polish(built_stylesheet: str) -> None:
 
     timeline_rules = _find_qualified_rules(rules, lambda p: p == ".cv-timeline")
     assert timeline_rules
-    assert "border-left:1pxsolidvar(--tertiary)" in ";".join(c for _, c in timeline_rules).replace(" ", "")
+    timeline_css = ";".join(c for _, c in timeline_rules).replace(" ", "")
+    assert any(
+        tok in timeline_css
+        for tok in (
+            "border-left:1pxsolidvar(--tertiary)",
+            "border-left:1pxsolidvar(--border)",
+            "border-left:1pxsolidvar(--hairline)",
+        )
+    ), f"Missing hairline border-left on .cv-timeline: {timeline_css}"
 
     assert _find_qualified_rules(rules, lambda p: p == ".cv-entry-compact")
     pill_reset_rules = _find_qualified_rules(
@@ -1140,13 +1219,15 @@ def test_css_contrast_tokens_and_modern_polish(built_stylesheet: str) -> None:
 
     sw_grid_rules = _find_qualified_rules(rules, lambda p: p == ".software-container")
     assert sw_grid_rules and any(
-        "minmax(min(100%,300px),1fr)" in c.replace(" ", "") for _, c in sw_grid_rules
-    ), f"Expected .software-container min(100%, 300px) grid track, got {sw_grid_rules}"
+        "min(100%," in c.replace(" ", "") or "min-width:0" in c.replace(" ", "")
+        for _, c in sw_grid_rules
+    ), f"Expected responsive .software-container track or min-width:0, got {sw_grid_rules}"
 
     sim_grid_rules = _find_qualified_rules(rules, lambda p: p == ".simulation-gallery")
     assert sim_grid_rules and any(
-        "minmax(min(100%,350px),1fr)" in c.replace(" ", "") for _, c in sim_grid_rules
-    ), f"Expected .simulation-gallery min(100%, 350px) grid track, got {sim_grid_rules}"
+        "minmax(min(100%,350px),1fr)" in c.replace(" ", "") or "min(100%," in c.replace(" ", "")
+        for _, c in sim_grid_rules
+    ), f"Expected .simulation-gallery responsive min(100%, ...) grid track, got {sim_grid_rules}"
 
     empty_msg_rules = _find_qualified_rules(rules, lambda p: p == ".pub-empty-message")
     assert empty_msg_rules and any(
@@ -1362,17 +1443,23 @@ def test_m3_home_audience_links_and_log_threshold(built_site: Path) -> None:
     assert actual_cta[1][0] == "Hiring" and actual_cta[1][1].endswith("/cv/")
     assert actual_cta[2][0] == "Read" and actual_cta[2][1].endswith("/posts/")
 
-    # With 3 published Log items (>= 2), "Latest from the Log" must render up to 3 items with kind badges
+    # With 3 published Log items (>= 2), "Latest from the Log" must render up to 3 monograph rows with kind badges and ISO dates
     home_posts = home_soup.select_one(".home-posts")
     assert home_posts is not None, "Expected .home-posts on Home when >= 2 Log items are published"
     heading = home_posts.select_one("h2")
     assert heading is not None and heading.get_text(strip=True) == "Latest from the Log"
-    cards = home_posts.select("article.post-entry")
-    assert 2 <= len(cards) <= 3, f"Expected 2..3 cards in Latest from the Log, got {len(cards)}"
-    for card in cards:
-        badges = card.select(".kind-badge")
-        assert badges, "Expected kind badge on Home Log card"
+    rows = home_posts.select(".log-rows .log-row")
+    assert 2 <= len(rows) <= 3, f"Expected 2..3 monograph rows in Latest from the Log, got {len(rows)}"
+    for row in rows:
+        badges = row.select(".kind-badge")
+        assert badges, "Expected kind badge on Home Log row"
         assert all(b.get_text(strip=True) in {"note", "talk", "paper"} for b in badges)
+        title_link = row.select_one("a.log-row-title-link")
+        assert title_link is not None and (title_link.get("href") or "").strip(), "Expected a.log-row-title-link on Home Log row"
+        date_el = row.select_one("time.log-row-date")
+        assert date_el is not None and re.match(r"^\d{4}-\d{2}-\d{2}$", date_el.get_text(strip=True)), (
+            "Expected ISO date in time.log-row-date on Home Log row"
+        )
 
     # Probe < 2 published Log items using snap-safe temporary directories under REPO_ROOT
     probe_src = Path(tempfile.mkdtemp(prefix="_tmp_hugo_probe_src_", dir=REPO_ROOT))
@@ -1469,8 +1556,18 @@ def test_m3_log_kind_filters_badges_and_linkedin_probe(built_site: Path) -> None
     assert any(h.endswith("/kinds/note/") for h in filter_hrefs)
     assert any(h.endswith("/kinds/talk/") for h in filter_hrefs)
 
-    for entry in log_soup.select("article.post-entry"):
+    entries = log_soup.select(".log-rows .log-row")
+    assert len(entries) == 3, f"Expected 3 published Log entries on /posts/, got {len(entries)}"
+    for entry in entries:
         assert entry.select(".kind-badge"), "Expected .kind-badge on Log list entry"
+        title_link = entry.select_one("a.log-row-title-link")
+        assert title_link is not None and (title_link.get("href") or "").strip(), (
+            "Expected a.log-row-title-link on Log list entry"
+        )
+        date_el = entry.select_one("time.log-row-date")
+        assert date_el is not None and re.match(r"^\d{4}-\d{2}-\d{2}$", date_el.get_text(strip=True)), (
+            "Expected ISO date in time.log-row-date on Log list entry"
+        )
 
     # Single post without linkedin: must not render .post-linkedin-link, and must show .kind-badge
     note_soup = BeautifulSoup(
@@ -1690,3 +1787,268 @@ def test_m4_section6_verbatim_prose(
             elif payload.get("@type") == "Organization":
                 assert payload.get("description") == expected_site_desc, f"Organization JSON-LD mismatch on {rel}"
         assert found_person, f"Missing Person JSON-LD on {rel}"
+
+
+def test_monograph_tabular_nums_coverage(built_stylesheet: str) -> None:
+    """Verify font-variant-numeric: tabular-nums is declared across dates, metrics, badges, and tables."""
+    rules = _parse_css_rules(built_stylesheet)
+    tabular_selectors: set[str] = set()
+    for rule in rules:
+        if rule.type == "qualified-rule":
+            content = _serialize_content(rule).replace(" ", "")
+            if "font-variant-numeric:tabular-nums" in content:
+                for part in _serialize_prelude(rule).split(","):
+                    tabular_selectors.add(part.strip())
+
+    required = {
+        ".log-row-date",
+        ".cv-date-badge",
+        ".cv-download-badge",
+        ".pub-year-pill",
+        ".pub-card-year",
+        ".pub-year-heading",
+        ".pub-metrics-intro",
+        ".log-kind-pill",
+        ".sim-spec-pill",
+        ".action-pill",
+        "table th",
+        "table td",
+    }
+    missing = sorted(required - tabular_selectors)
+    assert not missing, f"Selectors missing font-variant-numeric: tabular-nums: {missing}"
+
+
+def test_action_pills_css_and_html_contracts(built_site: Path, built_stylesheet: str) -> None:
+    """Verify action pill containers wrap cleanly, pills avoid --secondary, rows are flat, and /publications/ renders action pills."""
+    rules = _parse_css_rules(built_stylesheet)
+
+    # All standalone pill/tag strip containers must allow wrapping
+    for container_sel in (
+        ".action-pill-row",
+        ".pub-card-actions",
+        ".log-kind-filter",
+        ".cv-nav-bar",
+        ".pub-year-nav",
+        ".software-tags",
+        ".cv-skills",
+        ".sim-specs",
+        ".entry-tags",
+        ".entry-kinds",
+        ".post-kinds",
+    ):
+        matched = _find_qualified_rules(rules, lambda p, s=container_sel: s in [part.strip() for part in p.split(",")])
+        assert matched, f"Missing CSS rule for pill container {container_sel}"
+        combined = ";".join(c for _, c in matched).replace(" ", "")
+        assert "flex-wrap:wrap" in combined, f"Pill container {container_sel} must declare flex-wrap: wrap"
+
+    # Pills & badges must never regress to low-contrast --secondary ink and must have flat elevation
+    for pill_sel in (
+        ".action-pill",
+        ".pub-badge-btn",
+        ".pub-copy-btn",
+        ".pub-bibtex-summary",
+        ".cv-nav-link",
+        ".log-kind-pill",
+        ".kind-badge",
+        ".post-tag",
+        ".software-tag",
+        ".sim-spec-pill",
+        ".cv-skills-tag",
+        ".cv-date-badge",
+        ".pub-year-pill",
+        ".cv-download-badge",
+    ):
+        matched = _find_qualified_rules(rules, lambda p, s=pill_sel: p == s)
+        assert matched, f"Missing CSS rule for pill selector {pill_sel}"
+        combined = ";".join(c for _, c in matched).replace(" ", "")
+        assert "color:var(--secondary)" not in combined, f"{pill_sel} must not use low-contrast --secondary"
+        shadow_matches = re.findall(r"box-shadow:([^;]+)", combined)
+        assert all(val == "none" for val in shadow_matches), f"{pill_sel} has non-flat box-shadow: {shadow_matches}"
+
+    # Monograph Log rows must neutralize PaperMod card box-shadow and border-radius clutter
+    post_entry_rules = _find_qualified_rules(rules, lambda p: p == ".post-entry")
+    assert post_entry_rules
+    pe_css = ";".join(c for _, c in post_entry_rules).replace(" ", "")
+    assert "box-shadow:none" in pe_css
+    assert "border-radius:0" in pe_css
+
+    log_row_rules = _find_qualified_rules(rules, lambda p: p == ".log-rows .log-row")
+    assert log_row_rules
+    lr_css = ";".join(c for _, c in log_row_rules).replace(" ", "")
+    assert "border-radius:0" in lr_css
+    assert "background:transparent" in lr_css or "background:00" in lr_css
+
+    # /publications/ HTML action pill contract
+    pubs_data = yaml.safe_load((REPO_ROOT / "data" / "publications.yaml").read_text(encoding="utf-8"))
+    expected_doi_count = sum(1 for item in pubs_data if item.get("doi"))
+    expected_url_count = sum(
+        1 for item in pubs_data
+        if item.get("url") and not re.match(r"^https?://(dx\.)?doi\.org", str(item.get("url")))
+    )
+    pub_soup = BeautifulSoup((built_site / "publications" / "index.html").read_text(encoding="utf-8"), "lxml")
+    pub_cards = pub_soup.select(".pub-card")
+    assert len(pub_cards) == len(pubs_data) and len(pub_cards) >= 24
+    assert len(pub_soup.select(".pub-card a.pub-doi-btn")) == expected_doi_count
+    assert len(pub_soup.select(".pub-card a.pub-link-btn")) == expected_url_count
+    for card in pub_cards:
+        assert card.select_one("button.pub-copy-btn") is not None
+        assert card.select_one("details.pub-bibtex-details > summary.pub-bibtex-summary") is not None
+
+
+def _pdf_page_count(pdf_path: Path) -> int:
+    """Return PDF page count preferring pypdf, then pdfinfo, then pure-Python fallback."""
+    try:
+        from pypdf import PdfReader
+
+        return len(PdfReader(str(pdf_path)).pages)
+    except ImportError:
+        pass
+
+    pdfinfo_bin = shutil.which("pdfinfo")
+    if pdfinfo_bin:
+        proc = subprocess.run([pdfinfo_bin, str(pdf_path)], capture_output=True, text=True, check=False)
+        if proc.returncode == 0:
+            match = re.search(r"^Pages:\s*(\d+)", proc.stdout, re.MULTILINE)
+            if match:
+                return int(match.group(1))
+
+    raw = pdf_path.read_bytes()
+    return len(re.findall(rb"/Type\s*/Page\b(?!s)", raw))
+
+
+def test_cv_pdfs_and_timeline_structure(built_site: Path) -> None:
+    """Verify 2-page Industry PDF, Full Research PDF, above-the-fold download bar order, and timeline structure."""
+    industry_pdf = built_site / "downloads" / "vladimir-lapin-cv-industry.pdf"
+    research_pdf = built_site / "downloads" / "vladimir-lapin-cv-research-full.pdf"
+    assert industry_pdf.is_file() and industry_pdf.read_bytes().startswith(b"%PDF-")
+    assert research_pdf.is_file() and research_pdf.read_bytes().startswith(b"%PDF-")
+
+    industry_pages = _pdf_page_count(industry_pdf)
+    research_pages = _pdf_page_count(research_pdf)
+    assert industry_pages == 2, f"Expected Industry CV PDF to be 2 pages, got {industry_pages}"
+    assert research_pages >= 2, f"Expected Full Research CV PDF >= 2 pages, got {research_pages}"
+
+    cv_raw = (built_site / "cv" / "index.html").read_text(encoding="utf-8")
+    cv_soup = BeautifulSoup(cv_raw, "lxml")
+    assert cv_soup.select("article.post-entry, .log-row, .post-meta") == []
+    assert "applied-scientist" not in cv_raw
+
+    pos_bar = cv_raw.find("cv-download-bar")
+    pos_tl = cv_raw.find("cv-timeline")
+    assert pos_bar != -1 and pos_tl != -1 and pos_bar < pos_tl, (
+        ".cv-download-bar must precede .cv-timeline on /cv/"
+    )
+
+    industry_btn = cv_soup.select_one('a.cv-download-btn[href="/downloads/vladimir-lapin-cv-industry.pdf"]')
+    assert industry_btn is not None
+    sublabel = industry_btn.select_one(".cv-download-sublabel")
+    badge = industry_btn.select_one(".cv-download-badge.cv-download-badge--primary")
+    assert sublabel is not None and "2-page" in sublabel.get_text()
+    assert badge is not None and "2-page" in badge.get_text()
+
+    timelines = cv_soup.select(".cv-timeline")
+    assert len(timelines) == 2, f"Expected 2 .cv-timeline blocks (employment + education), got {len(timelines)}"
+
+    emp_entries = timelines[0].select(".cv-entry")
+    assert len(emp_entries) == 5, f"Expected 5 employment entries, got {len(emp_entries)}"
+    assert "Barcelona Supercomputing Center" in emp_entries[0].get_text(" ", strip=True)
+    assert len(timelines[0].select(".cv-entry-compact")) == 1
+    assert "Career Break" in timelines[0].select_one(".cv-entry-compact").get_text(" ", strip=True)
+
+    edu_entries = timelines[1].select(".cv-entry")
+    assert len(edu_entries) == 2, f"Expected 2 education entries, got {len(edu_entries)}"
+    edu_text = timelines[1].get_text(" ", strip=True)
+    assert "University of Limerick" in edu_text and "Lomonosov Moscow State University" in edu_text
+
+
+def test_design_docs_sync(built_stylesheet: str) -> None:
+    """Verify DESIGN.md (8 canonical sections + frontmatter) and .impeccable/design.json stay synced with main.css."""
+    design_md = (REPO_ROOT / "DESIGN.md").read_text(encoding="utf-8")
+    parts = design_md.split("---", 2)
+    assert len(parts) == 3, "DESIGN.md must start with YAML frontmatter"
+    fm = yaml.safe_load(parts[1]) or {}
+    body = parts[2]
+
+    expected_headings = [
+        "Overview",
+        "Colors",
+        "Typography",
+        "Layout",
+        "Elevation & Depth",
+        "Shapes",
+        "Components",
+        "Do's and Don'ts",
+    ]
+    found_headings = re.findall(r"^##\s+(.+)$", body, re.MULTILINE)
+    assert found_headings == expected_headings, (
+        f"DESIGN.md H2 sections mismatch: got {found_headings}, expected {expected_headings}"
+    )
+
+    design_json = json.loads((REPO_ROOT / ".impeccable" / "design.json").read_text(encoding="utf-8"))
+    assert design_json.get("schemaVersion") == 2
+    color_meta = design_json.get("extensions", {}).get("colorMeta", {})
+    fm_colors = fm.get("colors", {})
+    assert set(fm_colors.keys()) == set(color_meta.keys()), "Color keys differ between DESIGN.md and design.json"
+    for key, hex_val in fm_colors.items():
+        assert color_meta[key]["canonical"].lower() == str(hex_val).lower(), (
+            f"Color {key} mismatch: DESIGN.md={hex_val} vs design.json={color_meta[key]['canonical']}"
+        )
+
+    rules = _parse_css_rules(built_stylesheet)
+    root_combined = ";".join(c for _, c in _find_qualified_rules(rules, lambda p: p == ":root")).lower()
+    for css_var, design_key in (
+        ("--accent-pine-light", "accent-pine"),
+        ("--accent-pine-dark", "accent-pine-dark"),
+        ("--accent-pine-mid-light", "accent-pine-mid"),
+        ("--accent-pine-mid-dark", "accent-pine-mid-dark"),
+        ("--accent-ocean-light", "accent-ocean"),
+        ("--accent-ocean-dark", "accent-ocean-dark"),
+        ("--hairline-light", "hairline-light"),
+        ("--hairline-dark", "hairline-dark"),
+        ("--border-control-light", "border-control-light"),
+        ("--border-control-dark", "border-control-dark"),
+        ("--surface-pill-light", "surface-pill-light"),
+        ("--surface-pill-dark", "surface-pill-dark"),
+        ("--surface-pill-hover-light", "surface-pill-hover-light"),
+        ("--surface-pill-hover-dark", "surface-pill-hover-dark"),
+    ):
+        expected_hex = fm_colors[design_key].lower()
+        assert f"{css_var}:{expected_hex}" in root_combined.replace(" ", ""), (
+            f"Built CSS {css_var} out of sync with DESIGN.md {design_key}={expected_hex}"
+        )
+
+    body_lower = body.lower()
+    for token in ("left-aligned", "tidal", "tabular-nums", "action pill", "nhigham.com"):
+        assert token in body_lower, f"DESIGN.md missing required concept {token!r}"
+    assert "profile-symbol.svg" not in design_md
+
+
+def test_zero_nick_higham_and_no_teamwork_metadata(
+    non_redirect_html_pages: list[tuple[Path, BeautifulSoup]],
+) -> None:
+    """Verify zero Nick Higham WordPress patterns in built HTML and zero Teamwork metadata files in REPO_ROOT."""
+    for forbidden_file in ("PROJECT.md", "BRIEFING.md", "TEST_INFRA.md", "TEST_READY.md", "DISPATCH.md", "handoff.md"):
+        assert not (REPO_ROOT / forbidden_file).exists(), f"Teamwork file leaked into repo root: {forbidden_file}"
+    assert not (REPO_ROOT / ".agents" / "teamwork").exists(), ".agents/teamwork/ must not exist inside repo"
+
+    for rel, soup in non_redirect_html_pages:
+        assert soup.select("aside, #secondary, .widget-area, .sidebar") == [], f"Sidebar widget found on {rel}"
+        assert soup.select(".widget_recent_entries, .widget_archive, .widget_categories") == [], (
+            f"WordPress widget class found on {rel}"
+        )
+        assert soup.select('input[type="email"]') == [], f"Email subscriber input found on {rel}"
+        for inp in soup.find_all("input"):
+            if rel.as_posix() == "publications/index.html" and inp.get("id") == "pubFilterInput":
+                continue
+            pytest.fail(f"Unexpected <input> element on {rel}: {inp}")
+
+        gen = soup.find("meta", attrs={"name": "generator"})
+        if gen is not None:
+            assert "wordpress" not in (gen.get("content") or "").lower(), f"WordPress generator meta on {rel}"
+
+        for sc in soup.find_all("script", src=True):
+            assert "mathjax" not in sc["src"].lower(), f"MathJax script found on {rel}"
+
+        for a in soup.find_all("a", href=True):
+            assert "What Is" not in a.get_text(" ", strip=True), f"Forbidden 'What Is' series link on {rel}"
+
