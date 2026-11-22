@@ -5,7 +5,7 @@ draft: true
 type: "posts"
 math: true
 summary: "Engineering lessons from managing multi-member Earth system model ensembles on MareNostrum 5: orchestrating DAGs with Autosubmit, tuning Lustre striping for NetCDF outputs, and NUMA-aware MPI rank placement."
-tags: ["HPC", "Autosubmit", "MareNostrum 5", "Slurm", "Lustre", "EC-Earth", "Climate Modeling"]
+tags: ["HPC", "Autosubmit", "EC-Earth"]
 ShowToc: true
 TocOpen: false
 aliases:

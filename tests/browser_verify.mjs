@@ -808,24 +808,12 @@ describe("vlap.github.io headless browser verification", () => {
       }
     }
 
-    // Verify <details class="cv-section-details"> starts closed, opens via anchor click, and Tab reachability works into .cv-item:nth-of-type(n+6)
-    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/cv/`);
-    const cvDetailsState = await cdp.eval(`(() => {
-      const details = [...document.querySelectorAll('details.cv-section-details')];
-      return {
-        count: details.length,
-        initiallyClosed: details.every((d) => !d.open),
-        deferredCv: getComputedStyle(document.querySelector('.cv-item:nth-of-type(n+6)')).contentVisibility
-      };
-    })()`);
-    assert.equal(cvDetailsState.count, 2);
-    assert.equal(cvDetailsState.initiallyClosed, true);
+    // Verify /cv/Trainings standalone route uses content-visibility: auto on .cv-item:nth-of-type(n+6) and Tab reachability works
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/cv/trainings/`);
+    const cvDetailsState = await cdp.eval(`(() => ({
+      deferredCv: getComputedStyle(document.querySelector('.cv-item:nth-of-type(n+6)')).contentVisibility
+    }))()`);
     assert.equal(cvDetailsState.deferredCv, "auto");
-
-    await cdp.eval(`document.querySelector('.cv-nav-link[href="#trainings--certifications"]').click()`);
-    await new Promise((r) => setTimeout(r, 250));
-    const openedByNav = await cdp.eval(`document.querySelector('details.cv-section-details[data-cv-section="trainings--certifications"]')?.open`);
-    assert.equal(openedByNav, true, "Clicking #trainings--certifications nav link must open Trainings <details>");
 
     await cdp.eval(`(() => {
       const items = [...document.querySelectorAll('.cv-item')];
@@ -841,7 +829,7 @@ describe("vlap.github.io headless browser verification", () => {
       enteredDeferredCv = await cdp.eval(`Boolean(document.activeElement?.closest('.cv-item:nth-of-type(n+6)'))`);
       if (enteredDeferredCv) break;
     }
-    assert.equal(enteredDeferredCv, true, "Deferred .cv-item:nth-of-type(n+6) must be reachable via sequential Tab");
+    assert.equal(enteredDeferredCv, true, "Deferred .cv-item:nth-of-type(n+6) must be reachable via sequential Tab on /cv/trainings/");
   });
 
   it("keeps SVG rollout labels inside card bounds", async () => {
@@ -1097,7 +1085,7 @@ describe("vlap.github.io headless browser verification", () => {
     }
   });
 
-  it("renders M2 tidal field SVG, monograph Log rows, 3 nav items, 3 Home links, 6 footer social icons, 2 CV PDF buttons, and EGU2014 talk link", async () => {
+  it("renders spherical-grid domain emblem, monograph Log rows, 3 nav items, 3 Home links, 6 footer social icons, 2 CV PDF buttons, and EGU2014 talk link", async () => {
     await cdp.send("Emulation.setDeviceMetricsOverride", {
       width: 1280,
       height: 800,
@@ -1112,44 +1100,36 @@ describe("vlap.github.io headless browser verification", () => {
         await cdp.eval(`document.documentElement.dataset.theme = ${JSON.stringify(theme)}`);
         await new Promise((r) => setTimeout(r, 250));
         themeSnapshots[theme] = await cdp.eval(`(() => {
-          const band = document.querySelector('.home-info .tidal-field-band');
-          const svg = document.querySelector('.home-info .tidal-field-svg');
+          const svg = document.querySelector('.home-info svg.home-domain-emblem');
           const hi = document.querySelector('.home-info')?.getBoundingClientRect();
-          const bandRect = band?.getBoundingClientRect();
           const svgRect = svg?.getBoundingClientRect();
-          const coamp = svg?.querySelector('g.tidal-coamplitude');
-          const cotid = svg?.querySelector('g.tidal-cotidal');
-          const zero = svg?.querySelector('.tidal-cotidal-zero');
-          const amphiCircle = svg?.querySelector('g.tidal-amphidromes circle');
+          const meridians = svg?.querySelector('g.globe-meridians');
+          const stencil = svg?.querySelector('.globe-stencil');
+          const nodes = svg?.querySelector('g.globe-nodes');
           const csSvg = svg ? getComputedStyle(svg) : null;
-          const csCoamp = coamp ? getComputedStyle(coamp) : null;
-          const csCotid = cotid ? getComputedStyle(cotid) : null;
-          const csZero = zero ? getComputedStyle(zero) : null;
-          const csCircle = amphiCircle ? getComputedStyle(amphiCircle) : null;
-          const firstCoPath = coamp?.querySelector('path');
-          const csPath = firstCoPath ? getComputedStyle(firstCoPath) : null;
+          const csMeridians = meridians ? getComputedStyle(meridians) : null;
+          const csStencil = stencil ? getComputedStyle(stencil) : null;
+          const csNodes = nodes ? getComputedStyle(nodes) : null;
+          const firstCircle = meridians?.querySelector('circle');
+          const csCircle = firstCircle ? getComputedStyle(firstCircle) : null;
           return {
             legacyImg: Boolean(document.querySelector('img.home-symbol-icon')),
             legacySrc: Boolean(document.querySelector('[src*="profile-symbol.svg"]')),
-            bandCount: document.querySelectorAll('.home-info .tidal-field-band').length,
-            svgCount: document.querySelectorAll('.home-info .tidal-field-svg').length,
-            bandAriaHidden: band?.getAttribute('aria-hidden'),
+            hasTidalBand: Boolean(document.querySelector('.tidal-field-band')),
+            svgCount: document.querySelectorAll('.home-info svg.home-domain-emblem').length,
             svgAriaHidden: svg?.getAttribute('aria-hidden'),
             viewBox: svg?.getAttribute('viewBox'),
-            primitiveCount: svg ? svg.querySelectorAll('path, circle, ellipse, polyline, polygon').length : 0,
-            bandInBounds: Boolean(hi && bandRect && bandRect.width >= 40 && bandRect.height >= 24 && bandRect.left >= hi.left - 1 && bandRect.right <= hi.right + 1),
-            svgInBounds: Boolean(hi && svgRect && svgRect.width >= 40 && svgRect.height >= 24 && svgRect.left >= hi.left - 1 && svgRect.right <= hi.right + 1),
+            primitiveCount: svg ? svg.querySelectorAll('path, circle, ellipse, line').length : 0,
+            svgInBounds: Boolean(hi && svgRect && svgRect.width >= 36 && svgRect.height >= 36 && svgRect.left >= hi.left - 1 && svgRect.right <= hi.right + 1),
             svgDisplay: csSvg?.display,
             svgVisibility: csSvg?.visibility,
             svgOpacity: csSvg ? Number(csSvg.opacity) : 0,
-            coampColor: csCoamp?.color,
-            coampOpacity: csCoamp ? Number(csCoamp.opacity) : 0,
-            pathStroke: csPath?.stroke,
-            cotidColor: csCotid?.color,
-            cotidOpacity: csCotid ? Number(csCotid.opacity) : 0,
-            zeroColor: csZero?.color,
-            circleFill: csCircle?.fill,
+            meridiansColor: csMeridians?.color,
+            meridiansOpacity: csMeridians ? Number(csMeridians.opacity) : 0,
             circleStroke: csCircle?.stroke,
+            stencilColor: csStencil?.color,
+            stencilOpacity: csStencil ? Number(csStencil.opacity) : 0,
+            nodesColor: csNodes?.color,
           };
         })()`);
       }
@@ -1161,23 +1141,20 @@ describe("vlap.github.io headless browser verification", () => {
       const snap = themeSnapshots[theme];
       assert.equal(snap.legacyImg, false, `Legacy img.home-symbol-icon present in ${theme}`);
       assert.equal(snap.legacySrc, false, `Legacy profile-symbol.svg present in ${theme}`);
-      assert.equal(snap.bandCount, 1);
+      assert.equal(snap.hasTidalBand, false, `Removed .tidal-field-band present in ${theme}`);
       assert.equal(snap.svgCount, 1);
-      assert.equal(snap.bandAriaHidden, "true");
       assert.equal(snap.svgAriaHidden, "true");
       assert.ok(snap.viewBox && snap.viewBox.split(/\s+/).length === 4, `Invalid viewBox: ${snap.viewBox}`);
-      assert.ok(snap.primitiveCount >= 4, `Expected >= 4 contour primitives, got ${snap.primitiveCount}`);
-      assert.equal(snap.bandInBounds, true, `.tidal-field-band out of bounds in ${theme}`);
-      assert.equal(snap.svgInBounds, true, `.tidal-field-svg out of bounds in ${theme}`);
+      assert.ok(snap.primitiveCount >= 8, `Expected >= 8 spherical-grid primitives, got ${snap.primitiveCount}`);
+      assert.equal(snap.svgInBounds, true, `.home-domain-emblem out of bounds in ${theme}`);
       assert.notEqual(snap.svgDisplay, "none");
       assert.notEqual(snap.svgVisibility, "hidden");
-      assert.ok(snap.svgOpacity > 0 && snap.coampOpacity > 0 && snap.cotidOpacity > 0);
-      assert.ok(snap.pathStroke && snap.pathStroke !== "none", `Missing stroke on tidal path: ${snap.pathStroke}`);
-      assert.ok(snap.circleStroke && snap.circleStroke !== "none");
+      assert.ok(snap.svgOpacity > 0 && snap.meridiansOpacity > 0 && snap.stencilOpacity > 0);
+      assert.ok(snap.circleStroke && snap.circleStroke !== "none", `Missing stroke on emblem circle: ${snap.circleStroke}`);
     }
-    assert.notEqual(themeSnapshots.light.coampColor, themeSnapshots.dark.coampColor, "coamplitude color must adapt between light and dark");
-    assert.notEqual(themeSnapshots.light.cotidColor, themeSnapshots.dark.cotidColor, "cotidal color must adapt between light and dark");
-    assert.notEqual(themeSnapshots.light.circleFill, themeSnapshots.dark.circleFill, "amphidrome circle fill must adapt between light and dark");
+    assert.notEqual(themeSnapshots.light.meridiansColor, themeSnapshots.dark.meridiansColor, "meridians color must adapt between light and dark");
+    assert.notEqual(themeSnapshots.light.stencilColor, themeSnapshots.dark.stencilColor, "stencil color must adapt between light and dark");
+    assert.notEqual(themeSnapshots.light.nodesColor, themeSnapshots.dark.nodesColor, "nodes color must adapt between light and dark");
 
     const homeCheck = await cdp.eval(`(() => {
       const h1 = document.querySelector('.home-info h1');
@@ -1247,20 +1224,31 @@ describe("vlap.github.io headless browser verification", () => {
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/cv/`);
     const cvCheck = await cdp.eval(`(() => {
       const btns = [...document.querySelectorAll('.cv-download-btn')];
-      const eguItem = [...document.querySelectorAll('.cv-item')].find((el) => el.textContent.includes('EGU2014'));
-      const eguTalkHref = eguItem?.querySelector('a[href*="/posts/2014-04-28-egu2014"]')?.getAttribute('href') || null;
       return {
         postEntries: document.querySelectorAll('article.post-entry, .log-entry, .log-row').length,
         btnCount: btns.length,
         sublabels: btns.map((b) => b.querySelector('.cv-download-sublabel')?.textContent.trim() || ''),
-        eguTalkHref,
+        navHrefs: [...document.querySelectorAll('.cv-nav-bar a.cv-nav-link')].map((a) => a.getAttribute('href')),
       };
     })()`);
     assert.equal(cvCheck.postEntries, 0);
     assert.equal(cvCheck.btnCount, 2);
     assert.ok(cvCheck.sublabels.every((s) => s.length > 0));
     assert.equal(new Set(cvCheck.sublabels).size, 2);
-    assert.ok(cvCheck.eguTalkHref, "Expected EGU2014 entry on /cv/ to link to its Log talk page");
+    assert.deepEqual(cvCheck.navHrefs, [
+      "#research-experience",
+      "#education",
+      "/cv/trainings/",
+      "/cv/presentations/",
+      "/publications/",
+    ]);
+
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/cv/presentations/`);
+    const eguTalkHref = await cdp.eval(`(() => {
+      const eguItem = [...document.querySelectorAll('.cv-item')].find((el) => el.textContent.includes('EGU2014'));
+      return eguItem?.querySelector('a[href*="/posts/2014-04-28-egu2014"]')?.getAttribute('href') || null;
+    })()`);
+    assert.ok(eguTalkHref, "Expected EGU2014 entry on /cv/presentations/ to link to its Log talk page");
   });
 
   it("highlights live publication matches via CSS.highlights, syncs ?q= URL state, and handles / and Escape shortcuts", async () => {
@@ -1422,7 +1410,7 @@ describe("vlap.github.io headless browser verification", () => {
             const h1 = document.querySelector('.home-info h1');
             const subEl = document.querySelector('.home-subtitle');
             const subRect = subEl?.getBoundingClientRect();
-            const fieldRect = document.querySelector('.home-info .tidal-field-band')?.getBoundingClientRect();
+            const fieldRect = document.querySelector('.home-info svg.home-domain-emblem')?.getBoundingClientRect();
             const range = document.createRange();
             const textNode = [...(h1?.childNodes || [])].find((n) => n.nodeType === Node.TEXT_NODE && n.nodeValue.trim());
             if (textNode) range.selectNodeContents(textNode);
@@ -1622,14 +1610,12 @@ describe("vlap.github.io headless browser verification", () => {
     const sweFigures = await cdp.eval(`(async () => {
       const pc = document.querySelector('.post-content');
       const flowersImg = document.querySelector('.post-content img[src*="flowers_warpfield.png"]');
-      const svgImg = document.querySelector('.post-content img[src*="neural_surrogate_swe_rollout.svg"]');
-      for (const img of [flowersImg, svgImg]) {
-        if (!img) continue;
-        img.scrollIntoView({ block: 'center' });
-        if (!img.complete) {
+      if (flowersImg) {
+        flowersImg.scrollIntoView({ block: 'center' });
+        if (!flowersImg.complete) {
           await new Promise((resolve) => {
-            img.addEventListener('load', resolve, { once: true });
-            img.addEventListener('error', resolve, { once: true });
+            flowersImg.addEventListener('load', resolve, { once: true });
+            flowersImg.addEventListener('error', resolve, { once: true });
             setTimeout(resolve, 3000);
           });
         }
@@ -1639,8 +1625,7 @@ describe("vlap.github.io headless browser verification", () => {
         postContentWidth: pc?.getBoundingClientRect().width || 0,
         flowersComplete: Boolean(flowersImg?.complete && flowersImg?.naturalWidth > 0),
         flowersWidth: flowersImg?.getBoundingClientRect().width || 0,
-        svgComplete: Boolean(svgImg?.complete && svgImg?.naturalWidth > 0),
-        svgWidth: svgImg?.getBoundingClientRect().width || 0,
+        tagCount: document.querySelectorAll('.post-tags li').length,
       };
     })()`);
     assert.equal(sweFigures.flowersComplete, true, "Expected flowers_warpfield.png to load");
@@ -1648,11 +1633,7 @@ describe("vlap.github.io headless browser verification", () => {
       Math.abs(sweFigures.flowersWidth - sweFigures.postContentWidth) <= 4,
       `Expected flowers_warpfield.png width (${sweFigures.flowersWidth}px) to match .post-content (${sweFigures.postContentWidth}px)`,
     );
-    assert.equal(sweFigures.svgComplete, true, "Expected neural_surrogate_swe_rollout.svg to load");
-    assert.ok(
-      Math.abs(sweFigures.svgWidth - sweFigures.postContentWidth) <= 4,
-      `Expected neural_surrogate_swe_rollout.svg width (${sweFigures.svgWidth}px) to match .post-content (${sweFigures.postContentWidth}px)`,
-    );
+    assert.ok(sweFigures.tagCount <= 3, `Expected <= 3 tags on single post, got ${sweFigures.tagCount}`);
 
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/posts/2026-06-15-neural-surrogates-shallow-water-equations/`);
 
@@ -1840,19 +1821,16 @@ describe("vlap.github.io headless browser verification", () => {
     ]);
 
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/cv/`);
-    const cvTools = await cdp.eval(
-      `(document.querySelector('.cv-tools-line')?.textContent || '').replace(/\\s+/g, ' ').trim()`,
-    );
-    assert.equal(
-      cvTools,
-      "Tools: Python (xarray, Dask, PyTorch), Fortran (MPI, OpenMP), Bash, Slurm, Autosubmit, CDO, NCO. Models: EC-Earth4, OpenIFS, NEMO/PISCES, OASIS3-MCT, ICON.",
-    );
+    const hasCvTools = await cdp.eval(`Boolean(document.querySelector('.cv-tools-line'))`);
+    assert.equal(hasCvTools, false, "Manual .cv-tools-line must be removed from /cv/");
 
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/publications/`);
     const pubIntro = await cdp.eval(
       `(document.querySelector('.pub-metrics-intro')?.textContent || '').replace(/\\s+/g, ' ').trim()`,
     );
     assert.match(pubIntro, /^\d+ papers · \d+ citations · h-index \d+ \(OpenAlex\)\.$/);
+    const hasDiplomaLink = await cdp.eval(`Boolean(document.querySelector('a[href="/downloads/msc-thesis-vlapin.pdf"]'))`);
+    assert.equal(hasDiplomaLink, true, "Expected Diploma Thesis PDF link on /publications/");
   });
 
   it("enforces tabular-nums glyph width invariance and clean CV mobile wrapping across routes", async () => {
@@ -2097,28 +2075,29 @@ describe("vlap.github.io headless browser verification", () => {
     }
 
     try {
-      await cdp.eval(`window.dispatchEvent(new Event('beforeprint'))`);
       await cdp.send("Emulation.setEmulatedMedia", { media: "print" });
       await new Promise((r) => setTimeout(r, 150));
       const cvPrint = await cdp.eval(`(() => ({
-        allOpen: [...document.querySelectorAll('details.cv-section-details')].every((d) => d.open === true),
-        cvItemVisibility: getComputedStyle(document.querySelector('.cv-item:nth-of-type(n+6)')).contentVisibility,
         barDisplay: getComputedStyle(document.querySelector('.cv-download-bar')).display,
         navDisplay: getComputedStyle(document.querySelector('.cv-nav-bar')).display,
       }))()`);
-      assert.equal(cvPrint.allOpen, true, "beforeprint must open all details.cv-section-details");
-      assert.equal(cvPrint.cvItemVisibility, "visible", "@media print must reset .cv-item content-visibility");
       assert.equal(cvPrint.barDisplay, "none");
       assert.equal(cvPrint.navDisplay, "none");
     } finally {
       await cdp.send("Emulation.setEmulatedMedia", { media: "screen" });
-      await cdp.eval(`window.dispatchEvent(new Event('afterprint'))`);
     }
 
-    const restoredClosed = await cdp.eval(
-      `[...document.querySelectorAll('details.cv-section-details')].every((d) => d.open === false)`,
-    );
-    assert.equal(restoredClosed, true, "afterprint must restore previously collapsed details.cv-section-details");
+    await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/cv/trainings/`);
+    try {
+      await cdp.send("Emulation.setEmulatedMedia", { media: "print" });
+      await new Promise((r) => setTimeout(r, 150));
+      const trainingsPrint = await cdp.eval(`({
+        cvItemVisibility: getComputedStyle(document.querySelector('.cv-item:nth-of-type(n+6)')).contentVisibility,
+      })`);
+      assert.equal(trainingsPrint.cvItemVisibility, "visible", "@media print must reset .cv-item content-visibility");
+    } finally {
+      await cdp.send("Emulation.setEmulatedMedia", { features: [], media: "screen" });
+    }
 
     await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/publications/`);
     try {
@@ -2509,7 +2488,7 @@ describe("vlap.github.io headless browser verification", () => {
     assert.equal(notFoundState.hasHomeLink, true);
   });
 
-  it("lands /cv/ .cv-nav-link jumps on #trainings--certifications and #selected-presentations under content-visibility: auto", async () => {
+  it("lands /cv/ .cv-nav-link jumps on #education and navigates directly to standalone Trainings, Presentations, and Publications", async () => {
     for (const vp of [
       { name: "desktop", width: 1280, height: 800, mobile: false },
       { name: "mobile", width: 375, height: 812, mobile: true },
@@ -2521,39 +2500,34 @@ describe("vlap.github.io headless browser verification", () => {
         mobile: vp.mobile,
       });
       await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/cv/`);
-      await cdp.eval(`document.querySelector('.cv-nav-link[href="#trainings--certifications"]').click()`);
-      await new Promise((r) => setTimeout(r, 450));
-      const trainingsJump = await cdp.eval(`(() => {
-        const el = document.getElementById('trainings--certifications');
-        const det = document.querySelector('details.cv-section-details[data-cv-section="trainings--certifications"]');
+      await cdp.eval(`document.querySelector('.cv-nav-link[href="#education"]').click()`);
+      await new Promise((r) => setTimeout(r, 200));
+      const eduJump = await cdp.eval(`(() => {
+        const el = document.getElementById('education');
+        const atBottom = Math.abs(window.scrollY + window.innerHeight - document.documentElement.scrollHeight) <= 2;
         return {
-          open: Boolean(det?.open),
-          top: el ? el.getBoundingClientRect().top : 99999
+          top: el ? el.getBoundingClientRect().top : 99999,
+          atBottom,
+          innerHeight: window.innerHeight,
         };
       })()`);
-      assert.equal(trainingsJump.open, true, `${vp.name}: #trainings--certifications link must open details`);
       assert.ok(
-        trainingsJump.top >= 0 && trainingsJump.top <= 100,
-        `${vp.name} #trainings--certifications landed off-target: top=${trainingsJump.top}px`,
+        eduJump.top >= 0 && (eduJump.top <= 100 || (eduJump.atBottom && eduJump.top <= eduJump.innerHeight * 0.4)),
+        `${vp.name} #education landed off-target: ${JSON.stringify(eduJump)}`,
       );
+    }
 
-      await cdp.eval(`window.scrollTo(0, 0)`);
-      await new Promise((r) => setTimeout(r, 150));
-      await cdp.eval(`document.querySelector('.cv-nav-link[href="#selected-presentations"]').click()`);
-      await new Promise((r) => setTimeout(r, 450));
-      const presJump = await cdp.eval(`(() => {
-        const el = document.getElementById('selected-presentations');
-        const det = document.querySelector('details.cv-section-details[data-cv-section="selected-presentations"]');
-        return {
-          open: Boolean(det?.open),
-          top: el ? el.getBoundingClientRect().top : 99999
-        };
-      })()`);
-      assert.equal(presJump.open, true, `${vp.name}: #selected-presentations link must open details`);
-      assert.ok(
-        presJump.top >= 0 && presJump.top <= 100,
-        `${vp.name} #selected-presentations (with Trainings open) landed off-target: top=${presJump.top}px`,
-      );
+    for (const [href, expectedH1] of [
+      ["/cv/trainings/", "Trainings & Certifications"],
+      ["/cv/presentations/", "Selected Presentations"],
+      ["/publications/", "Publications"],
+    ]) {
+      await navigateAndCheckErrors(cdp, `${serverObj.baseUrl}/cv/`);
+      await cdp.eval(`document.querySelector('.cv-nav-link[href="${href}"]').click()`);
+      await new Promise((r) => setTimeout(r, 350));
+      const dest = await cdp.eval(`({ path: location.pathname, h1: document.querySelector('h1')?.textContent.trim() })`);
+      assert.equal(dest.path, href);
+      assert.equal(dest.h1, expectedH1);
     }
   });
 });

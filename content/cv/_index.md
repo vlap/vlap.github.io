@@ -26,12 +26,10 @@ hideMeta: true
 <nav class="cv-nav-bar" aria-label="CV sections">
   <a href="#research-experience" class="cv-nav-link">Experience</a>
   <a href="#education" class="cv-nav-link">Education</a>
-  <a href="#trainings--certifications" class="cv-nav-link">Trainings &amp; Certifications</a>
-  <a href="#selected-presentations" class="cv-nav-link">Selected Presentations</a>
+  <a href="/cv/trainings/" class="cv-nav-link">Trainings &amp; Certifications &rarr;</a>
+  <a href="/cv/presentations/" class="cv-nav-link">Selected Presentations &rarr;</a>
   <a href="/publications/" class="cv-nav-link">Publications &rarr;</a>
 </nav>
-
-<p class="cv-tools-line"><strong>Tools:</strong> Python (xarray, Dask, PyTorch), Fortran (MPI, OpenMP), Bash, Slurm, Autosubmit, CDO, NCO. <strong>Models:</strong> EC-Earth4, OpenIFS, NEMO/PISCES, OASIS3-MCT, ICON.</p>
 
 ## Research Experience
 
@@ -40,74 +38,3 @@ hideMeta: true
 ## Education
 
 {{< cv_timeline section="education" >}}
-
-## Trainings &amp; Certifications
-
-{{< cv_data file="trainings" collapsible="true" section_id="trainings--certifications" summary_label="trainings &amp; certifications" >}}
-
-<p class="cv-standalone-link"><a href="/cv/trainings/">Open standalone Trainings &amp; Certifications page &rarr;</a></p>
-
-## Selected Presentations
-
-{{< cv_data file="presentations" collapsible="true" section_id="selected-presentations" summary_label="selected presentations" >}}
-
-<p class="cv-standalone-link"><a href="/cv/presentations/">Open standalone Selected Presentations page &rarr;</a></p>
-
-<script>
-(function () {
-  function openCvDetailsForHash(hash) {
-    if (!hash || hash.length < 2) return;
-    var id = decodeURIComponent(hash.slice(1));
-    var bySection = document.querySelector('details.cv-section-details[data-cv-section="' + CSS.escape(id) + '"]');
-    if (bySection) {
-      bySection.open = true;
-      return;
-    }
-    var target = document.getElementById(id);
-    if (!target) return;
-    var parentDetails = target.closest('details.cv-section-details');
-    if (parentDetails) {
-      parentDetails.open = true;
-      return;
-    }
-    var nextEl = target.nextElementSibling;
-    while (nextEl && !nextEl.matches('h2, hr')) {
-      if (nextEl.matches('details.cv-section-details')) {
-        nextEl.open = true;
-        break;
-      }
-      nextEl = nextEl.nextElementSibling;
-    }
-  }
-
-  if (window.location.hash) {
-    openCvDetailsForHash(window.location.hash);
-  }
-
-  window.addEventListener('hashchange', function () {
-    openCvDetailsForHash(window.location.hash);
-  });
-
-  document.querySelectorAll('.cv-nav-link[href^="#"]').forEach(function (link) {
-    link.addEventListener('click', function () {
-      openCvDetailsForHash(link.getAttribute('href'));
-    });
-  });
-
-  window.addEventListener('beforeprint', function () {
-    document.querySelectorAll('details.cv-section-details').forEach(function (d) {
-      d.setAttribute('data-was-open', d.open ? 'true' : 'false');
-      d.open = true;
-    });
-  });
-
-  window.addEventListener('afterprint', function () {
-    document.querySelectorAll('details.cv-section-details').forEach(function (d) {
-      if (d.getAttribute('data-was-open') === 'false') {
-        d.open = false;
-      }
-      d.removeAttribute('data-was-open');
-    });
-  });
-})();
-</script>

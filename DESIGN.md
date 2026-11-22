@@ -114,12 +114,12 @@ components:
 
 **Creative North Star: "The Computational Physicist's Monograph & Lab Notebook"**
 
-This design system treats technical research, numerical PDEs, and high-performance computing engineering as a cohesive monograph rather than a generic blog. Every route shares a single aligned `45rem` (`720px`) reading column anchored by a left-aligned editorial masthead on Home, a mathematical physical-field contour signature derived from a rotating-basin $M_2$ tidal wave solution, hairline section rules, tabular numerals, and compact monospace action pills.
+This design system treats technical research, numerical PDEs, and high-performance computing engineering as a cohesive monograph rather than a generic blog. Every route shares a single aligned `45rem` (`720px`) reading column anchored by a left-aligned editorial masthead on Home, a spherical-grid & finite-difference stencil emblem derived from `profile-symbol.svg`, hairline section rules, tabular numerals, and compact monospace action pills.
 
-Neutrals hold the full canvas and structural cadence across both light and dark modes, while deep pine and ocean heritage accents mark interactive links, selections, blockquote hairlines, primary calls to action, and analytical contour lines. We explicitly reject generic WordPress academic blog patterns such as Nick Higham's `nhigham.com` utility sidebar, recent-posts/archive/category widget columns, subscriber widgets, and stacked blog-card boxes.
+Neutrals hold the full canvas and structural cadence across both light and dark modes, while deep pine and ocean heritage accents mark interactive links, selections, blockquote hairlines, primary calls to action, and spherical-grid linework. We explicitly reject generic WordPress academic blog patterns such as Nick Higham's `nhigham.com` utility sidebar, recent-posts/archive/category widget columns, subscriber widgets, and stacked blog-card boxes.
 
 **Key Characteristics:**
-- **Left-Aligned Monograph Authority:** Home opens with a left-aligned portrait-and-identity masthead, the $M_2$ rotating-basin amphidromic contour band, a ruled Current Focus line, and a three-column audience index rather than a centered social-profile card.
+- **Left-Aligned Monograph Authority:** Home opens with a left-aligned portrait-and-identity masthead featuring the spherical-grid stencil emblem, a ruled Current Focus line, and a three-column audience index rather than a centered social-profile card.
 - **Hairline-Ruled Hierarchy:** Log entries, CV presentations/trainings, and publication records use `1px` structural hairlines on a unified canvas (`#ffffff` light / `#1d1e20` dark) instead of elevated card boxes.
 - **Tabular Precision & Compact Action Pills:** Dates, publication metrics, CV badges, and filter controls align with `tabular-nums` monospace typography and `4px`-radius action pills (`PDF`, `Code`, `Slides`, `DOI`, `Copy BibTeX`, `View BibTeX`) meeting WCAG 2.1 AA contrast (`>= 4.5:1`).
 - **Zero-Overhead Performance:** Native system sans-serif and monospace stacks eliminate webfont network latency and layout shift (`CLS === 0`), while progressive `<details>` disclosures, `CSS.highlights` filtering, and local video facades keep interaction instant.
@@ -130,10 +130,10 @@ The palette pairs neutral paper and charcoal surfaces with a restrained deep-pin
 
 ### Primary
 - **Deep Pine** (`accent-pine` light / `accent-pine-dark` dark): Used for `::selection` fills, native `accent-color` controls, active navigation/filter indicators, primary action pill backgrounds, featured CV badges, and hover accents.
-- **Mid Pine** (`accent-pine-mid` light / `accent-pine-mid-dark` dark): Used for the `1px` left blockquote rule, prose underline decoration, hairline hover highlights, and $M_2$ cotidal phase rays (calibrated for `>= 4.5:1` / UI-control contrast on dark surfaces).
+- **Mid Pine** (`accent-pine-mid` light / `accent-pine-mid-dark` dark): Used for the `1px` left blockquote rule, prose underline decoration, hairline hover highlights, and the finite-difference stencil lines (calibrated for `>= 4.5:1` / UI-control contrast on dark surfaces).
 
 ### Secondary
-- **Deep Ocean** (`accent-ocean` light / `accent-ocean-dark` dark): Used for inline prose hyperlinks, scholarly cross-references, and $M_2$ co-amplitude contours so links read distinctly from body copy without harsh neon saturation.
+- **Deep Ocean** (`accent-ocean` light / `accent-ocean-dark` dark): Used for inline prose hyperlinks, scholarly cross-references, and spherical-grid meridians so links read distinctly from body copy without harsh neon saturation.
 
 ### Neutral
 - **Canvas** (`canvas-light` / `canvas-dark`): Unified page background across single articles, list feeds, and grids.
@@ -146,7 +146,7 @@ The palette pairs neutral paper and charcoal surfaces with a restrained deep-pin
 - **Code Surface** (`code-surface-light` / `code-surface-dark`): Inline code spans, BibTeX `<pre>` blocks, and syntax-highlighted listings.
 
 ### Named Rules
-**The Heritage Scarcity Rule.** Reserve deep pine and ocean exclusively for structural rules, inline prose links, selections, primary actions, and the $M_2$ physical-field graphic; never flood general page cards with saturated brand fills.
+**The Heritage Scarcity Rule.** Reserve deep pine and ocean exclusively for structural rules, inline prose links, selections, primary actions, and the spherical-grid emblem; never flood general page cards with saturated brand fills.
 **The Pill Contrast Rule.** Always pair small pills, tags, and action badges with primary ink over tinted pill surfaces (or canvas ink over deep pine for primary pills) to sustain `>= 4.5:1` WCAG AA contrast in both light and dark modes.
 **The Control Border Rule.** Give interactive pills, inputs, and disclosure controls a visible `border-control` stroke (`>= 3.0:1` against canvas) so buttons remain unmistakable without relying on drop shadows.
 
@@ -171,7 +171,7 @@ The palette pairs neutral paper and charcoal surfaces with a restrained deep-pin
 
 ## Layout
 
-All routes inhabit a single centered `45rem` (`720px`) column with `24px` desktop (`14px` mobile) gutter padding and `min-width: 0` containment down to `320px`. On Home, the `.home-masthead` pairs a compact square portrait (`96px` desktop, `clamp(4.5rem, 18vw, 6rem)`) with the left-aligned `h1`/tagline, followed by the full-width `720x108` $M_2$ tidal field band, single-occurrence bio, ruled Current Focus, and 3-column `.home-audience-links` strip (collapsing to 1 column at `<= 600px`). Both Home and `/posts/` / `/kinds/*` render a 2-column `.log-rows` grid (`10.5rem minmax(0, 1fr)` on desktop, `1fr` below `600px`) with stretched-link title navigation. `/work/` uses responsive `minmax(min(100%, 300px), 1fr)` software grids and `minmax(min(100%, 350px), 1fr)` 4:3 simulation tiles. `/cv/` leads with a 2-column `.cv-download-bar` (stacking below `600px`), `.cv-tools-line`, left-ruled `.cv-timeline`, and progressive `<details>` sections (expanded on standalone routes and `@media print` / `beforeprint`). `/publications/` pairs `#pubFilterInput` and `.pub-year-nav` with `content-visibility: auto` year groups (reset for print) and full-width wrapping `<details class="pub-bibtex-details">` drawers.
+All routes inhabit a single centered `45rem` (`720px`) column with `24px` desktop (`14px` mobile) gutter padding and `min-width: 0` containment down to `320px`. On Home, the `.home-masthead` pairs a compact square portrait (`96px` desktop, `clamp(4.5rem, 18vw, 6rem)`), left-aligned `h1`/tagline, and inline spherical-grid emblem (`home-domain-emblem`), followed by the single-occurrence bio, ruled Current Focus, and 3-column `.home-audience-links` strip (collapsing to 1 column at `<= 600px`). Both Home and `/posts/` / `/kinds/*` render a 2-column `.log-rows` grid (`10.5rem minmax(0, 1fr)` on desktop, `1fr` below `600px`) with stretched-link title navigation. `/work/` uses responsive `minmax(min(100%, 300px), 1fr)` software grids and `minmax(min(100%, 350px), 1fr)` 4:3 simulation tiles. `/cv/` leads with a 2-column `.cv-download-bar` (stacking below `600px`), `.cv-nav-bar` jumping to Experience/Education or linking directly to `/cv/trainings/`, `/cv/presentations/`, and `/publications/`, and left-ruled `.cv-timeline`. `/publications/` pairs `#pubFilterInput` and `.pub-year-nav` with `content-visibility: auto` year groups (reset for print) and full-width wrapping `<details class="pub-bibtex-details">` drawers.
 
 ## Elevation & Depth
 
@@ -210,7 +210,7 @@ Controls are compact, keyboard-obvious, `>= 44px` accessible on touch/primary ta
 - **Primary Header & Footer:** Single-row `45rem` nav bar (`Work`, `Log`, `CV` + `44x44px` `#theme-toggle`), hairline footer with 6 labeled icon links, `.log-kind-filter` / `.cv-nav-bar` / `.pub-year-nav` pill strips, and `.paginav` prev/next boxes stacking vertically below `600px`.
 
 ### Signature Components
-- **Editorial Masthead & $M_2$ Tidal Field Band:** Left-aligned `96px` portrait (`fetchpriority="high"`), display name, tagline, and an inline `720x108` SVG (`tidal_field.html`, `aria-hidden="true"`) rendering 8 co-amplitude contours, 16 cotidal rays, and 2 amphidromic points from a rotating-basin Kelvin-wave $M_2$ solution themed via `--accent-ocean` and `--accent-pine-mid`.
+- **Editorial Masthead & Spherical-Grid Emblem:** Left-aligned `96px` portrait (`fetchpriority="high"`), display name, tagline, and an inline `64x64` spherical-grid & finite-difference stencil emblem (`home-domain-emblem`, `aria-hidden="true"`) themed via `--accent-ocean`, `--accent-pine-mid`, and `--accent-pine`.
 - **Simulation Facade & Progressive Disclosure:** 4:3 `<button type="button" class="sim-facade">` (`480x360` WebP poster, `cubic-bezier(0.22, 1, 0.36, 1)` play-badge scale disabled under `prefers-reduced-motion: reduce`, `replaceChildren(video)` swap) and native `<details class="cv-section-details">` expanding automatically on anchor click, `beforeprint`, and `@media print`.
 
 ## Do's and Don'ts

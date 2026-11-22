@@ -5,7 +5,7 @@ draft: true
 type: "posts"
 math: true
 summary: "The first time you run OpenIFS in single precision, the global CO₂ mass budget will look like it has a severe leak. Here is what we found after tracking the diagnostics term-by-term, why >99.5% of the drift is chaotic weather, and how stochastic rounding fixed the real numerical error."
-tags: ["OpenIFS", "Atmospheric Modeling", "Numerical Precision", "HPC", "Fortran", "ECMWF"]
+tags: ["OpenIFS", "Numerical Precision", "HPC"]
 ShowToc: true
 TocOpen: false
 cover:

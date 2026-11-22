@@ -920,14 +920,15 @@ def test_heading_hierarchy_no_skipped_levels(
 
 
 def test_home_physical_field_graphic_and_no_emoji_bar(built_site: Path, built_stylesheet: str) -> None:
-    """Verify Home renders the authentic M2 tidal physical-field SVG without legacy profile-symbol.svg or emoji bars."""
+    """Verify Home renders the spherical-grid domain emblem (profile-symbol.svg geometry) without legacy img/emoji bars."""
     home_raw = (built_site / "index.html").read_text(encoding="utf-8")
-    assert "profile-symbol.svg" not in home_raw, "Legacy profile-symbol.svg must not be referenced in built index.html"
+    assert "profile-symbol.svg" not in home_raw, "Legacy profile-symbol.svg img must not be referenced in built index.html"
     home_info_src = (REPO_ROOT / "layouts" / "_partials" / "home_info.html").read_text(encoding="utf-8")
-    assert "profile-symbol.svg" not in home_info_src, "Legacy profile-symbol.svg must not remain in home_info.html"
+    assert "profile-symbol.svg" not in home_info_src, "Legacy profile-symbol.svg img must not remain in home_info.html"
 
     home_soup = BeautifulSoup(home_raw, "lxml")
     assert home_soup.select_one("img.home-symbol-icon") is None, "Legacy img.home-symbol-icon must be removed"
+    assert home_soup.select_one(".tidal-field-band") is None, "Removed .tidal-field-band must not appear on Home"
 
     h1 = home_soup.select_one(".home-info h1")
     assert h1 is not None
@@ -937,12 +938,8 @@ def test_home_physical_field_graphic_and_no_emoji_bar(built_site: Path, built_st
         assert glyph not in h1_text, f"Raw emoji {glyph!r} found in home <h1>"
         assert glyph not in home_info_src, f"Raw emoji {glyph!r} found in home_info.html"
 
-    bands = home_soup.select(".home-info .tidal-field-band")
-    assert len(bands) == 1, f"Expected exactly 1 .tidal-field-band inside .home-info, got {len(bands)}"
-    assert bands[0].get("aria-hidden") == "true"
-
-    svgs = home_soup.select(".home-info .tidal-field-band svg.tidal-field-svg")
-    assert len(svgs) == 1, f"Expected exactly 1 svg.tidal-field-svg inside .tidal-field-band, got {len(svgs)}"
+    svgs = home_soup.select(".home-info svg.home-domain-emblem")
+    assert len(svgs) == 1, f"Expected exactly 1 svg.home-domain-emblem inside .home-info, got {len(svgs)}"
     svg_el = svgs[0]
     assert svg_el.get("aria-hidden") == "true"
 
@@ -950,47 +947,41 @@ def test_home_physical_field_graphic_and_no_emoji_bar(built_site: Path, built_st
     vb_raw = svg_root.get("viewBox") or svg_root.get("viewbox") or ""
     vb_parts = [float(p) for p in vb_raw.split()]
     assert len(vb_parts) == 4 and vb_parts[2] > 0 and vb_parts[3] > 0, (
-        f"Invalid viewBox on tidal-field-svg: {vb_raw!r}"
+        f"Invalid viewBox on home-domain-emblem: {vb_raw!r}"
     )
 
-    tidal_src = (REPO_ROOT / "layouts" / "_partials" / "tidal_field.html").read_text(encoding="utf-8")
-    tidal_src_root = ET.fromstring(tidal_src)
-    assert tidal_src_root.get("viewBox") is not None, "tidal_field.html must declare camelCase viewBox"
-
-    primitive_tags = {"path", "circle", "ellipse", "polyline", "polygon"}
+    primitive_tags = {"path", "circle", "ellipse", "polyline", "polygon", "line"}
     primitives = [
         el for el in svg_root.iter()
         if el.tag.split("}")[-1] in primitive_tags
     ]
-    assert len(primitives) >= 4, f"Expected >= 4 contour primitives in tidal-field-svg, got {len(primitives)}"
+    assert len(primitives) >= 8, f"Expected >= 8 spherical-grid primitives in home-domain-emblem, got {len(primitives)}"
 
-    # Inspect both root <svg> and child <g>/<path>/<circle> nodes for theme-adaptive strokes/fills
     has_current_color_or_var = False
     for node in svg_root.iter():
         stroke = (node.get("stroke") or "").strip()
         fill = (node.get("fill") or "").strip()
         style = (node.get("style") or "").strip()
-        if stroke == "currentColor" or "var(" in stroke or "var(" in fill or "var(" in style:
+        if stroke == "currentColor" or fill == "currentColor" or "var(" in stroke or "var(" in fill or "var(" in style:
             has_current_color_or_var = True
         for attr_val in (stroke, fill):
             assert attr_val.lower() not in {"#000", "#000000", "#fff", "#ffffff"}, (
-                f"Hardcoded non-adaptive color {attr_val!r} found in tidal-field-svg"
+                f"Hardcoded non-adaptive color {attr_val!r} found in home-domain-emblem"
             )
-    assert has_current_color_or_var, "Expected stroke='currentColor' or CSS var(...) on tidal-field-svg nodes"
+    assert has_current_color_or_var, "Expected currentColor or CSS var(...) on home-domain-emblem nodes"
 
     rules = _parse_css_rules(built_stylesheet)
-    coamp_css = ";".join(c for _, c in _find_qualified_rules(rules, lambda p: p == ".tidal-coamplitude")).replace(" ", "")
-    cotid_css = ";".join(c for _, c in _find_qualified_rules(rules, lambda p: p == ".tidal-cotidal")).replace(" ", "")
-    amphi_css = ";".join(c for _, c in _find_qualified_rules(rules, lambda p: p == ".tidal-amphidromes circle")).replace(" ", "")
-    assert "color:var(--accent-ocean)" in coamp_css
-    assert "color:var(--accent-pine-mid)" in cotid_css
-    assert "fill:var(--theme)" in amphi_css and "stroke:var(--accent-pine)" in amphi_css
-    assert _find_qualified_rules(rules, lambda p: "[data-theme=dark]" in p and ".tidal-coamplitude" in p)
-    assert _find_qualified_rules(rules, lambda p: "[data-theme=dark]" in p and ".tidal-cotidal" in p)
+    merid_css = ";".join(c for _, c in _find_qualified_rules(rules, lambda p: p == ".home-domain-emblem .globe-meridians")).replace(" ", "")
+    stencil_css = ";".join(c for _, c in _find_qualified_rules(rules, lambda p: p == ".home-domain-emblem .globe-stencil")).replace(" ", "")
+    nodes_css = ";".join(c for _, c in _find_qualified_rules(rules, lambda p: p == ".home-domain-emblem .globe-nodes")).replace(" ", "")
+    assert "color:var(--accent-ocean)" in merid_css
+    assert "color:var(--accent-pine-mid)" in stencil_css
+    assert "color:var(--accent-pine)" in nodes_css
+    assert _find_qualified_rules(rules, lambda p: "[data-theme=dark]" in p and ".home-domain-emblem" in p)
 
 
 def test_cv_two_pdf_buttons_tools_and_talk_links(built_site: Path) -> None:
-    """Verify /cv/ suppresses trailing post-entry cards, renders 2 PDF buttons, tools line, and talk links."""
+    """Verify /cv/ has 2 PDF buttons, standalone nav links for Trainings/Presentations, and talk/thesis links."""
     cv_raw = (built_site / "cv" / "index.html").read_text(encoding="utf-8")
     cv_soup = BeautifulSoup(cv_raw, "lxml")
     assert cv_soup.select("article.post-entry") == [], "Duplicate trailing post-entry cards found on /cv/"
@@ -1018,24 +1009,33 @@ def test_cv_two_pdf_buttons_tools_and_talk_links(built_site: Path) -> None:
     assert "Specialized in atmospheric and oceanic fluid dynamics" not in cv_text, (
         "Old CV intro paragraph should be removed"
     )
-    assert "Tools:" in cv_text and "Models:" in cv_text and "EC-Earth4" in cv_text and "OpenIFS" in cv_text, (
-        "Missing Tools & Models line on /cv/"
-    )
+    assert cv_soup.select_one(".cv-tools-line") is None, "Manual .cv-tools-line should be removed from /cv/"
+
+    nav_hrefs = [a.get("href") for a in cv_soup.select(".cv-nav-bar a.cv-nav-link")]
+    assert nav_hrefs == [
+        "#research-experience",
+        "#education",
+        "/cv/trainings/",
+        "/cv/presentations/",
+        "/publications/",
+    ], f"Unexpected /cv/ nav links: {nav_hrefs}"
 
     assert (built_site / "cv" / "presentations" / "index.html").is_file()
     assert (built_site / "cv" / "trainings" / "index.html").is_file()
 
-    # Verify legacy PhD/MSc thesis PDFs are copied, built, and linked from Education
+    # Verify legacy PhD/MSc thesis PDFs are copied, built, and linked from both /cv/ and /publications/
+    pub_soup = BeautifulSoup((built_site / "publications" / "index.html").read_text(encoding="utf-8"), "lxml")
     for pdf_name in ("phd-thesis-vlapin.pdf", "msc-thesis-vlapin.pdf"):
         assert (built_site / "downloads" / pdf_name).is_file(), f"Missing built thesis PDF: {pdf_name}"
         assert cv_soup.find("a", href=f"/downloads/{pdf_name}") is not None, (
             f"Missing /downloads/{pdf_name} link on /cv/"
         )
+        assert pub_soup.find("a", href=f"/downloads/{pdf_name}") is not None, (
+            f"Missing /downloads/{pdf_name} link on /publications/"
+        )
 
-    # Verify /cv/ collapses Trainings & Presentations inside details.cv-section-details while keeping standalone pages open
-    cv_details = cv_soup.select("details.cv-section-details")
-    assert len(cv_details) == 2, f"Expected 2 details.cv-section-details on /cv/, got {len(cv_details)}"
-    assert all(not d.has_attr("open") for d in cv_details), "CV details disclosures should start collapsed"
+    # Trainings & Presentations moved to standalone pages rather than inline <details> on /cv/
+    assert cv_soup.select("details.cv-section-details") == []
 
     trainings_soup = BeautifulSoup((built_site / "cv" / "trainings" / "index.html").read_text(encoding="utf-8"), "lxml")
     assert trainings_soup.select("details.cv-section-details") == []
@@ -1045,19 +1045,18 @@ def test_cv_two_pdf_buttons_tools_and_talk_links(built_site: Path) -> None:
     assert pres_soup.select("details.cv-section-details") == []
     assert len(pres_soup.select(".cv-item")) == 21
 
-    # Verify EGU2014 (2014) and AMS 19th (2013) link to their Log talk pages on both /cv/ and /cv/presentations/
-    for target_name, target_soup in (("cv", cv_soup), ("cv/presentations", pres_soup)):
-        for event_name, expected_slug in (
-            ("EGU2014", "/posts/2014-04-28-egu2014-global-modelling-surface-internal-tides/"),
-            ("19th Conference on Atmospheric and Oceanic Fluid Dynamics of the AMS", "/posts/2013-06-21-ams19-global-modelling-surface-internal-tides/"),
-        ):
-            matching_items = [
-                item for item in target_soup.select(".cv-item")
-                if event_name in item.get_text(" ", strip=True)
-            ]
-            assert len(matching_items) == 1, f"Expected 1 {event_name} item on {target_name}, got {len(matching_items)}"
-            talk_link = matching_items[0].find("a", href=re.compile(re.escape(expected_slug)))
-            assert talk_link is not None, f"Missing Log talk link {expected_slug} on {event_name} in {target_name}"
+    # Verify EGU2014 (2014) and AMS 19th (2013) link to their Log talk pages on /cv/presentations/
+    for event_name, expected_slug in (
+        ("EGU2014", "/posts/2014-04-28-egu2014-global-modelling-surface-internal-tides/"),
+        ("19th Conference on Atmospheric and Oceanic Fluid Dynamics of the AMS", "/posts/2013-06-21-ams19-global-modelling-surface-internal-tides/"),
+    ):
+        matching_items = [
+            item for item in pres_soup.select(".cv-item")
+            if event_name in item.get_text(" ", strip=True)
+        ]
+        assert len(matching_items) == 1, f"Expected 1 {event_name} item on cv/presentations, got {len(matching_items)}"
+        talk_link = matching_items[0].find("a", href=re.compile(re.escape(expected_slug)))
+        assert talk_link is not None, f"Missing Log talk link {expected_slug} on {event_name} in cv/presentations"
 
     # Verify compact timeline styling for institution/bullet-less entries (Career Break)
     assert len(cv_soup.select(".cv-entry-compact")) == 1
@@ -1579,7 +1578,12 @@ def test_m3_log_kind_filters_badges_and_linkedin_probe(built_site: Path) -> None
 
     entries = log_soup.select(".log-rows .log-row")
     assert len(entries) == 3, f"Expected 3 published Log entries on /posts/, got {len(entries)}"
+    # Max 3 tags per post (frontmatter and rendered list/single pages)
+    for md_path in sorted((REPO_ROOT / "content" / "posts").glob("*.md")):
+        fm, _ = _parse_front_matter(md_path)
+        assert len(fm.get("tags") or []) <= 3, f"{md_path.name} exceeds 3-tag cap: {fm.get('tags')}"
     for entry in entries:
+        assert len(entry.select(".entry-tags a.post-tag")) <= 3, "Log list row exceeds 3 tags"
         assert entry.select(".kind-badge"), "Expected .kind-badge on Log list entry"
         title_link = entry.select_one("a.log-row-title-link")
         assert title_link is not None and (title_link.get("href") or "").strip(), (
@@ -1590,12 +1594,13 @@ def test_m3_log_kind_filters_badges_and_linkedin_probe(built_site: Path) -> None
             "Expected ISO date in time.log-row-date on Log list entry"
         )
 
-    # Single post without linkedin: must not render .post-linkedin-link, and must show .kind-badge
+    # Single post without linkedin: must not render .post-linkedin-link, and must show .kind-badge + <= 3 tags
     note_soup = BeautifulSoup(
         (built_site / "posts" / "2026-06-15-neural-surrogates-shallow-water-equations" / "index.html").read_text(encoding="utf-8"),
         "lxml",
     )
     assert note_soup.select_one(".post-header .kind-badge") is not None
+    assert len(note_soup.select(".post-tags li")) <= 3
     assert note_soup.select_one(".post-linkedin-link") is None
 
     # Probe optional linkedin: front-matter key in an isolated temporary contentDir
@@ -1698,10 +1703,6 @@ def test_m4_section6_verbatim_prose(
             "Builds PISCES biogeochemistry initial conditions for NEMO and EC-Earth4 from a data catalog.",
         ),
     ]
-    expected_cv_tools = (
-        "Tools: Python (xarray, Dask, PyTorch), Fortran (MPI, OpenMP), Bash, Slurm, Autosubmit, CDO, NCO. "
-        "Models: EC-Earth4, OpenIFS, NEMO/PISCES, OASIS3-MCT, ICON."
-    )
     expected_site_desc = "Vladimir Lapin, Senior Research Engineer at BSC. Climate models, HPC and ML emulators."
 
     profile = yaml.safe_load((REPO_ROOT / "data" / "profile.yaml").read_text(encoding="utf-8"))
@@ -1774,11 +1775,9 @@ def test_m4_section6_verbatim_prose(
     ]
     assert rendered_cards == expected_software
 
-    # 8. CV tools line
+    # 8. CV tools line removed to avoid manual maintenance
     cv_soup = BeautifulSoup((built_site / "cv" / "index.html").read_text(encoding="utf-8"), "lxml")
-    cv_tools = cv_soup.select_one(".cv-tools-line")
-    assert cv_tools is not None
-    assert re.sub(r"\s+", " ", cv_tools.get_text()).strip() == expected_cv_tools
+    assert cv_soup.select_one(".cv-tools-line") is None
 
     # 9. Publications intro
     stats = yaml.safe_load((REPO_ROOT / "data" / "stats.yaml").read_text(encoding="utf-8"))
@@ -2039,9 +2038,8 @@ def test_design_docs_sync(built_stylesheet: str) -> None:
         )
 
     body_lower = body.lower()
-    for token in ("left-aligned", "tidal", "tabular-nums", "action pill", "nhigham.com"):
+    for token in ("left-aligned", "emblem", "tabular-nums", "action pill", "nhigham.com"):
         assert token in body_lower, f"DESIGN.md missing required concept {token!r}"
-    assert "profile-symbol.svg" not in design_md
 
 
 def test_zero_nick_higham_and_no_teamwork_metadata(

@@ -110,7 +110,7 @@
     <footer class="entry-footer">
       {{- with .Params.tags }}
       <div class="entry-tags">
-        {{- range . }}
+        {{- range first 3 . }}
         <a href="{{ (printf "tags/%s/" (. | urlize)) | absURL }}" class="post-tag">#{{ . }}</a>
         {{- end }}
       </div>

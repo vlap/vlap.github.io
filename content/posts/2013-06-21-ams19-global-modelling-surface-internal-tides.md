@@ -7,17 +7,11 @@ kinds: ["talk"]
 event: "19th Conference on Atmospheric and Oceanic Fluid Dynamics of the AMS"
 year: 2013
 location: "Rhode Island"
-summary: "Talk at the 19th Conference on Atmospheric and Oceanic Fluid Dynamics of the AMS (Rhode Island) on global dynamical modelling of surface and internal tides."
-tags: ["Ocean Modeling", "Tides", "Geophysical Fluid Dynamics", "Fortran"]
+summary: "Dynamical global modelling of surface and low-mode internal tides with self-attraction and loading (AMS AOFD 2013, Newport)."
+tags: ["Tides", "Ocean Modeling", "Fortran"]
 ---
 
-## Details
-
-- **Venue:** 19th Conference on Atmospheric and Oceanic Fluid Dynamics of the AMS, Newport, Rhode Island
-- **Date:** 21 June 2013
-- **Program:** [AMS Paper 227193](https://ams.confex.com/ams/19Fluid17Middle/webprogram/Paper227193.html)
-
-## Abstract
+**19th AMS Conference on Atmospheric and Oceanic Fluid Dynamics** · Newport, Rhode Island · 21 June 2013 · [AMS Paper 227193](https://ams.confex.com/ams/19Fluid17Middle/webprogram/Paper227193.html)
 
 > Global prediction of oceanic tides is a classical problem in physical oceanography and was, probably, the first one to be formulated in a robust mathematical manner. A system of hydrodynamical equations that can describe tidal flows given astronomical forcing and global topography was formulated by Laplace almost 250 years ago. The quality and complexity of this model has increased considerably during the last 100 years as the importance of additional physical processes has been recognised, such as energy loss to a turbulent bottom boundary layer, oceanic self-attraction and Earth loading, and, more recently, energy loss due to generation of internal waves at tidal frequency. This so-called *internal tide* is now thought to play an important role in setting the global oceanic circulation, and has led to renewed interest in numerical modelling of ocean tides.
 >

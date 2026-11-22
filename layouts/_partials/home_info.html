@@ -17,9 +17,24 @@
                 <h1>{{ or $profile.name site.Params.homeInfoParams.Title "Dr. Vladimir Lapin" }}</h1>
                 <p class="home-subtitle">{{ or $profile.tagline "Senior Research Engineer, BSC · Climate models, HPC, ML emulators" }}</p>
             </header>
-        </div>
-        <div class="tidal-field-band" aria-hidden="true">
-            {{- partial "tidal_field.html" . }}
+            <svg class="home-domain-emblem" viewBox="0 0 100 100" width="64" height="64" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+                <g class="globe-meridians" fill="none" stroke="currentColor">
+                    <circle cx="50" cy="50" r="45" stroke-width="2" />
+                    <ellipse cx="50" cy="50" rx="15" ry="45" stroke-width="1.5" />
+                    <ellipse cx="50" cy="50" rx="30" ry="45" stroke-width="1" stroke-dasharray="2,2" />
+                    <line x1="5" y1="50" x2="95" y2="50" stroke-width="1.5" />
+                    <line x1="10" y1="30" x2="90" y2="30" stroke-width="1" stroke-dasharray="2,2" />
+                    <line x1="10" y1="70" x2="90" y2="70" stroke-width="1" stroke-dasharray="2,2" />
+                </g>
+                <path class="globe-stencil" d="M 50 20 L 80 50 L 50 80 L 20 50 Z" fill="none" stroke="currentColor" stroke-width="1.25" />
+                <g class="globe-nodes" fill="currentColor">
+                    <circle cx="50" cy="50" r="3.2" />
+                    <circle cx="50" cy="20" r="2.2" />
+                    <circle cx="50" cy="80" r="2.2" />
+                    <circle cx="20" cy="50" r="2.2" />
+                    <circle cx="80" cy="50" r="2.2" />
+                </g>
+            </svg>
         </div>
     </div>
 

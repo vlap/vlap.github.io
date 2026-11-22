@@ -4,7 +4,7 @@ date: 2026-09-22T10:00:00+02:00
 draft: true
 type: "posts"
 summary: "Every research repo eventually collects ghost dependencies, committed runtime caches, and 1,800-line planning docs that nobody reads. Here is what happened when we ran an adversarial audit on Climate Commons, cutting 112 MB and 5,500 files with zero lost functionality."
-tags: ["Research Engineering", "Scientific Computing", "Deterministic CI", "Software Architecture", "YAGNI", "cvc-commons"]
+tags: ["Research Engineering", "Deterministic CI", "cvc-commons"]
 ShowToc: true
 TocOpen: false
 cover:

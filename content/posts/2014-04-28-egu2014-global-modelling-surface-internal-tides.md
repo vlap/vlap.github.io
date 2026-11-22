@@ -7,18 +7,11 @@ kinds: ["talk"]
 event: "EGU2014"
 year: 2014
 location: "Vienna"
-summary: "Talk at EGU General Assembly 2014 (Vienna) on global numerical modelling of surface and internal ocean tides."
-tags: ["Ocean Modeling", "Tides", "Geophysical Fluid Dynamics", "Fortran"]
+summary: "Explicit linear internal-wave generation in a global barotropic–baroclinic tide model (EGU 2014, Vienna)."
+tags: ["Tides", "Ocean Modeling", "Fortran"]
 ---
 
-## Details
-
-- **Venue:** EGU General Assembly 2014, Vienna
-- **Date:** April 2014
-- **Slides:** [EGU2014-14442 presentation (PDF)](https://presentations.copernicus.org/EGU2014/EGU2014-14442_presentation.pdf)
-- **Abstract:** [EGU2014-14442 official abstract (PDF)](https://meetingorganizer.copernicus.org/EGU2014/EGU2014-14442.pdf)
-
-## Abstract
+**EGU General Assembly 2014** · Vienna · April 2014 · [Slides (PDF)](https://presentations.copernicus.org/EGU2014/EGU2014-14442_presentation.pdf) · [Official abstract (PDF)](https://meetingorganizer.copernicus.org/EGU2014/EGU2014-14442.pdf)
 
 > Almost 250 years ago Laplace formulated a system of hydrodynamical equations that can describe the dynamics of ocean tides given astronomical forcing and global topography. But these equations lack dissipation that is required to cause the observed slowdown of Earth’s rotation. During the last 100 years the importance of two dissipative processes has been recognised: energy loss to a turbulent bottom boundary layer in shallow seas and, more recently, energy conversion from surface to internal tides (i.e. internal waves at tidal frequency). And this internal tide is now thought to play an important role in setting the global oceanic circulation, and, therefore, climate on Earth.
 >

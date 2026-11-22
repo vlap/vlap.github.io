@@ -230,19 +230,19 @@
       "css": ".ds-cv-summary { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 44px; padding: 0.55rem 1rem; background: var(--theme, #ffffff); border: 1px solid var(--border-control, #7d8783); border-radius: 4px; color: var(--primary, #1e1e1e); font-size: 0.92rem; font-weight: 600; cursor: pointer; list-style: none; } .ds-cv-summary:hover { background: var(--surface-pill, #eef2f0); border-color: var(--accent-pine, #203931); } .ds-cv-summary:focus-visible { outline: 2px solid var(--accent-pine, #203931); outline-offset: 2px; }"
     },
     {
-      "name": "M2 Tidal Field Band",
+      "name": "Spherical-Grid Domain Emblem",
       "kind": "custom",
       "refersTo": "row-monograph",
-      "description": "Inline rotating-basin M2 amphidromic contour SVG band framing the Home editorial masthead.",
-      "html": "<div class=\"ds-tidal-band\" aria-hidden=\"true\"><svg viewBox=\"0 0 720 108\" width=\"720\" height=\"108\" class=\"ds-tidal-svg\"><ellipse cx=\"200\" cy=\"54\" rx=\"48\" ry=\"24\" fill=\"none\" stroke=\"currentColor\" opacity=\"0.28\"/><line x1=\"200\" y1=\"54\" x2=\"340\" y2=\"0\" stroke=\"currentColor\" stroke-dasharray=\"3 3\" opacity=\"0.5\"/><circle cx=\"200\" cy=\"54\" r=\"3\" fill=\"#ffffff\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg></div>",
-      "css": ".ds-tidal-band { border-top: 1px solid var(--hairline, #e2e6e4); border-bottom: 1px solid var(--hairline, #e2e6e4); padding: 0.25rem 0; color: var(--accent-pine-mid, #3E7060); } .ds-tidal-svg { display: block; width: 100%; height: auto; aspect-ratio: 720 / 108; }"
+      "description": "Inline spherical-grid & finite-difference stencil SVG emblem framing the Home editorial masthead.",
+      "html": "<svg class=\"ds-domain-emblem\" viewBox=\"0 0 100 100\" width=\"64\" height=\"64\" aria-hidden=\"true\"><circle cx=\"50\" cy=\"50\" r=\"45\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M 50 20 L 80 50 L 50 80 L 20 50 Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.25\"/></svg>",
+      "css": ".ds-domain-emblem { display: block; width: 64px; height: 64px; color: var(--accent-pine-mid, #3E7060); }"
     }
   ],
   "narrative": {
     "northStar": "The Computational Physicist's Monograph & Lab Notebook",
-    "overview": "This design system treats technical research, numerical PDEs, and high-performance computing engineering as a cohesive monograph rather than a generic blog. Every route shares a single aligned 45rem (720px) reading column anchored by a left-aligned editorial masthead on Home, a mathematical physical-field contour signature derived from a rotating-basin M2 tidal wave solution, hairline section rules, tabular numerals, and compact monospace action pills.\n\nNeutrals hold the full canvas and structural cadence across both light and dark modes, while deep pine and ocean heritage accents mark interactive links, selections, blockquote hairlines, primary calls to action, and analytical contour lines. We explicitly reject generic WordPress academic blog patterns such as Nick Higham's nhigham.com utility sidebar, recent-posts/archive/category widget columns, subscriber widgets, and stacked blog-card boxes.",
+    "overview": "This design system treats technical research, numerical PDEs, and high-performance computing engineering as a cohesive monograph rather than a generic blog. Every route shares a single aligned 45rem (720px) reading column anchored by a left-aligned editorial masthead on Home, a spherical-grid & finite-difference stencil emblem, hairline section rules, tabular numerals, and compact monospace action pills.\n\nNeutrals hold the full canvas and structural cadence across both light and dark modes, while deep pine and ocean heritage accents mark interactive links, selections, blockquote hairlines, primary calls to action, and spherical-grid linework. We explicitly reject generic WordPress academic blog patterns such as Nick Higham's nhigham.com utility sidebar, recent-posts/archive/category widget columns, subscriber widgets, and stacked blog-card boxes.",
     "keyCharacteristics": [
-      "Left-Aligned Monograph Authority: Home opens with a left-aligned portrait-and-identity masthead, the M2 rotating-basin amphidromic contour band, a ruled Current Focus line, and a three-column audience index rather than a centered social-profile card.",
+      "Left-Aligned Monograph Authority: Home opens with a left-aligned portrait-and-identity masthead featuring the spherical-grid stencil emblem, a ruled Current Focus line, and a three-column audience index rather than a centered social-profile card.",
       "Hairline-Ruled Hierarchy: Log entries, CV presentations/trainings, and publication records use 1px structural hairlines on a unified canvas (#ffffff light / #1d1e20 dark) instead of elevated card boxes.",
       "Tabular Precision & Compact Action Pills: Dates, publication metrics, CV badges, and filter controls align with tabular-nums monospace typography and 4px-radius action pills (PDF, Code, Slides, DOI, Copy BibTeX, View BibTeX) meeting WCAG 2.1 AA contrast (>= 4.5:1).",
       "Zero-Overhead Performance: Native system sans-serif and monospace stacks eliminate webfont network latency and layout shift (CLS === 0), while progressive <details> disclosures, CSS.highlights filtering, and local video facades keep interaction instant."
@@ -250,7 +250,7 @@
     "rules": [
       {
         "name": "The Heritage Scarcity Rule",
-        "body": "Reserve deep pine and ocean exclusively for structural rules, inline prose links, selections, primary actions, and the M2 physical-field graphic; never flood general page cards with saturated brand fills.",
+        "body": "Reserve deep pine and ocean exclusively for structural rules, inline prose links, selections, primary actions, and the spherical-grid emblem; never flood general page cards with saturated brand fills.",
         "section": "colors"
       },
       {

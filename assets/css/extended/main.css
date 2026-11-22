@@ -433,9 +433,16 @@ main#main-content:focus:not(:focus-visible) {
 
 .home-identity-row {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
     gap: 1rem 1.25rem;
+}
+
+@media (max-width: 480px) {
+    .home-identity-row {
+        align-items: start;
+        gap: 0.75rem 0.9rem;
+    }
 }
 
 .home-info-image {
@@ -483,57 +490,45 @@ main#main-content:focus:not(:focus-visible) {
     letter-spacing: 0.005em;
 }
 
-/* Physical-Field Signature (M2 Rotating-Basin Amphidromic Contours) */
-.tidal-field-band {
-    border-top: 1px solid var(--hairline);
-    border-bottom: 1px solid var(--hairline);
-    padding: 0.25rem 0;
-}
-
-.tidal-field-svg {
+/* Domain Emblem (Spherical Mesh & Finite-Difference Stencil) */
+.home-domain-emblem {
     display: block;
-    width: 100%;
+    width: clamp(2.5rem, 8vw, 4rem);
     height: auto;
-    aspect-ratio: 720 / 108;
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0;
 }
 
-.tidal-coamplitude {
+.home-domain-emblem .globe-meridians {
     color: var(--accent-ocean);
-    opacity: 0.24;
+    opacity: 0.42;
 }
 
-.tidal-cotidal {
+.home-domain-emblem .globe-stencil {
     color: var(--accent-pine-mid);
-    opacity: 0.44;
+    opacity: 0.68;
 }
 
-.tidal-cotidal-zero {
+.home-domain-emblem .globe-nodes {
     color: var(--accent-pine);
-    stroke-dasharray: 3 3;
-    opacity: 0.55;
+    opacity: 0.85;
 }
 
-.tidal-amphidromes circle {
-    fill: var(--theme);
-    stroke: var(--accent-pine);
-    stroke-width: 1.5;
+[data-theme="dark"] .home-domain-emblem .globe-meridians {
+    opacity: 0.52;
 }
 
-[data-theme="dark"] .tidal-coamplitude {
-    opacity: 0.32;
-}
-
-[data-theme="dark"] .tidal-cotidal {
-    opacity: 0.55;
+[data-theme="dark"] .home-domain-emblem .globe-stencil {
+    opacity: 0.78;
 }
 
 @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .tidal-coamplitude {
-        opacity: 0.32;
+    :root:not([data-theme="light"]) .home-domain-emblem .globe-meridians {
+        opacity: 0.52;
     }
 
-    :root:not([data-theme="light"]) .tidal-cotidal {
-        opacity: 0.55;
+    :root:not([data-theme="light"]) .home-domain-emblem .globe-stencil {
+        opacity: 0.78;
     }
 }
 
@@ -634,14 +629,10 @@ main#main-content:focus:not(:focus-visible) {
         content-visibility: visible !important;
     }
 
-    .tidal-field-band {
-        border-color: #bbb !important;
-    }
-
-    .tidal-coamplitude,
-    .tidal-cotidal,
-    .tidal-cotidal-zero {
-        opacity: 0.75 !important;
+    .home-domain-emblem .globe-meridians,
+    .home-domain-emblem .globe-stencil,
+    .home-domain-emblem .globe-nodes {
+        opacity: 0.85 !important;
     }
 
     body {
@@ -2833,7 +2824,8 @@ pre:focus-within .copy-code,
     position: relative;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 0.5rem 0;
+    margin: 0;
+    padding: 0;
     max-width: 100%;
     -webkit-overflow-scrolling: touch;
 }
@@ -2904,7 +2896,6 @@ h1, h2, h3, .post-title, .pub-card-title {
     .pub-card,
     .current-focus,
     .home-audience-links,
-    .tidal-field-band,
     .action-pill,
     .kind-badge,
     .log-kind-pill,
