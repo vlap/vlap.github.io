@@ -1110,8 +1110,8 @@ describe("vlap.github.io headless browser verification", () => {
           const csMeridians = meridians ? getComputedStyle(meridians) : null;
           const csStencil = stencil ? getComputedStyle(stencil) : null;
           const csNodes = nodes ? getComputedStyle(nodes) : null;
-          const firstCircle = meridians?.querySelector('circle');
-          const csCircle = firstCircle ? getComputedStyle(firstCircle) : null;
+          const firstMeridianEl = meridians?.querySelector('path, line, rect, circle');
+          const csCircle = firstMeridianEl ? getComputedStyle(firstMeridianEl) : null;
           return {
             legacyImg: Boolean(document.querySelector('img.home-symbol-icon')),
             legacySrc: Boolean(document.querySelector('[src*="profile-symbol.svg"]')),

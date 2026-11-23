@@ -17,22 +17,56 @@
                 <h1>{{ or $profile.name site.Params.homeInfoParams.Title "Dr. Vladimir Lapin" }}</h1>
                 <p class="home-subtitle">{{ or $profile.tagline "Senior Research Engineer, BSC · Climate models, HPC, ML emulators" }}</p>
             </header>
-            <svg class="home-domain-emblem" viewBox="0 0 100 100" width="64" height="64" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-                <g class="globe-meridians" fill="none" stroke="currentColor">
-                    <circle cx="50" cy="50" r="45" stroke-width="2" />
-                    <ellipse cx="50" cy="50" rx="15" ry="45" stroke-width="1.5" />
-                    <ellipse cx="50" cy="50" rx="30" ry="45" stroke-width="1" stroke-dasharray="2,2" />
-                    <line x1="5" y1="50" x2="95" y2="50" stroke-width="1.5" />
-                    <line x1="10" y1="30" x2="90" y2="30" stroke-width="1" stroke-dasharray="2,2" />
-                    <line x1="10" y1="70" x2="90" y2="70" stroke-width="1" stroke-dasharray="2,2" />
+            <svg class="home-domain-emblem" viewBox="0 0 100 100" width="72" height="72" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+                <g class="globe-meridians" fill="none">
+                    <rect x="10" y="10" width="80" height="80" stroke="var(--hairline)" stroke-width="1.6"/>
+                    <g stroke="var(--accent-ocean)" stroke-width="0.9" opacity="0.24">
+                        <line x1="23.3" y1="10" x2="23.3" y2="90"/>
+                        <line x1="36.7" y1="10" x2="36.7" y2="90"/>
+                        <line x1="50" y1="10" x2="50" y2="90"/>
+                        <line x1="63.3" y1="10" x2="63.3" y2="90"/>
+                        <line x1="76.7" y1="10" x2="76.7" y2="90"/>
+                        <line x1="10" y1="23.3" x2="90" y2="23.3"/>
+                        <line x1="10" y1="76.7" x2="90" y2="76.7"/>
+                    </g>
+                    <path d="M 10,36.7 C 23,32.5 37,40.9 50,36.7 C 63,32.5 77,40.9 90,36.7" stroke="var(--accent-pine-mid)" stroke-width="1.2" opacity="0.65"/>
+                    <path d="M 10,50.0 C 23,55.5 37,44.5 50,50.0 C 63,55.5 77,44.5 90,50.0" stroke="var(--accent-ocean)" stroke-width="1.3" opacity="0.72"/>
+                    <path d="M 10,63.3 C 23,59.1 37,67.5 50,63.3 C 63,59.1 77,67.5 90,63.3" stroke="var(--accent-pine-mid)" stroke-width="1.2" opacity="0.65"/>
+                    <rect x="10" y="10" width="80" height="80" stroke="var(--accent-ocean)" stroke-width="1.25" opacity="0.54"/>
+                    <path d="M 50.5,18.0 C 70.5,21.5 82.0,35.5 76.5,51.0 Q 65.0,55.5 53.5,56.0 Z" fill="var(--theme)" fill-opacity="0.84" stroke="var(--accent-ocean)" stroke-width="1.8" stroke-linejoin="round"/>
+                    <g fill="none" stroke-linecap="round">
+                        <path d="M 50.5,18.0 C 62.5,25.5 69.0,38.0 66.0,54.0" stroke="var(--accent-pine-mid)" stroke-width="1.35" opacity="0.86"/>
+                        <path d="M 50.8,18.0 C 57.0,28.5 60.0,41.0 58.8,55.3" stroke="var(--accent-ocean)" stroke-width="1.2" opacity="0.72"/>
+                        <path d="M 51.4,30.5 Q 62.5,33.5 73.5,30.2" stroke="var(--accent-ocean)" stroke-width="1.25" opacity="0.78"/>
+                        <path d="M 52.6,43.0 Q 65.0,46.8 77.5,42.2" stroke="var(--accent-pine-mid)" stroke-width="1.3" opacity="0.82"/>
+                    </g>
                 </g>
-                <path class="globe-stencil" d="M 50 20 L 80 50 L 50 80 L 20 50 Z" fill="none" stroke="currentColor" stroke-width="1.25" />
-                <g class="globe-nodes" fill="currentColor">
-                    <circle cx="50" cy="50" r="3.2" />
-                    <circle cx="50" cy="20" r="2.2" />
-                    <circle cx="50" cy="80" r="2.2" />
-                    <circle cx="20" cy="50" r="2.2" />
-                    <circle cx="80" cy="50" r="2.2" />
+                <g class="globe-stencil">
+                    <path d="M 46.8,20.5 L 22.0,55.5 Q 34.0,58.2 46.2,56.8 Z" fill="var(--theme)" fill-opacity="0.84" stroke="var(--accent-ocean)" stroke-width="1.75" stroke-linejoin="round"/>
+                    <g stroke="var(--accent-pine-mid)" stroke-width="1.05" stroke-linecap="round" opacity="0.85">
+                        <line x1="43.5" y1="29.5" x2="37.2" y2="40.5"/>
+                        <line x1="43.5" y1="29.5" x2="43.8" y2="40.5"/>
+                        <line x1="37.2" y1="40.5" x2="29.2" y2="52.0"/>
+                        <line x1="37.2" y1="40.5" x2="36.8" y2="52.5"/>
+                        <line x1="37.2" y1="40.5" x2="43.8" y2="52.5"/>
+                        <line x1="43.8" y1="40.5" x2="29.2" y2="52.0"/>
+                        <line x1="43.8" y1="40.5" x2="36.8" y2="52.5"/>
+                        <line x1="43.8" y1="40.5" x2="43.8" y2="52.5"/>
+                    </g>
+                    <g fill="var(--theme)" stroke-width="1.15">
+                        <circle cx="43.5" cy="29.5" r="1.35" stroke="var(--accent-pine)"/>
+                        <circle cx="37.2" cy="40.5" r="1.35" stroke="var(--accent-ocean)"/>
+                        <circle cx="43.8" cy="40.5" r="1.35" stroke="var(--accent-ocean)"/>
+                        <circle cx="29.2" cy="52.0" r="1.35" stroke="var(--accent-pine-mid)"/>
+                        <circle cx="36.8" cy="52.5" r="1.35" stroke="var(--accent-pine-mid)"/>
+                        <circle cx="43.8" cy="52.5" r="1.35" stroke="var(--accent-pine-mid)"/>
+                    </g>
+                </g>
+                <g class="globe-nodes">
+                    <path d="M 46.2,15.5 C 47.0,7.0 51.2,3.4 56.2,3.6 C 59.8,3.8 61.4,6.9 60.2,9.8 C 59.0,12.5 55.6,12.8 53.3,11.3 C 51.6,10.2 50.8,10.6 50.1,14.8 C 49.4,22.0 52.8,34.0 53.9,50.0 C 54.7,64.0 54.4,76.0 53.8,84.5 C 53.0,93.0 48.8,96.6 43.8,96.4 C 40.2,96.2 38.6,93.1 39.8,90.2 C 41.0,87.5 44.4,87.2 46.7,88.7 C 48.4,89.8 49.2,89.4 49.9,85.2 C 50.6,78.0 47.2,66.0 46.1,50.0 C 45.3,36.0 45.6,24.0 46.2,15.5 Z" fill="var(--accent-pine)"/>
+                    <path d="M 21.0,61.0 C 39.0,63.8 59.0,63.2 74.0,57.5 C 78.2,55.8 81.2,52.8 82.5,49.5 C 82.2,60.5 78.2,69.8 73.0,74.0 C 59.0,78.2 44.0,79.0 30.5,78.5 C 25.5,73.0 22.5,67.0 21.0,61.0 Z" fill="var(--theme)" stroke="none"/>
+                    <path d="M 21.0,61.0 C 39.0,63.8 59.0,63.2 74.0,57.5 C 78.2,55.8 81.2,52.8 82.5,49.5" fill="none" stroke="var(--accent-pine-mid)" stroke-width="1.9" stroke-linecap="round"/>
+                    <path d="M 82.5,49.5 C 82.2,60.5 78.2,69.8 73.0,74.0 C 59.0,78.2 44.0,79.0 30.5,78.5 C 25.5,73.0 22.5,67.0 21.0,61.0" fill="none" stroke="var(--accent-ocean)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
                 </g>
             </svg>
         </div>

@@ -490,10 +490,10 @@ main#main-content:focus:not(:focus-visible) {
     letter-spacing: 0.005em;
 }
 
-/* Domain Emblem (Spherical Mesh & Finite-Difference Stencil) */
+/* Domain Emblem (Climate-Mekhmat Sailboat: Isobar & GNN Sails on C-Grid) */
 .home-domain-emblem {
     display: block;
-    width: clamp(2.5rem, 8vw, 4rem);
+    width: clamp(3.25rem, 9vw, 4.5rem);
     height: auto;
     aspect-ratio: 1 / 1;
     flex-shrink: 0;
@@ -501,34 +501,34 @@ main#main-content:focus:not(:focus-visible) {
 
 .home-domain-emblem .globe-meridians {
     color: var(--accent-ocean);
-    opacity: 0.42;
+    opacity: 1;
 }
 
 .home-domain-emblem .globe-stencil {
     color: var(--accent-pine-mid);
-    opacity: 0.68;
+    opacity: 1;
 }
 
 .home-domain-emblem .globe-nodes {
     color: var(--accent-pine);
-    opacity: 0.85;
+    opacity: 1;
 }
 
 [data-theme="dark"] .home-domain-emblem .globe-meridians {
-    opacity: 0.52;
+    opacity: 1;
 }
 
 [data-theme="dark"] .home-domain-emblem .globe-stencil {
-    opacity: 0.78;
+    opacity: 1;
 }
 
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) .home-domain-emblem .globe-meridians {
-        opacity: 0.52;
+        opacity: 1;
     }
 
     :root:not([data-theme="light"]) .home-domain-emblem .globe-stencil {
-        opacity: 0.78;
+        opacity: 1;
     }
 }
 
